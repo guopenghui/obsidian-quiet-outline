@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-quiet-outline",
+	"name": "Quiet Outline",
+	"version": "0.0.1",
+	"minAppVersion": "0.12.0",
+	"description": "Make outline quiet ;p",
+	"author": "the_tree",
+	"authorUrl": "",
+	"isDesktopOnly": true
+}

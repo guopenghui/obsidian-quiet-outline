@@ -1,0 +1,36 @@
+{
+	"name": "obsidian-sample-plugin",
+	"version": "1.0.1",
+	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"dependencies": {
+		"marked": "^4.0.12",
+		"vue": "^3.2.31"
+	},
+	"devDependencies": {
+		"@types/markdown-it": "^12.2.3",
+		"@types/marked": "^4.0.2",
+		"@types/node": "^16.11.6",
+		"@typescript-eslint/eslint-plugin": "^5.2.0",
+		"@typescript-eslint/parser": "^5.2.0",
+		"@vicons/material": "^0.12.0",
+		"@vicons/utils": "^0.1.4",
+		"@vue/compiler-sfc": "^3.2.31",
+		"builtin-modules": "^3.2.0",
+		"esbuild": "0.13.12",
+		"esbuild-plugin-vue3": "^0.3.0",
+		"hash-sum": "^2.0.0",
+		"naive-ui": "^2.26.3",
+		"obsidian": "^0.13.26",
+		"tslib": "2.3.1",
+		"typescript": "4.4.4"
+	}
+}
