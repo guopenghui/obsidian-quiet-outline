@@ -12,7 +12,6 @@ import {
 } from 'obsidian';
 
 import { OutlineView, VIEW_TYPE } from './view'
-
 import { store, HeadLine } from './store'
 
 
@@ -49,6 +48,12 @@ export default class MyPlugin extends Plugin {
 			}
 		})
 		
+		// for test
+		// this.addRibbonIcon('dice','test something',(evt)=>{
+
+		// })
+
+
 		this.addCommand({
 			id: "quiet-outline",
 			name: "Quiet Outline",
@@ -92,7 +97,6 @@ export default class MyPlugin extends Plugin {
 			})
 				
 			store.headers = real_headers
-			store.editor = editor
 		}
 
 		const refresh = debounce(refresh_outline,0.3,true)
@@ -176,3 +180,7 @@ class SampleSettingTab extends PluginSettingTab {
 				)
 	}
 }
+function MarkdownPreviewview(MarkdownPreviewview: any) {
+	throw new Error('Function not implemented.');
+}
+

@@ -7,7 +7,6 @@ export interface HeadLine {
     line: number,
 }
 
-
 const store = reactive({
     plugin: undefined as QuietOutline,
     activeView() {
@@ -16,13 +15,6 @@ const store = reactive({
     headers:[] as HeadLine[],
     text: "",
     dark: false,
-    editor: undefined,
-    scroll(range: EditorRange, center: boolean) {
-        if(this.editor){
-            let editor: Editor = this.editor
-            editor.scrollIntoView(range, center)
-        }
-    }
 })
 
 export { store }

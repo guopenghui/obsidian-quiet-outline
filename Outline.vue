@@ -23,13 +23,13 @@
 
 <script setup lang="ts">
 import {ref, computed, createStaticVNode} from 'vue'
-//import { Notice, Editor, renderMath, finishRenderMath } from 'obsidian'
+import { Notice, MarkdownView } from 'obsidian'
 import { NTree, TreeOption, NButton, NInput, NConfigProvider, darkTheme } from 'naive-ui'
 import { Icon } from '@vicons/utils'
 import { SettingsBackupRestoreRound } from '@vicons/material'
 import { marked } from 'marked'
-import { formula, internal_link, remove_href } from './parser'
 
+import { formula, internal_link, remove_href } from './parser'
 import { store, HeadLine } from './store'
 
 
@@ -60,18 +60,15 @@ function jump(_selected:any, nodes:TreeOption[] ): Promise<number> {
             resolve(0)
         }
         const key: number = nodes[0].key as number  
-        const to_line: number = store.headers[key].line
-        const range = {
-            from: {
-                line: to_line,
-                ch: 0,
-            },
-            to: {
-                line: to_line,
-                ch: 0,
-            }
+        let to_line: number = store.headers[key].line
+        
+        const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
+        if(view) {
+            const current_view = view.currentMode
+            to_line -= 1
+            to_line = to_line > 0? to_line : 0
+            current_view.applyScroll(to_line)
         }
-        store.scroll(range, true)
         resolve(0)
     })
 }
