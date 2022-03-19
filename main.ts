@@ -1,32 +1,30 @@
 import { 
 	App, 
 	debounce,
-	Editor, 
 	MarkdownView, 
-	Modal, 
 	Notice, 
 	Plugin, 
 	PluginSettingTab, 
 	Setting,
 	loadMathJax 
-} from 'obsidian';
+} from 'obsidian'
 
 import { OutlineView, VIEW_TYPE } from './view'
 import { store, HeadLine } from './store'
 
 
-interface MyPluginSettings {
+interface QuietOutlineSettings {
 	mySetting: string;
 	markdown: boolean;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: QuietOutlineSettings = {
 	mySetting: 'default',
 	markdown: false,
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class QuietOutline extends Plugin {
+	settings: QuietOutlineSettings;
 
 	async onload() {
 		await this.loadSettings()
@@ -53,7 +51,6 @@ export default class MyPlugin extends Plugin {
 
 		// })
 
-
 		this.addCommand({
 			id: "quiet-outline",
 			name: "Quiet Outline",
@@ -62,18 +59,19 @@ export default class MyPlugin extends Plugin {
 			}
 		})
 
-		this.addSettingTab(new SampleSettingTab(this.app,this))
+		this.addSettingTab(new SettingTab(this.app, this))
 		
 		const refresh_outline = () => {
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView)
+
 			if(!view) {
 				store.headers = []
 				return
 			}
-			const editor = view.editor
-			const text = editor.getValue()
-			let headers = text.split('\n')
-								.map((s,i)=>({text:s, line:i}))
+
+			const text = view.editor.getValue()
+			let head_or_block = text.split('\n')
+								.map((s, i) => ({text: s, line: i}))
 								.filter(({text})=>{
 									return text.startsWith("# ")||
 											text.startsWith("## ")||
@@ -83,33 +81,32 @@ export default class MyPlugin extends Plugin {
 											text.startsWith("###### ") ||
 											text.startsWith("```")
 								})
-			let real_headers: HeadLine[] = []
+
+			let headers: HeadLine[] = []
 			let in_code_block = false
 			
-			headers.forEach((entry) => {
+			head_or_block.forEach((entry) => {
 				if(entry.text.startsWith('```')){
 					in_code_block = !in_code_block
 				} else {
 					if(!in_code_block) {
-						real_headers.push(entry)
+						headers.push(entry)
 					}
 				}
 			})
 				
-			store.headers = real_headers
+			store.headers = headers
 		}
 
-		const refresh = debounce(refresh_outline,0.3,true)
-		this.app.workspace.on('editor-change',(editor,markdown)=>{
+		const refresh = debounce(refresh_outline, 0.3, true)
+		this.registerEvent(this.app.workspace.on('editor-change', () => {
 			refresh()
-		})
+		}))
 
-		this.app.workspace.on('active-leaf-change',(leaf)=>{
-			new Promise((resolve,reject) => {
+		this.registerEvent(this.app.workspace.on('active-leaf-change', async () => {
+				await new Promise((resolve) => { resolve(0) })
 				refresh_outline()
-				resolve(0)
-			})
-		})
+		}))
 	}
 
 	onunload() {
@@ -123,6 +120,7 @@ export default class MyPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
 	async activateView() {
 		this.app.workspace.detachLeavesOfType(VIEW_TYPE)
 
@@ -135,7 +133,9 @@ export default class MyPlugin extends Plugin {
 			this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
 		)
 	}
-	onModeChange(callback:(dark:boolean) => void) {
+	
+	// observe theme change from <body>
+	onModeChange(callback: (dark: boolean) => void) {
 		let body = document.querySelector("body")
 		let Observer = new MutationObserver((mutations)=>{
 			mutations.forEach((mutation) => {
@@ -144,18 +144,16 @@ export default class MyPlugin extends Plugin {
 				}   
 			})
 		})
-		Observer.observe(body,{
+		Observer.observe(body, {
 			attributeFilter: ['class']
 		})	
 	}
 }
 
+class SettingTab extends PluginSettingTab {
+	plugin: QuietOutline;
 
-
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
-
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: QuietOutline) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -163,11 +161,9 @@ class SampleSettingTab extends PluginSettingTab {
 	display(): void {
 		const {containerEl} = this;
 
-		containerEl.empty();
+		containerEl.empty()
+		containerEl.createEl('h2', {text: 'Settings for Quiet Outline.'})
 
-		containerEl.createEl('h2', {text: 'Settings for Quiet Outline.'});
-
-		
 		new Setting(containerEl)
 			.setName('Render markdown')
 			.setDesc('Render heading string as markdown format.')
@@ -179,8 +175,5 @@ class SampleSettingTab extends PluginSettingTab {
 				})
 				)
 	}
-}
-function MarkdownPreviewview(MarkdownPreviewview: any) {
-	throw new Error('Function not implemented.');
 }
 

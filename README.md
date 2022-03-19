@@ -47,10 +47,12 @@ Quiet Outline:
 ## Limitations
 
 + Due to the lazy-rendering strategy of built-in editor (Only text showed in the current window is rendered. If scrolling too fast, you will see some text is not ready to be rendered and  the editor stutters), sometimes you can't jump to the place you want by one click **in edit mode**，especially when the note is opened for the first time since you open obsidian app.    Outline core plugin has the same issue.  Solution: **Just click again**.
+
 + If you use `1. xxxx` as a heading, you probably find something tricky. Because `<number>. xxx` is a markdown notation for a numbered list (`<ol>` element in HTML). Maybe try another notation instead, e.g., `1 . xxx`，`1- xxxx`, `1\. xxxxx`.
 
++ Cross-level is not supported, which means you can uew `h1->h2->h3`，but not `h1->h3->h4`, while `h3` and `h4` will be treated as `h2` and `h3`. 
 
-
++ Some extented grammars in obsidian are not supported by default. But we can extend the markdown-parser to fix it! If you believe any grammar is frequently used and should be implemented, create an issue to discuss about it.
 
 
 ## Usage

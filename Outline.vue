@@ -33,7 +33,7 @@ import { formula, internal_link, remove_href } from './parser'
 import { store, HeadLine } from './store'
 
 
-// 设置
+// load settings
 let renderMethod = computed(() => {
     if(store.plugin.settings.markdown){
         return renderLabel
@@ -41,10 +41,10 @@ let renderMethod = computed(() => {
     return null
 })
 
-// 搜索
+// search
 let pattern =ref("")
 
-// light/dark 模式切换
+// toggle light/dark theme
 let theme = computed(() => {
     if(store.dark){
         return darkTheme
@@ -52,28 +52,25 @@ let theme = computed(() => {
     return null
 })
 
-// 页内跳转
-function jump(_selected:any, nodes:TreeOption[] ): Promise<number> {
-    // new Notice("Jump!")
-    return new Promise((resolve, reject) =>{
-        if(nodes[0] === undefined){
-            resolve(0)
-        }
-        const key: number = nodes[0].key as number  
-        let to_line: number = store.headers[key].line
-        
-        const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
-        if(view) {
-            const current_view = view.currentMode
-            to_line -= 1
-            to_line = to_line > 0? to_line : 0
-            current_view.applyScroll(to_line)
-        }
-        resolve(0)
-    })
+// click and jump
+async function jump(_selected:any, nodes:TreeOption[] ): Promise<number> {
+    await new Promise((resolve) => { resolve(0) })
+
+    if(nodes[0] === undefined){
+        return
+    }
+    const key: number = nodes[0].key as number  
+    let to_line: number = store.headers[key].line
+    
+    const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
+    if(view) {
+        const current_view = view.currentMode
+        to_line = to_line > 1? to_line-2 : 0
+        current_view.applyScroll(to_line)
+    }
 }
 
-// 准备数据
+// prepare data for tree component
 let data2 = computed(()=>{
     return makeTree(store.headers)
 })
@@ -85,19 +82,21 @@ interface Head {
     line: number,
 }
 
-function makeTree(headers:HeadLine[]):TreeOption[] {
+function makeTree(headers: HeadLine[]): TreeOption[] {
     const head_names: Head[] = headers.map((s)=>{
         let v = s.text.split(" ")
-        const sharps = v[0].length
+
+        const level = v[0].length
         const head = v.slice(1).join(" ")
-        return {level: sharps, head: head, line: s.line}
+
+        return {level, head, line: s.line}
     })
 
-    let tree: TreeOption[] = strs_to_tree(head_names)
+    let tree: TreeOption[] = strsToTree(head_names)
     return tree
 }
 
-function strs_to_tree(head: Head[]): TreeOption[] {
+function strsToTree(head: Head[]): TreeOption[] {
     const root: TreeOption = {children:[]}
     const stack = [{node: root, level: -1}]
 
@@ -125,14 +124,26 @@ function strs_to_tree(head: Head[]): TreeOption[] {
 }
 
 
-marked.use({extensions: [formula, internal_link]})
-marked.use({walkTokens: remove_href})
+// render markdown
+marked.use({ extensions: [formula, internal_link] })
+marked.use({ walkTokens: remove_href })
 
-// markdown渲染
-function renderLabel({option}:{option:TreeOption}){
+function renderLabel({ option }: { option: TreeOption }) {
     let result = marked.parse(option.label).trim()
+    
+    result = securityCheck(result)
+
     result = `<div>${result}</div>`
     return createStaticVNode(result,1)
+}
+
+function securityCheck(html: string): string {
+    if(/<script.*>/.test(html)) {
+         return `<p style="color:red;background-color:yellow;">
+                    Script is not permitted.
+                </p>`
+    }
+    return html
 }
 
 </script>

@@ -1,8 +1,9 @@
-import { marked } from "marked";
-import { renderMath, finishRenderMath } from "obsidian";
+import { marked } from "marked"
+import { renderMath, finishRenderMath } from "obsidian"
 
 type Extension = marked.TokenizerExtension & marked.RendererExtension
 
+// parse $xxx$ format
 export const formula: Extension = {
     name: "formula",
     level: "inline",
@@ -27,6 +28,7 @@ export const formula: Extension = {
     }
 }
 
+// parse [[xxx]] format
 export const internal_link: Extension = {
     name: "internal",
     level: "inline",
@@ -49,7 +51,7 @@ export const internal_link: Extension = {
     }
 }
 
-
+// remove url inside <a>
 export const remove_href = (token:marked.Token) => {
     if(token.type === "link") {
         token.href = "void(0);"

@@ -1,5 +1,4 @@
-import { ref, reactive } from 'vue'
-import { Editor, EditorRange } from 'obsidian'
+import { reactive } from 'vue'
 import QuietOutline from './main'
 
 export interface HeadLine {
