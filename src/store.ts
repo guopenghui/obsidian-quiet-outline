@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import QuietOutline from './main'
+import { QuietOutline } from './plugin'
 
 export interface HeadLine {
     text: string,
