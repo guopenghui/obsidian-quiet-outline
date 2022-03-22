@@ -8,29 +8,29 @@ An outline plugin makes headings easier to read.
 
 Default Outline: 
 
-![系统自带大纲](public/系统自带大纲.gif)
+![系统自带大纲](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/notquiet.gif)
 
 Quiet Outline: 
 
-![安静大纲](public/安静大纲.gif)
+![安静大纲](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/quiet.gif)
 
 
 
 ### Search support
 
-![支持搜索](public/支持搜索.gif)
+![支持搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/search.gif)
 
 
 
 ### Toggle light/dark mode
 
-![切换模式](public/切换模式.gif)
+![切换模式](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/theme.gif)
 
 
 
 ### Markdown render support
 
-![渲染markdown](public/渲染markdown.gif)
+![渲染markdown](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/markdown.gif)
 
 
 
