@@ -1,5 +1,6 @@
-import { marked } from "marked"
-import { renderMath, finishRenderMath } from "obsidian"
+import { marked } from 'marked'
+import { renderMath, finishRenderMath, loadMathJax } from 'obsidian'
+import { store } from './store'
 
 type Extension = marked.TokenizerExtension & marked.RendererExtension
 
@@ -22,9 +23,16 @@ export const formula: Extension = {
         }
     },
     renderer(token) {
-        const formula = renderMath(token.formula,false).outerHTML
-        finishRenderMath()
-        return formula
+        try{
+            const formula = renderMath(token.formula,false).outerHTML
+            finishRenderMath()
+            return formula
+        } catch {
+            loadMathJax().then(()=>{
+                store.activeView()
+            })
+            return false
+        }
     }
 }
 

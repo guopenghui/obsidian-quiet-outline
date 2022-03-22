@@ -23,14 +23,14 @@
 
 <script setup lang="ts">
 import {ref, computed, createStaticVNode} from 'vue'
-import { Notice, MarkdownView } from 'obsidian'
+import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache } from 'obsidian'
 import { NTree, TreeOption, NButton, NInput, NConfigProvider, darkTheme } from 'naive-ui'
 import { Icon } from '@vicons/utils'
 import { SettingsBackupRestoreRound } from '@vicons/material'
 import { marked } from 'marked'
 
 import { formula, internal_link, remove_href } from './parser'
-import { store, HeadLine } from './store'
+import { store } from './store'
 
 
 // load settings
@@ -54,19 +54,20 @@ let theme = computed(() => {
 
 // click and jump
 async function jump(_selected:any, nodes:TreeOption[] ): Promise<number> {
-    await new Promise((resolve) => { resolve(0) })
-
     if(nodes[0] === undefined){
         return
     }
+
     const key: number = nodes[0].key as number  
-    let to_line: number = store.headers[key].line
+    let to_line: number = store.headers[key].position.start.line
     
     const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
     if(view) {
         const current_view = view.currentMode
         to_line = to_line > 1? to_line-2 : 0
         current_view.applyScroll(to_line)
+        // make jump more precisely
+        setTimeout(()=>{current_view.applyScroll(to_line)},500)
     }
 }
 
@@ -75,36 +76,21 @@ let data2 = computed(()=>{
     return makeTree(store.headers)
 })
 
+function makeTree(headers: HeadingCache[]): TreeOption[] {
 
-interface Head {
-    level: number,
-    head: string,
-    line: number,
-}
-
-function makeTree(headers: HeadLine[]): TreeOption[] {
-    const head_names: Head[] = headers.map((s)=>{
-        let v = s.text.split(" ")
-
-        const level = v[0].length
-        const head = v.slice(1).join(" ")
-
-        return {level, head, line: s.line}
-    })
-
-    let tree: TreeOption[] = strsToTree(head_names)
+    let tree: TreeOption[] = arrToTree(headers)
     return tree
 }
 
-function strsToTree(head: Head[]): TreeOption[] {
+function arrToTree(headers: HeadingCache[]): TreeOption[] {
     const root: TreeOption = {children:[]}
     const stack = [{node: root, level: -1}]
 
-    head.forEach((h,i)=>{
+    headers.forEach((h,i)=>{
         let node: TreeOption = {
-                label: h.head,
+                label: h.heading,
                 key: i,
-                line: h.line,
+                line: h.position.start.line,
             }
 
         while(h.level <= stack.last().level){
@@ -117,7 +103,7 @@ function strsToTree(head: Head[]): TreeOption[] {
         }
 
         parent.children.push(node)
-        stack.push({node, level:h.level})
+        stack.push({node, level: h.level})
     })
 
     return root.children
@@ -129,21 +115,12 @@ marked.use({ extensions: [formula, internal_link] })
 marked.use({ walkTokens: remove_href })
 
 function renderLabel({ option }: { option: TreeOption }) {
-    let result = marked.parse(option.label).trim()
+    const sanitized = sanitizeHTMLToDom(`<div>${option.label}</div>`).children[0].innerHTML
+    let result = marked.parse(sanitized).trim()
     
-    result = securityCheck(result)
-
     result = `<div>${result}</div>`
-    return createStaticVNode(result,1)
-}
 
-function securityCheck(html: string): string {
-    if(/<script.*>/.test(html)) {
-         return `<p style="color:red;background-color:yellow;">
-                    Script is not permitted.
-                </p>`
-    }
-    return html
+    return createStaticVNode(result,1)
 }
 
 </script>

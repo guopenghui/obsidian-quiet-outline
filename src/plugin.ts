@@ -6,11 +6,10 @@ import {
 	Plugin, 
 	PluginSettingTab, 
 	Setting,
-	loadMathJax 
 } from 'obsidian'
 
 import { OutlineView, VIEW_TYPE } from './view'
-import { store, HeadLine } from './store'
+import { store } from './store'
 
 
 interface QuietOutlineSettings {
@@ -28,7 +27,6 @@ export class QuietOutline extends Plugin {
 
 	async onload() {
 		await this.loadSettings()
-		await loadMathJax()
 		
 		store.plugin = this
 		store.dark = document.querySelector('body').classList.contains('theme-dark')
@@ -38,13 +36,6 @@ export class QuietOutline extends Plugin {
 			(leaf) => new OutlineView(leaf)				
 		)
 		
-		this.onModeChange((dark) => {
-			if(dark) {
-				store.dark = true
-			} else {
-				store.dark = false
-			}
-		})
 		
 		// for test
 		// this.addRibbonIcon('dice','test something',(evt)=>{
@@ -60,51 +51,26 @@ export class QuietOutline extends Plugin {
 		})
 
 		this.addSettingTab(new SettingTab(this.app, this))
-		
+
 		const refresh_outline = () => {
-			const view = this.app.workspace.getActiveViewOfType(MarkdownView)
-
-			if(!view) {
-				store.headers = []
-				return
-			}
-
-			const text = view.editor.getValue()
-			let head_or_block = text.split('\n')
-								.map((s, i) => ({text: s, line: i}))
-								.filter(({text})=>{
-									return text.startsWith("# ")||
-											text.startsWith("## ")||
-											text.startsWith("### ") ||
-											text.startsWith("#### ") ||
-											text.startsWith("##### ") ||
-											text.startsWith("###### ") ||
-											text.startsWith("```")
-								})
-
-			let headers: HeadLine[] = []
-			let in_code_block = false
-			
-			head_or_block.forEach((entry) => {
-				if(entry.text.startsWith('```')){
-					in_code_block = !in_code_block
-				} else {
-					if(!in_code_block) {
-						headers.push(entry)
-					}
+			const current_file = this.app.workspace.getActiveFile()
+			if(current_file) {
+				const headers = this.app.metadataCache.getFileCache(current_file).headings
+				if(headers){
+					store.headers = headers
+					return
 				}
-			})
-				
-			store.headers = headers
+			}
+			
+			store.headers = []
 		}
 
-		const refresh = debounce(refresh_outline, 0.3, true)
-		this.registerEvent(this.app.workspace.on('editor-change', () => {
+		const refresh = debounce(refresh_outline, 300, true)
+		this.registerEvent(this.app.metadataCache.on('changed', () => {
 			refresh()
 		}))
 
 		this.registerEvent(this.app.workspace.on('active-leaf-change', async () => {
-				await new Promise((resolve) => { resolve(0) })
 				refresh_outline()
 		}))
 	}
@@ -134,20 +100,6 @@ export class QuietOutline extends Plugin {
 		)
 	}
 	
-	// observe theme change from <body>
-	onModeChange(callback: (dark: boolean) => void) {
-		let body = document.querySelector("body")
-		let Observer = new MutationObserver((mutations)=>{
-			mutations.forEach((mutation) => {
-				if(mutation.attributeName === 'class') {
-					callback(body.classList.contains("theme-dark"))
-				}   
-			})
-		})
-		Observer.observe(body, {
-			attributeFilter: ['class']
-		})	
-	}
 }
 
 class SettingTab extends PluginSettingTab {
