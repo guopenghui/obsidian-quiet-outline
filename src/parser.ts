@@ -47,10 +47,11 @@ export const internal_link: Extension = {
         const rule = /^\[\[([^\[\]]+?)\]\]/
         const match = rule.exec(src)
         if(match){
+            const alias = /.*\|(.*)/.exec(match[1])
             return {
                 type: "internal",
                 raw: match[0],
-                internal: match[1],
+                internal: alias? alias[1]: match[1],
             }
         }
     },

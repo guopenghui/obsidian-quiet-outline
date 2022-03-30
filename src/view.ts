@@ -24,10 +24,11 @@ export class OutlineView extends ItemView {
     async onOpen(this:OutlineView) {
         const container = this.containerEl.children[1];
         container.empty();
-        container.createEl("div", { 
+        const mountPoint = container.createEl("div", { 
             cls: "quiet-outline"
         })
-        setTimeout(()=> { createApp(Outline).mount('.quiet-outline') }, 0)
+        
+        setTimeout(()=> { createApp(Outline).mount(mountPoint) }, 0)
     }
 
     async onClose() {

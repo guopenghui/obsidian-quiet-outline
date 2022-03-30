@@ -13,13 +13,13 @@ import { store } from './store'
 
 
 interface QuietOutlineSettings {
-	mySetting: string;
+	level_switch: boolean;
 	markdown: boolean;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
-	mySetting: 'default',
-	markdown: false,
+	level_switch: true,
+	markdown: true,
 }
 
 export class QuietOutline extends Plugin {
@@ -39,7 +39,7 @@ export class QuietOutline extends Plugin {
 		
 		// for test
 		// this.addRibbonIcon('dice','test something',(evt)=>{
-
+		// 	this.app.workspace.detachLeavesOfType(VIEW_TYPE)
 		// })
 
 		this.addCommand({
@@ -117,7 +117,7 @@ class SettingTab extends PluginSettingTab {
 		containerEl.createEl('h2', {text: 'Settings for Quiet Outline.'})
 
 		new Setting(containerEl)
-			.setName('Render markdown')
+			.setName('Render Markdown')
 			.setDesc('Render heading string as markdown format.')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.markdown)
@@ -126,6 +126,17 @@ class SettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				})
 				)
+				
+		new Setting(containerEl)
+			.setName("Level Switch")
+			.setDesc("Expand headings to certain level.")
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.level_switch)
+				.onChange(async (value) => {
+					store.plugin.settings.level_switch = value
+					await this.plugin.saveSettings()
+				})
+			)
 	}
 }
 

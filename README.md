@@ -15,17 +15,9 @@ Quiet Outline:
 ![安静大纲](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/quiet.gif)
 
 
-
 ### Search support
 
 ![支持搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/search.gif)
-
-
-
-### Toggle light/dark mode
-
-![切换模式](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/theme.gif)
-
 
 
 ### Markdown render support
@@ -33,8 +25,14 @@ Quiet Outline:
 ![渲染markdown](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/markdown.gif)
 
 
+### Level Switch Bar
+
+![切换展开级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/switch.gif)
 
 
+### Toggle light/dark mode
+
+![切换模式](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/theme.gif)
 
 
 
@@ -50,7 +48,7 @@ Quiet Outline:
 
 + If you use `1. xxxx` as a heading, you probably find something tricky. Because `<number>. xxx` is a markdown notation for a numbered list (`<ol>` element in HTML). Maybe try another notation instead, e.g., `1 . xxx`，`1- xxxx`, `1\. xxxxx`.
 
-+ Cross-level is not supported, which means you can uew `h1->h2->h3`，but not `h1->h3->h4`, while `h3` and `h4` will be treated as `h2` and `h3`. 
++ Cross-level is not supported, which means you can use `h1->h2->h3`，but not `h1->h3->h4`, while `h3` and `h4` will be treated as `h2` and `h3`. 
 
 + Some extented grammars in obsidian are not supported by default. But we can extend the markdown-parser to fix it! If you believe any grammar is frequently used and should be implemented, create an issue to discuss about it.
 

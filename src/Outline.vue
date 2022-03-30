@@ -9,28 +9,92 @@
             </NButton>
             <NInput v-model:value="pattern" placeholder="Input to search" />
         </div>
+        <NSlider
+            v-if="store.plugin.settings.level_switch"
+            v-model:value="level" 
+            :marks="marks" step="mark" 
+            :min="0" 
+            :max="5" 
+            style="margin-bottom:8px;"
+            :format-tooltip="formatTooltip"/>
         <NTree
-            style="--n-node-text-color:var(--text-normal)"
             block-line
             :pattern="pattern"
             :data="data2"
             :on-update:selected-keys="jump"
             :render-label="renderMethod"
+            :node-props="setAttrs"
+            :expanded-keys="expanded"
+            :on-update:expanded-keys="expand"
         />
     </NConfigProvider>
 </div>
 </template>
 
 <script setup lang="ts">
-import {ref, computed, createStaticVNode} from 'vue'
+import {ref, reactive, computed, createStaticVNode, watch} from 'vue'
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache } from 'obsidian'
-import { NTree, TreeOption, NButton, NInput, NConfigProvider, darkTheme } from 'naive-ui'
+import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme } from 'naive-ui'
 import { Icon } from '@vicons/utils'
 import { SettingsBackupRestoreRound } from '@vicons/material'
 import { marked } from 'marked'
 
 import { formula, internal_link, remove_href } from './parser'
 import { store } from './store'
+
+// add html attributes to nodes
+function setAttrs(info: {option: TreeOption}) {
+    let lev = parseInt( (info.option.key as string).split('-')[1] )
+    
+    return {
+        class: "level-" + lev
+    }
+}
+
+// switch heading expand levels
+let level = ref(0)
+
+let expanded = ref([])
+function expand(keys:string[], option:TreeOption[]) {
+    expanded.value = keys;
+}
+
+function switchLevel(lev: number) {
+    expanded.value = store.headers
+        .map((h,i)=>{
+            return "item-" + h.level + "-" + i
+        })
+        .filter((key,i,arr)=>{
+            const get_level = (k:string):number=> parseInt(k.split('-')[1])
+            if(i===arr.length-1) return false
+            if(get_level(arr[i]) >= get_level(arr[i+1])) return false
+            return  get_level(key) <= lev
+        })
+}
+
+
+watch(
+    level,
+    (cur, prev) => {
+        switchLevel(cur)
+    }
+)
+
+const marks = {
+    0: "",
+    1: "",
+    2: "",
+    3: "",
+    4: "",
+    5: "",
+}
+
+function formatTooltip(value: number): string {
+    if(value > 0){
+        return "h" + value
+    }
+    return "No expand"
+}
 
 
 // load settings
@@ -40,6 +104,7 @@ let renderMethod = computed(() => {
     }
     return null
 })
+    
 
 // search
 let pattern =ref("")
@@ -58,7 +123,8 @@ async function jump(_selected:any, nodes:TreeOption[] ): Promise<number> {
         return
     }
 
-    const key: number = nodes[0].key as number  
+    const key_value = (nodes[0].key as string).split("-")
+    const key = parseInt(key_value[2])
     let to_line: number = store.headers[key].position.start.line
     
     const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
@@ -89,7 +155,7 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
     headers.forEach((h,i)=>{
         let node: TreeOption = {
                 label: h.heading,
-                key: i,
+                key: "item-" + h.level + "-" + i,
                 line: h.position.start.line,
             }
 
@@ -101,7 +167,6 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
         if(parent.children === undefined){
             parent.children = []
         }
-
         parent.children.push(node)
         stack.push({node, level: h.level})
     })
