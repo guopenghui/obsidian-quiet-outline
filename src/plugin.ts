@@ -15,11 +15,13 @@ import { store } from './store'
 interface QuietOutlineSettings {
 	level_switch: boolean;
 	markdown: boolean;
+	expand_level: string;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
 	level_switch: true,
 	markdown: true,
+	expand_level: "0",
 }
 
 export class QuietOutline extends Plugin {
@@ -71,6 +73,7 @@ export class QuietOutline extends Plugin {
 		}))
 
 		this.registerEvent(this.app.workspace.on('active-leaf-change', async () => {
+				store.leaf_change = !store.leaf_change
 				refresh_outline()
 		}))
 	}
@@ -134,6 +137,23 @@ class SettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.level_switch)
 				.onChange(async (value) => {
 					store.plugin.settings.level_switch = value
+					await this.plugin.saveSettings()
+				})
+			)
+
+		new Setting(containerEl)
+			.setName("Default Level")
+			.setDesc("Default expand level when opening a new note.")
+			.addDropdown(level => level
+				.addOption("0","No expand")
+				.addOption("1", "H1")
+				.addOption("2", "H2")
+				.addOption("3", "H3")
+				.addOption("4", "H4")
+				.addOption("5", "H5")
+				.setValue(this.plugin.settings.expand_level)
+				.onChange(async (value) => {
+					store.plugin.settings.expand_level = value
 					await this.plugin.saveSettings()
 				})
 			)

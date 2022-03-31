@@ -5,12 +5,19 @@ import { QuietOutline } from './plugin'
 
 const store = reactive({
     plugin: undefined as QuietOutline,
+
     activeView() {
         this.plugin.activateView()
-        this.dark = document.querySelector('body').classList.contains('theme-dark')
+        this.refreshTree()
     },
+
     headers:[] as HeadingCache[],
     dark: false,
+
+    leaf_change: false,
+    refreshTree() {
+        this.leaf_change = !this.leaf_change
+    }
 })
 
 export { store }

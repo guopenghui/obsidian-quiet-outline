@@ -30,6 +30,10 @@ Quiet Outline:
 ![切换展开级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/switch.gif)
 
 
+### Default level
+![默认级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/default-level.gif)
+
+
 ### Toggle light/dark mode
 
 ![切换模式](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/theme.gif)

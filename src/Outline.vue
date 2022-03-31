@@ -2,7 +2,7 @@
 <div id="container">
     <NConfigProvider :theme="theme">
         <div class="function-bar">
-            <NButton size="small" circle type="success" @click="store.activeView()">
+            <NButton size="small" circle type="success" @click="reset">
                 <template #icon>
                     <Icon><SettingsBackupRestoreRound/></Icon>
                 </template>
@@ -26,13 +26,14 @@
             :node-props="setAttrs"
             :expanded-keys="expanded"
             :on-update:expanded-keys="expand"
+            :key="update_tree"
         />
     </NConfigProvider>
 </div>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, computed, createStaticVNode, watch} from 'vue'
+import {ref, reactive, computed, createStaticVNode, watch, nextTick} from 'vue'
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache } from 'obsidian'
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme } from 'naive-ui'
 import { Icon } from '@vicons/utils'
@@ -41,6 +42,9 @@ import { marked } from 'marked'
 
 import { formula, internal_link, remove_href } from './parser'
 import { store } from './store'
+
+
+
 
 // add html attributes to nodes
 function setAttrs(info: {option: TreeOption}) {
@@ -52,7 +56,7 @@ function setAttrs(info: {option: TreeOption}) {
 }
 
 // switch heading expand levels
-let level = ref(0)
+let level = ref(parseInt(store.plugin.settings.expand_level))
 
 let expanded = ref([])
 function expand(keys:string[], option:TreeOption[]) {
@@ -65,13 +69,14 @@ function switchLevel(lev: number) {
             return "item-" + h.level + "-" + i
         })
         .filter((key,i,arr)=>{
+            
             const get_level = (k:string):number=> parseInt(k.split('-')[1])
             if(i===arr.length-1) return false
             if(get_level(arr[i]) >= get_level(arr[i+1])) return false
             return  get_level(key) <= lev
         })
-}
 
+}
 
 watch(
     level,
@@ -79,6 +84,23 @@ watch(
         switchLevel(cur)
     }
 )
+
+// force remake tree
+let update_tree =ref(0)
+
+watch(
+    () => store.leaf_change,
+    () => {
+        const old_level = level.value
+        level.value = parseInt(store.plugin.settings.expand_level)
+        if(old_level === level.value) {
+            switchLevel(level.value)
+        }
+
+        update_tree.value++
+    }
+)
+
 
 const marks = {
     0: "",
@@ -186,6 +208,14 @@ function renderLabel({ option }: { option: TreeOption }) {
     result = `<div>${result}</div>`
 
     return createStaticVNode(result,1)
+}
+
+// reset button
+function reset(){
+    store.dark = document.querySelector('body').classList.contains('theme-dark')
+    pattern.value = ""
+    level.value = parseInt(store.plugin.settings.expand_level)
+    switchLevel(level.value)
 }
 
 </script>

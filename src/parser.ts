@@ -29,7 +29,8 @@ export const formula: Extension = {
             return formula
         } catch {
             loadMathJax().then(()=>{
-                store.activeView()
+                //store.activeView()
+                store.refreshTree()
             })
             return false
         }
