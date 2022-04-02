@@ -40,9 +40,8 @@ import { Icon } from '@vicons/utils'
 import { SettingsBackupRestoreRound } from '@vicons/material'
 import { marked } from 'marked'
 
-import { formula, internal_link, remove_href } from './parser'
+import { formula, internal_link, remove_href, renderer } from './parser'
 import { store } from './store'
-
 
 
 
@@ -147,15 +146,12 @@ async function jump(_selected:any, nodes:TreeOption[] ): Promise<number> {
 
     const key_value = (nodes[0].key as string).split("-")
     const key = parseInt(key_value[2])
-    let to_line: number = store.headers[key].position.start.line
+    let line: number = store.headers[key].position.start.line
     
     const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
     if(view) {
-        const current_view = view.currentMode
-        to_line = to_line > 1? to_line-2 : 0
-        current_view.applyScroll(to_line)
-        // make jump more precisely
-        setTimeout(()=>{current_view.applyScroll(to_line)},500)
+        view.setEphemeralState({line})
+        setTimeout(() => { view.setEphemeralState({line}) }, 100)
     }
 }
 
@@ -200,6 +196,7 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
 // render markdown
 marked.use({ extensions: [formula, internal_link] })
 marked.use({ walkTokens: remove_href })
+marked.use({ renderer })
 
 function renderLabel({ option }: { option: TreeOption }) {
     const sanitized = sanitizeHTMLToDom(`<div>${option.label}</div>`).children[0].innerHTML

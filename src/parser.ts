@@ -67,3 +67,18 @@ export const remove_href = (token:marked.Token) => {
         token.href = "void(0);"
     }
 }
+
+
+// remove <ol>
+export const renderer = {
+    list(body: string, ordered: boolean, start: number) {
+        if(ordered)
+            return `<p>${start}. ${body}</p>`
+        else
+            return `<p>${body}</p>`
+    },
+    listitem(text: string, task: boolean, checked: boolean) {
+        return `${text}`
+    }
+
+}

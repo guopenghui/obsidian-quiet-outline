@@ -41,7 +41,8 @@ export class QuietOutline extends Plugin {
 		
 		// for test
 		// this.addRibbonIcon('dice','test something',(evt)=>{
-		// 	this.app.workspace.detachLeavesOfType(VIEW_TYPE)
+		// 	const view = this.app.workspace.getActiveViewOfType(MarkdownView)	
+		// 	console.dir(view.getState())
 		// })
 
 		this.addCommand({
