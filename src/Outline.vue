@@ -199,8 +199,18 @@ marked.use({ walkTokens: remove_href })
 marked.use({ renderer })
 
 function renderLabel({ option }: { option: TreeOption }) {
-    const sanitized = sanitizeHTMLToDom(`<div>${option.label}</div>`).children[0].innerHTML
-    let result = marked.parse(sanitized).trim()
+    let result = marked.parse(option.label).trim()
+    
+    // save mjx elements
+    let i = 0
+    let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g)
+
+    result = sanitizeHTMLToDom(`<div>${result}</div>`).children[0].innerHTML
+
+    // restore mjx elements
+    result = result.replace(/<math.*?>.*?<\/math>/g, () => {
+        return mjxes[i++]
+    })
     
     result = `<div>${result}</div>`
 

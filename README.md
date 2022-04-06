@@ -65,7 +65,12 @@ For markdown-rendering, open `Markdown Render` option in setting panel.
 
 ## Install
 
-+ Download the latest release. 
+**Download from github**
+   + Download the latest release. 
+   + Extract and put the three files (`main.js`, `style.css`, `manifest.json`) to folder `{{obsidian_vault}}/.obsidian/plugins/obsidian-quiet-outline`.
 
-+ Extract and put the three files (`main.js`, `style.css`, `manifest.json`) to folder `{{obsidian_vault}}/.obsidian/plugins/obsidian-quiet-outline`.
-
+**Install from Plugin Store**
++ Open Settings > Third-party plugin
++ Click Browse community plugins
++ Search for "Quiet Outline"
++ Click Install

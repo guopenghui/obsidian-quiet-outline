@@ -64,7 +64,7 @@ export const internal_link: Extension = {
 // remove url inside <a>
 export const remove_href = (token:marked.Token) => {
     if(token.type === "link") {
-        token.href = "void(0);"
+        token.href = "javascript:void(0);"
     }
 }
 
