@@ -7,7 +7,7 @@
                     <Icon><SettingsBackupRestoreRound/></Icon>
                 </template>
             </NButton>
-            <NInput v-model:value="pattern" placeholder="Input to search" />
+            <NInput v-model:value="pattern" placeholder="Input to search" clearable/>
         </div>
         <NSlider
             v-if="store.plugin.settings.level_switch"
