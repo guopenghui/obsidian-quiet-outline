@@ -19,11 +19,16 @@ Quiet Outline:
 
 ![支持搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/search.gif)
 
+hide irrelevant results：
+![隐藏结果](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/hide_irrelevant.gif)
 
 ### Markdown render support
 
 ![渲染markdown](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/markdown.gif)
 
+### Auto expand and collapse
+
+![自动展开/折叠](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/auto_expand.gif)
 
 ### Level Switch Bar
 

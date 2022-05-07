@@ -11,13 +11,13 @@ const store = reactive({
         this.refreshTree()
     },
 
-    headers:[] as HeadingCache[],
+    headers: [] as HeadingCache[],
     dark: false,
 
     leaf_change: false,
     refreshTree() {
         this.leaf_change = !this.leaf_change
-    }
+    },
 })
 
 export { store }
