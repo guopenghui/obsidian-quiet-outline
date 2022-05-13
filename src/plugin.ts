@@ -1,32 +1,15 @@
 import {
-	App,
 	debounce,
 	MarkdownView,
 	Notice,
 	Plugin,
-	PluginSettingTab,
-	Setting,
 } from 'obsidian'
 
 import { OutlineView, VIEW_TYPE } from './view'
 import { store } from './store'
 
+import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings"
 
-interface QuietOutlineSettings {
-	level_switch: boolean;
-	markdown: boolean;
-	expand_level: string;
-	hide_unsearched: boolean;
-	auto_expand: boolean;
-}
-
-const DEFAULT_SETTINGS: QuietOutlineSettings = {
-	level_switch: true,
-	markdown: true,
-	expand_level: "0",
-	hide_unsearched: true,
-	auto_expand: true,
-}
 
 export class QuietOutline extends Plugin {
 	settings: QuietOutlineSettings;
@@ -44,8 +27,8 @@ export class QuietOutline extends Plugin {
 
 
 		// for test
-		// this.addRibbonIcon('dice','test something',(evt)=>{
-		// 	const view = this.app.workspace.getActiveViewOfType(MarkdownView)	
+		// this.addRibbonIcon('bot', 'test something', (evt) => {
+		// 	const view = this.app.workspace.getActiveViewOfType(MarkdownView)
 		// 	console.dir(view.getState())
 		// })
 
@@ -59,6 +42,8 @@ export class QuietOutline extends Plugin {
 
 		this.addSettingTab(new SettingTab(this.app, this))
 
+
+		// refresh headings
 		const refresh_outline = () => {
 			const current_file = this.app.workspace.getActiveFile()
 			if (current_file) {
@@ -68,7 +53,6 @@ export class QuietOutline extends Plugin {
 					return
 				}
 			}
-
 			store.headers = []
 		}
 
@@ -82,7 +66,7 @@ export class QuietOutline extends Plugin {
 			refresh_outline()
 		}))
 
-
+		// sync with markdown
 	}
 
 	onunload() {
@@ -104,7 +88,6 @@ export class QuietOutline extends Plugin {
 				active: true,
 			})
 		}
-
 		this.app.workspace.revealLeaf(
 			this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
 		)
@@ -112,80 +95,5 @@ export class QuietOutline extends Plugin {
 
 }
 
-class SettingTab extends PluginSettingTab {
-	plugin: QuietOutline;
 
-	constructor(app: App, plugin: QuietOutline) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		const { containerEl } = this;
-
-		containerEl.empty()
-		containerEl.createEl('h2', { text: 'Settings for Quiet Outline.' })
-
-		new Setting(containerEl)
-			.setName('Render Markdown')
-			.setDesc('Render heading string as markdown format.')
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.markdown)
-				.onChange(async (value) => {
-					store.plugin.settings.markdown = value
-					await this.plugin.saveSettings();
-				})
-			)
-
-		new Setting(containerEl)
-			.setName("Level Switch")
-			.setDesc("Expand headings to certain level.")
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.level_switch)
-				.onChange(async (value) => {
-					store.plugin.settings.level_switch = value
-					await this.plugin.saveSettings()
-				})
-			)
-
-		new Setting(containerEl)
-			.setName("Default Level")
-			.setDesc("Default expand level when opening a new note.")
-			.addDropdown(level => level
-				.addOption("0", "No expand")
-				.addOption("1", "H1")
-				.addOption("2", "H2")
-				.addOption("3", "H3")
-				.addOption("4", "H4")
-				.addOption("5", "H5")
-				.setValue(this.plugin.settings.expand_level)
-				.onChange(async (value) => {
-					store.plugin.settings.expand_level = value
-					await this.plugin.saveSettings()
-				})
-			)
-
-		new Setting(containerEl)
-			.setName("Hide Unsearched")
-			.setDesc("Hide irrelevant headings when searching")
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.hide_unsearched)
-				.onChange(async (value) => {
-					store.plugin.settings.hide_unsearched = value
-					await this.plugin.saveSettings()
-				})
-			)
-
-		new Setting(containerEl)
-			.setName("Auto Expand")
-			.setDesc("Auto expand and collapse headings when scrolling")
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.auto_expand)
-				.onChange(async (value) => {
-					store.plugin.settings.auto_expand = value
-					await this.plugin.saveSettings()
-				})
-			)
-	}
-}
 

@@ -22,6 +22,10 @@ Quiet Outline:
 hide irrelevant results：
 ![隐藏结果](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/hide_irrelevant.gif)
 
+use regex:
+![正则搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/regex_search.gif)
+
+
 ### Markdown render support
 
 ![渲染markdown](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/markdown.gif)
@@ -46,8 +50,6 @@ hide irrelevant results：
 
 
 ## Problems Now
-
-+ [x] ~~Only support jumping in edit mode (no in preview mode).~~
 
 
 

@@ -13,9 +13,10 @@
             </div>
             <NSlider v-if="store.plugin.settings.level_switch" v-model:value="level" :marks="marks" step="mark" :min="0"
                 :max="5" style="margin-bottom:8px;" :format-tooltip="formatTooltip" />
+            <code v-if="pattern">{{matchCount}} result(s): </code>
             <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
                 :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
-                :on-update:expanded-keys="expand" :key="update_tree"
+                :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
                 :show-irrelevant-nodes="!store.plugin.settings.hide_unsearched" />
         </NConfigProvider>
     </div>
@@ -33,8 +34,9 @@ import { formula, internal_link, remove_href, renderer } from './parser'
 import { store } from './store'
 import { QuietOutline } from "./plugin"
 
-let plugin = getCurrentInstance().appContext.config.globalProperties.plugin as QuietOutline
-let container = getCurrentInstance().appContext.config.globalProperties.container as HTMLElement
+let compomentSelf = getCurrentInstance()
+let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline
+let container =compomentSelf .appContext.config.globalProperties.container as HTMLElement
 
 // register scroll event
 onMounted(() => {
@@ -95,6 +97,15 @@ function _handleScroll(evt: Event) {
     let curLocation = container.querySelector(`#no-${index}`)
     if (curLocation) {
         curLocation.addClass("located")
+        curLocation.scrollIntoView({block: "center", behavior: "smooth"})
+    } else {
+        setTimeout(() => {
+            let curLocation = container.querySelector(`#no-${index}`)
+            if (curLocation) {
+                curLocation.addClass("located")
+                curLocation.scrollIntoView({block: "center", behavior: "smooth"})
+            }
+        },0)
     }
 }
 
@@ -113,7 +124,7 @@ function setAttrs(info: { option: TreeOption }): HTMLAttributes {
 // switch heading expand levels
 let level = ref(parseInt(store.plugin.settings.expand_level))
 
-let expanded = ref([])
+let expanded = ref<string[]>([])
 function expand(keys: string[], option: TreeOption[]) {
     expanded.value = keys;
 }
@@ -130,7 +141,6 @@ function switchLevel(lev: number) {
             if (get_level(arr[i]) >= get_level(arr[i + 1])) return false
             return get_level(key) <= lev
         })
-
 }
 
 watch(
@@ -147,15 +157,20 @@ watch(
     () => store.leaf_change,
     () => {
         const old_level = level.value
+        const old_pattern = pattern.value
+
+        pattern.value = ""
         level.value = parseInt(store.plugin.settings.expand_level)
         if (old_level === level.value) {
             switchLevel(level.value)
         }
+        
+        nextTick(() => {
+            pattern.value = old_pattern
+        })
 
-        update_tree.value++
     }
 )
-
 
 const marks = {
     0: "",
@@ -167,8 +182,10 @@ const marks = {
 }
 
 function formatTooltip(value: number): string {
+    let num = store.headers.filter((h) => h.level === value).length
+
     if (value > 0) {
-        return "h" + value
+        return `H${value}: ${num}`
     }
     return "No expand"
 }
@@ -182,9 +199,28 @@ let renderMethod = computed(() => {
     return null
 })
 
-
 // search
 let pattern = ref("")
+
+function regexFilter(pattern: string, option: TreeOption) : boolean {
+    let rule = RegExp(pattern, "i")
+    return rule.test(option.label)
+}
+
+function simpleFilter(pattern: string, option: TreeOption) : boolean {
+    return pattern.toLowerCase().contains(option.label.toLowerCase())
+}
+
+let filter = computed(() => {
+    return store.plugin.settings.regex_search ? regexFilter: simpleFilter
+}) 
+
+let matchCount = computed(() => {
+    return store.headers.filter((h) => {
+        let node = {label: h.heading} as TreeOption
+        return filter.value(pattern.value, node)
+    }).length
+})
 
 
 // toggle light/dark theme
@@ -281,6 +317,32 @@ function reset() {
     level.value = parseInt(store.plugin.settings.expand_level)
     switchLevel(level.value)
 }
+
+
+// sync with markdown
+// watch(expanded, (ex) => {
+//     let expandedIndex = expanded.value.map(key =>parseInt(key.split("-")[2]))
+//     let folds: {from: number, to: number}[] = []
+//     store.headers.forEach((h, i) => {
+//         if(!expandedIndex.contains(i)) {
+//             let from = h.position.start.line
+//             folds.push({
+//                 from,
+//                 to: from + 1,
+//             })
+//         }
+//     })
+    
+//     let mdView = plugin.app.workspace.getActiveViewOfType(MarkdownView)
+    
+//     if(mdView && plugin.settings.sync_with_markdown === "bidirectional") {
+//         (mdView.currentMode as any).applyFoldInfo({
+//             folds,
+//             lines: mdView.editor.lineCount()
+//         })
+//     }
+// })
+
 
 </script>
 
