@@ -208,7 +208,7 @@ function regexFilter(pattern: string, option: TreeOption) : boolean {
 }
 
 function simpleFilter(pattern: string, option: TreeOption) : boolean {
-    return pattern.toLowerCase().contains(option.label.toLowerCase())
+    return option.label.toLowerCase().contains(pattern.toLowerCase())
 }
 
 let filter = computed(() => {
