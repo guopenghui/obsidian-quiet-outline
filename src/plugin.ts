@@ -45,7 +45,7 @@ export class QuietOutline extends Plugin {
 			id: "quiet-outline-reset",
 			name: "Reset expanding level",
 			callback: () => {
-				new CustomEvent("quiet-outline-reset")
+				dispatchEvent(new CustomEvent("quiet-outline-reset"))
 			}
 		})
 
@@ -77,8 +77,8 @@ export class QuietOutline extends Plugin {
 			if (view) {
 				if (this.current_note !== view) {
 					store.leaf_change = !store.leaf_change
-					refresh_outline()
 				}
+				refresh_outline()
 				this.current_note = view
 			}
 		}))
