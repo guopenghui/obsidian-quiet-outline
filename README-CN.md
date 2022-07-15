@@ -1,0 +1,82 @@
+# Obsidian Quiet Outline
+
+一个让大纲更好用的插件
+
+## Features
+
+### 在编辑的时候，标题不再自动展开
+
+核心大纲插件: 
+
+![系统自带大纲](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/notquiet.gif)
+
+Quiet Outline: 
+
+![安静大纲](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/quiet.gif)
+
+
+### 支持搜索
+
+![支持搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/search.gif)
+
+隐藏无关结果：
+![隐藏结果](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/hide_irrelevant.gif)
+
+使用正则表达式来过滤:
+![正则搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/regex_search.gif)
+
+
+### 支持渲染丰富的markdown元素
+
+![渲染markdown](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/markdown.gif)
+
+### 随着页面滚动，自动展开和折叠标题
+
+![自动展开/折叠](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/auto_expand.gif)
+
+### 批量修改标题的展开层级
+
+![切换展开级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/switch.gif)
+
+
+### 默认层级，即打开每个笔记时标题展开到几级
+![默认级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/default-level.gif)
+
+
+### 切换明亮/黑暗模式后，需要手动按一下重置按钮来切换样式
+
+![切换模式](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/theme.gif)
+
+
+
+## 目前存在的问题
+
+
+
+## 局限
++ 由于内置编辑器的懒加载策略(只加载你当前在窗口中能看到的东西。如果你滚动地太快，可以看见有些文本来不及被渲染成相应的元素，如公式、表格、图片)，有时只点一下没办法跳转到你想要的位置，尤其是第一次打开这个笔记的时候。 Obsidian内置的核心大纲插件也存在这个问题。  解决方法很简单：**再点一次**。
+
++ 不支持跨层级的标题，比如你可以按`h1->h2->h3`来组织标题，但是不允许`h1->h3->h4`，在这种情况下`h3`和`h4`会被按`h2`和`h3`来处理。
+
++ 一些obsidian自己拓展的markdown语法可能是不被支持的(因此大纲中有些标题可能无法渲染成想要的样子)。但是这些都可以通过添加解析器来拓展，如果你觉得某个不被支持的语法很常用很重要，那就提一个issue，我们来讨论要不要实现它。
+
+
+
+## 使用
+
+打开命令面板输入`Quiet Outline`，然后回车，就可以打开大纲面板。
+
+其他详细功能在设置中查看
+
+
+
+
+## 安装
+
+**从obsidian的插件商店安装**(推荐)
+
+**从github下载**
+   + 下载最新的 release. 
+   + 把 (`main.js`, `style.css`, `manifest.json`) 移动到文件夹 `{{obsidian_vault}}/.obsidian/plugins/obsidian-quiet-outline`.
+
+

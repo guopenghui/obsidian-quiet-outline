@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { HeadingCache } from 'obsidian'
+import { HeadingCache, MarkdownView } from 'obsidian'
 import { QuietOutline } from './plugin'
 
 
@@ -18,6 +18,8 @@ const store = reactive({
     refreshTree() {
         this.leaf_change = !this.leaf_change
     },
+
+    current_note: null as MarkdownView
 })
 
 export { store }

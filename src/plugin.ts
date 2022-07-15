@@ -13,6 +13,7 @@ import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings"
 
 export class QuietOutline extends Plugin {
 	settings: QuietOutlineSettings;
+	current_note: MarkdownView;
 
 	async onload() {
 		await this.loadSettings()
@@ -40,6 +41,15 @@ export class QuietOutline extends Plugin {
 			}
 		})
 
+		this.addCommand({
+			id: "quiet-outline-reset",
+			name: "Reset expanding level",
+			callback: () => {
+				new CustomEvent("quiet-outline-reset")
+			}
+		})
+
+
 		this.addSettingTab(new SettingTab(this.app, this))
 
 
@@ -61,9 +71,16 @@ export class QuietOutline extends Plugin {
 			refresh()
 		}))
 
-		this.registerEvent(this.app.workspace.on('active-leaf-change', async () => {
-			store.leaf_change = !store.leaf_change
-			refresh_outline()
+		this.registerEvent(this.app.workspace.on('active-leaf-change', async (leaf) => {
+
+			let view = this.app.workspace.getActiveViewOfType(MarkdownView)
+			if (view) {
+				if (this.current_note !== view) {
+					store.leaf_change = !store.leaf_change
+					refresh_outline()
+				}
+				this.current_note = view
+			}
 		}))
 
 		// sync with markdown

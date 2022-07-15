@@ -1,8 +1,9 @@
 import { App, PluginSettingTab, Setting } from "obsidian"
 import { QuietOutline } from "./plugin";
 import { store } from "./store"
-
+import { t } from "./lang/helper"
 interface QuietOutlineSettings {
+    search_support: boolean;
     level_switch: boolean;
     markdown: boolean;
     expand_level: string;
@@ -13,6 +14,7 @@ interface QuietOutlineSettings {
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
+    search_support: true,
     level_switch: true,
     markdown: true,
     expand_level: "0",
@@ -34,11 +36,11 @@ class SettingTab extends PluginSettingTab {
         const { containerEl } = this;
 
         containerEl.empty()
-        containerEl.createEl('h2', { text: 'Settings for Quiet Outline.' })
+        containerEl.createEl('h2', { text: t('Settings for Quiet Outline.') })
 
         new Setting(containerEl)
-            .setName('Render Markdown')
-            .setDesc('Render heading string as markdown format.')
+            .setName(t('Render Markdown'))
+            .setDesc(t('Render heading string as markdown format.'))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.markdown)
                 .onChange(async (value) => {
@@ -48,8 +50,19 @@ class SettingTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName("Level Switch")
-            .setDesc("Expand headings to certain level.")
+            .setName(t("Search Support"))
+            .setDesc(t("Add a searching area on the top"))
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.search_support)
+                .onChange(async (value) => {
+                    store.plugin.settings.search_support = value
+                    await this.plugin.saveSettings()
+                })
+            )
+
+        new Setting(containerEl)
+            .setName(t("Level Switch"))
+            .setDesc(t("Expand headings to certain level."))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.level_switch)
                 .onChange(async (value) => {
@@ -59,10 +72,10 @@ class SettingTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName("Default Level")
-            .setDesc("Default expand level when opening a new note.")
+            .setName(t("Default Level"))
+            .setDesc(t("Default expand level when opening a new note."))
             .addDropdown(level => level
-                .addOption("0", "No expand")
+                .addOption("0", t("No expand"))
                 .addOption("1", "H1")
                 .addOption("2", "H2")
                 .addOption("3", "H3")
@@ -76,8 +89,8 @@ class SettingTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName("Hide Unsearched")
-            .setDesc("Hide irrelevant headings when searching")
+            .setName(t("Hide Unsearched"))
+            .setDesc(t("Hide irrelevant headings when searching"))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.hide_unsearched)
                 .onChange(async (value) => {
@@ -87,8 +100,8 @@ class SettingTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName("Regex Search")
-            .setDesc("Search headings using regular expression")
+            .setName(t("Regex Search"))
+            .setDesc(t("Search headings using regular expression"))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.regex_search)
                 .onChange(async (value) => {
@@ -98,8 +111,8 @@ class SettingTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName("Auto Expand")
-            .setDesc("Auto expand and collapse headings when scrolling")
+            .setName(t("Auto Expand"))
+            .setDesc(t("Auto expand and collapse headings when scrolling"))
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.auto_expand)
                 .onChange(async (value) => {

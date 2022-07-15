@@ -1,7 +1,8 @@
 <template>
     <div id="container">
+        <!-- <button ref="button">+{{n}}</button> -->
         <NConfigProvider :theme="theme">
-            <div class="function-bar">
+            <div class="function-bar" v-if="store.plugin.settings.search_support">
                 <NButton size="small" circle type="success" @click="reset">
                     <template #icon>
                         <Icon>
@@ -23,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, createStaticVNode, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes } from 'vue'
+import { Ref, ref, reactive, computed, createStaticVNode, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes } from 'vue'
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian'
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme } from 'naive-ui'
 import { Icon } from '@vicons/utils'
@@ -33,6 +34,30 @@ import { marked } from 'marked'
 import { formula, internal_link, remove_href, renderer } from './parser'
 import { store } from './store'
 import { QuietOutline } from "./plugin"
+
+// for test
+// let n = ref(0)
+// let button: Ref<HTMLElement> = ref(null)
+// function plusOne(){
+//     n.value++
+// }
+// onMounted(()=>{
+//     console.log("注册")
+//     button.value.addEventListener("click", plusOne)
+// })
+// onUnmounted(()=>{
+//     button.value.removeEventListener("click", plusOne)
+// })
+
+
+onMounted(() => {
+    addEventListener("quiet-outline-reset", reset)
+})
+
+onUnmounted(() => {
+    removeEventListener("quiet-outline-reset", reset)
+})
+
 
 let compomentSelf = getCurrentInstance()
 let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline
@@ -57,6 +82,9 @@ function _handleScroll(evt: Event) {
         return
     }
     const view = plugin.app.workspace.getActiveViewOfType(MarkdownView)
+
+    if(!view) return
+
     let current_line = view.currentMode.getScroll() + 8
     let current_heading = null;
 
@@ -241,7 +269,8 @@ async function jump(_selected: any, nodes: TreeOption[]): Promise<number> {
     const key = parseInt(key_value[2])
     let line: number = store.headers[key].position.start.line
 
-    const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
+    // const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
+    const view = plugin.current_note
     if (view) {
         view.setEphemeralState({ line })
         setTimeout(() => { view.setEphemeralState({ line }) }, 100)
