@@ -61,6 +61,18 @@ export class QuietOutline extends Plugin {
 			}
 		})
 
+		this.addCommand({
+			id: "quiet-outline-copy-as-text",
+			name: "Copy as plain text",
+			callback: async () => {
+				let headers = store.headers.map((h) => {
+					return "    ".repeat(h.level - 1) + h.heading
+				})
+				await navigator.clipboard.writeText(headers.join("\n"))
+				new Notice("Headings copied")
+			}
+		})
+
 		this.addSettingTab(new SettingTab(this.app, this))
 
 
