@@ -14,6 +14,7 @@ import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings"
 export class QuietOutline extends Plugin {
 	settings: QuietOutlineSettings;
 	current_note: MarkdownView;
+	current_file: string;
 
 	async onload() {
 		await this.loadSettings()
@@ -49,6 +50,16 @@ export class QuietOutline extends Plugin {
 			}
 		})
 
+		this.addCommand({
+			id: "quiet-outline-focus-input",
+			name: "Focus on input",
+			callback: () => {
+				let input = document.querySelector("input.n-input__input-el") as HTMLInputElement
+				if (input) {
+					input.focus()
+				}
+			}
+		})
 
 		this.addSettingTab(new SettingTab(this.app, this))
 
@@ -75,11 +86,19 @@ export class QuietOutline extends Plugin {
 
 			let view = this.app.workspace.getActiveViewOfType(MarkdownView)
 			if (view) {
-				if (this.current_note !== view) {
+				if (!this.current_note) {
+					this.current_note = view
+					this.current_file = view.file.path
+				}
+
+				const pathEq = view.file.path === this.current_file
+				if (!pathEq) {
 					store.leaf_change = !store.leaf_change
 				}
+
 				refresh_outline()
 				this.current_note = view
+				this.current_file = view.file.path
 			}
 		}))
 

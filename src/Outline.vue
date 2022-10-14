@@ -3,10 +3,10 @@
         <!-- <button ref="button">+{{n}}</button> -->
         <NConfigProvider :theme="theme">
             <div class="function-bar" v-if="store.plugin.settings.search_support">
-                <NButton size="small" circle type="success" @click="reset">
+                <NButton size="small" circle @click="reset">
                     <template #icon>
                         <Icon>
-                            <SettingsBackupRestoreRound />
+                            <SettingsBackupRestoreRound :style="iconColor"/>
                         </Icon>
                     </template>
                 </NButton>
@@ -184,6 +184,7 @@ let update_tree = ref(0)
 watch(
     () => store.leaf_change,
     () => {
+        console.log("leaf-changed")
         const old_level = level.value
         const old_pattern = pattern.value
 
@@ -257,6 +258,12 @@ let theme = computed(() => {
         return darkTheme
     }
     return null
+})
+let iconColor = computed(() => {
+    if(store.dark) {
+        return {color: "#a3a3a3"}
+    }
+    return {color: "#727272"}
 })
 
 // click and jump
