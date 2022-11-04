@@ -12,7 +12,7 @@ const store = reactive({
     },
 
     headers: [] as HeadingCache[],
-    dark: false,
+    dark: document.body.hasClass("theme-dark"),
 
     leaf_change: false,
     refreshTree() {

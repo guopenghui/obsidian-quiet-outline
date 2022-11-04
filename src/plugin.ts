@@ -20,7 +20,10 @@ export class QuietOutline extends Plugin {
 		await this.loadSettings()
 
 		store.plugin = this
-		store.dark = document.querySelector('body').classList.contains('theme-dark')
+
+		this.registerEvent(this.app.workspace.on("css-change", () => {
+			store.dark = document.body.hasClass("theme-dark");
+		}))
 
 		this.registerView(
 			VIEW_TYPE,
