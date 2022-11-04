@@ -16,5 +16,7 @@ export default {
     "Regex Search": 'Regex Search',
     "Search headings using regular expression": 'Search headings using regular expression',
     "Auto Expand": 'Auto Expand',
-    "Auto expand and collapse headings when scrolling": "Auto expand and collapse headings when scrolling"
+    "Auto expand and collapse headings when scrolling": "Auto expand and collapse headings when scrolling",
+    "Ellipsis": 'Ellipsis',
+    "Keep one line per heading": "Keep one line per heading",
 }

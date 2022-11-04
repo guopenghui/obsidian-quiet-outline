@@ -16,5 +16,7 @@ export default {
     "Regex Search": '正则搜索',
     "Search headings using regular expression": '支持使用正则表达式来搜索',
     "Auto Expand": '自动展开',
-    "Auto expand and collapse headings when scrolling": "当滚动页面时，自动跟踪当前所在标题并展开"
+    "Auto expand and collapse headings when scrolling": "当滚动页面时，自动跟踪当前所在标题并展开",
+    "Ellipsis": "省略长标题",
+    "Keep one line per heading": "保持标题只有一行,省略多余部分",
 }

@@ -18,7 +18,8 @@
             <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
                 :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
-                :show-irrelevant-nodes="!store.plugin.settings.hide_unsearched" />
+                :show-irrelevant-nodes="!store.plugin.settings.hide_unsearched" 
+                :class="{'ellipsis': store.plugin.settings.ellipsis}"/>
         </NConfigProvider>
     </div>
 </template>

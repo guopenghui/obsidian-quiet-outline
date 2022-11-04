@@ -11,6 +11,7 @@ interface QuietOutlineSettings {
     auto_expand: boolean;
     // sync_with_markdown: string;
     regex_search: boolean;
+    ellipsis: boolean;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -22,6 +23,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     auto_expand: true,
     // sync_with_markdown: "none",
     regex_search: false,
+    ellipsis: false,
 }
 
 class SettingTab extends PluginSettingTab {
@@ -45,6 +47,17 @@ class SettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.markdown)
                 .onChange(async (value) => {
                     store.plugin.settings.markdown = value
+                    await this.plugin.saveSettings();
+                })
+            )
+
+        new Setting(containerEl)
+            .setName(t('Ellipsis'))
+            .setDesc(t('Keep one line per heading'))
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.ellipsis)
+                .onChange(async (value) => {
+                    store.plugin.settings.ellipsis = value
                     await this.plugin.saveSettings();
                 })
             )
