@@ -1,3 +1,7 @@
+.quiet-outline .n-tree {
+  font-size: var(--nav-item-size);
+}
+
 
 .quiet-outline .n-tree-node-wrapper {
   padding: 0px;
@@ -19,7 +23,7 @@
   margin: 0;
 }
 
-/* experimental */
+
 
 
 
@@ -59,14 +63,26 @@
   margin-bottom: 10px;
 }
 
-.quiet-outline .function-bar>:first-child {
+.quiet-outline .function-bar .n-button {
   margin-right: 5px;
   text-align: center;
 }
 
-.quiet-outline .function-bar>:last-child {
+.quiet-outline .function-bar .n-input {
   flex: 1;
   min-width: 10px;
+}
+
+
+/*mobile behaves weird*/
+.is-mobile .quiet-outline .function-bar .n-button {
+  margin-right: 5px;
+  text-align: center;
+  flex: 1;
+}
+.is-mobile .quiet-outline .function-bar .n-input {
+  min-width: 10px;
+  flex: none;
 }
 
 
@@ -189,7 +205,11 @@
 
 
 
-/*no data*/
+/*remove 'no data'*/
 .n-tree__empty {
   display: none;
 }
+
+
+
+/* experimental */

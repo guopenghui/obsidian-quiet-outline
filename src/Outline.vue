@@ -185,7 +185,6 @@ let update_tree = ref(0)
 watch(
     () => store.leaf_change,
     () => {
-        console.log("leaf-changed")
         const old_level = level.value
         const old_pattern = pattern.value
 
