@@ -151,9 +151,10 @@ function setAttrs(info: { option: TreeOption }): HTMLAttributes {
 }
 
 // switch heading expand levels
-let level = ref(parseInt(store.plugin.settings.expand_level))
-
+let level = ref(parseInt(store.plugin.settings.expand_level));
 let expanded = ref<string[]>([])
+switchLevel(level.value);
+
 function expand(keys: string[], option: TreeOption[]) {
     expanded.value = keys;
 }
@@ -164,7 +165,6 @@ function switchLevel(lev: number) {
             return "item-" + h.level + "-" + i
         })
         .filter((key, i, arr) => {
-
             const get_level = (k: string): number => parseInt(k.split('-')[1])
             if (i === arr.length - 1) return false
             if (get_level(arr[i]) >= get_level(arr[i + 1])) return false

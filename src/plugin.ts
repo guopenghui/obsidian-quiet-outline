@@ -101,9 +101,13 @@ export class QuietOutline extends Plugin {
 
 			let view = this.app.workspace.getActiveViewOfType(MarkdownView)
 			if (view) {
+				// 保证第一次获取标题信息时，也能正常展开到默认层级
 				if (!this.current_note) {
 					this.current_note = view
 					this.current_file = view.file.path
+					refresh_outline()
+					store.leaf_change = !store.leaf_change
+					return
 				}
 
 				const pathEq = view.file.path === this.current_file
