@@ -45,13 +45,8 @@ use regex:
 ![默认级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/default-level.gif)
 
 
-### Toggle light/dark mode
-
-![切换模式](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/theme.gif)
 
 
-
-## Problems Now
 
 
 

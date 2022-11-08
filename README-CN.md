@@ -43,13 +43,6 @@ Quiet Outline:
 ![默认级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/default-level.gif)
 
 
-### 切换明亮/黑暗模式后，需要手动按一下重置按钮来切换样式
-
-![切换模式](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/theme.gif)
-
-
-
-## 目前存在的问题
 
 
 
