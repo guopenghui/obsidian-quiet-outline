@@ -61,6 +61,7 @@ export const internal_link: Extension = {
     }
 }
 
+// parse ==xxx== format
 export const highlight: Extension = {
     name: "highlight",
     level: "inline",
@@ -83,7 +84,27 @@ export const highlight: Extension = {
     }
 }
 
-
+export const tag: Extension = {
+    name: "tag",
+    level: "inline",
+    start(src) {
+        return src.match(/\s#/)?.index
+    },
+    tokenizer(src, token) {
+        const rule = /^\s#([^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
+        const match = rule.exec(src)
+        if (match) {
+            return {
+                type: "tag",
+                raw: match[0],
+                internal: match[1],
+            }
+        }
+    },
+    renderer(token) {
+        return `<a href="" class="tag" target="_blank" rel="noopener">#${token.internal}</a>`
+    }
+}
 
 // remove url inside <a>
 export const remove_href = (token: marked.Token) => {
