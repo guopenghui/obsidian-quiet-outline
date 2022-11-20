@@ -146,7 +146,8 @@ function setAttrs(info: { option: TreeOption }): HTMLAttributes {
 
     return {
         class: `level-${lev}`,
-        id: `no-${no}`
+        id: `no-${no}`,
+        title: plugin.settings.ellipsis? info.option.label: "",
     }
 }
 
