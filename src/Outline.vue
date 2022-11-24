@@ -1,6 +1,6 @@
 <template>
     <div id="container">
-        <NConfigProvider :theme="theme">
+        <NConfigProvider :theme="theme" :theme-overrides="themeConfig">
             <div class="function-bar" v-if="store.plugin.settings.search_support">
                 <NButton size="small" circle @click="reset">
                     <template #icon>
@@ -9,10 +9,10 @@
                         </Icon>
                     </template>
                 </NButton>
-                <NInput v-model:value="pattern" placeholder="Input to search" clearable />
+                <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
             <NSlider v-if="store.plugin.settings.level_switch" v-model:value="level" :marks="marks" step="mark" :min="0"
-                :max="5" style="margin-bottom:8px;" :format-tooltip="formatTooltip" />
+                :max="5" style="margin:4px 0;" :format-tooltip="formatTooltip" />
             <code v-if="pattern">{{matchCount}} result(s): </code>
             <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
                 :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
@@ -24,9 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref, reactive, computed, createStaticVNode, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes } from 'vue'
+import { ref, computed, createStaticVNode, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes } from 'vue'
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian'
-import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme } from 'naive-ui'
+import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides } from 'naive-ui'
 import { Icon } from '@vicons/utils'
 import { SettingsBackupRestoreRound } from '@vicons/material'
 import { marked } from 'marked'
@@ -34,6 +34,13 @@ import { marked } from 'marked'
 import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser'
 import { store } from './store'
 import { QuietOutline } from "./plugin"
+
+const themeConfig: GlobalThemeOverrides = {
+    Slider: {
+        handleSize: "10px",
+    }
+}
+
 
 onMounted(() => {
     addEventListener("quiet-outline-reset", reset)
@@ -236,7 +243,7 @@ let matchCount = computed(() => {
 
 
 // toggle light/dark theme
-let theme = computed(() => {
+let theme: any = computed(() => {
     if (store.dark) {
         return darkTheme
     }
