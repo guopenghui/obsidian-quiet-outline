@@ -1,6 +1,5 @@
 <template>
     <div id="container">
-        <!-- <button ref="button">+{{n}}</button> -->
         <NConfigProvider :theme="theme">
             <div class="function-bar" v-if="store.plugin.settings.search_support">
                 <NButton size="small" circle @click="reset">
@@ -36,29 +35,12 @@ import { formula, internal_link, highlight, tag, remove_href, renderer } from '.
 import { store } from './store'
 import { QuietOutline } from "./plugin"
 
-// for test
-// let n = ref(0)
-// let button: Ref<HTMLElement> = ref(null)
-// function plusOne(){
-//     n.value++
-// }
-// onMounted(()=>{
-//     console.log("注册")
-//     button.value.addEventListener("click", plusOne)
-// })
-// onUnmounted(()=>{
-//     button.value.removeEventListener("click", plusOne)
-// })
-
-
 onMounted(() => {
     addEventListener("quiet-outline-reset", reset)
 })
-
 onUnmounted(() => {
     removeEventListener("quiet-outline-reset", reset)
 })
-
 
 let compomentSelf = getCurrentInstance()
 let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline
