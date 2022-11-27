@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, createStaticVNode, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes } from 'vue'
+import { ref, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h } from 'vue'
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian'
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides } from 'naive-ui'
 import { Icon } from '@vicons/utils'
@@ -330,10 +330,8 @@ function renderLabel({ option }: { option: TreeOption }) {
     result = result.replace(/<math.*?>.*?<\/math>/g, () => {
         return mjxes[i++]
     })
-
-    result = `<div>${result}</div>`
-
-    return createStaticVNode(result, 1)
+    
+    return h("div", {innerHTML: result})
 }
 
 // reset button
