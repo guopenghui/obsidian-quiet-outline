@@ -43,6 +43,8 @@ Quiet Outline:
 ![默认级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/default-level.gif)
 
 
+### 拖拽标题调整文档结构 
+![拖拽](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/drag.gif)
 
 
 
@@ -50,6 +52,8 @@ Quiet Outline:
 + 由于内置编辑器的懒加载策略(只加载你当前在窗口中能看到的东西。如果你滚动地太快，可以看见有些文本来不及被渲染成相应的元素，如公式、表格、图片)，有时只点一下没办法跳转到你想要的位置，尤其是第一次打开这个笔记的时候。 Obsidian内置的核心大纲插件也存在这个问题。  解决方法很简单：**再点一次**。
 
 + 不支持跨层级的标题，比如你可以按`h1->h2->h3`来组织标题，但是不允许`h1->h3->h4`，在这种情况下`h3`和`h4`会被按`h2`和`h3`来处理。
+
++ 无法把标题拖入叶标题（没有子标题的标题）
 
 + 一些obsidian自己拓展的markdown语法可能是不被支持的(因此大纲中有些标题可能无法渲染成想要的样子)。但是这些都可以通过添加解析器来拓展，如果你觉得某个不被支持的语法很常用很重要，那就提一个issue，我们来讨论要不要实现它。
 

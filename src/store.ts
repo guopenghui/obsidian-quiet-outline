@@ -1,25 +1,28 @@
 import { reactive } from 'vue';
 import { HeadingCache, MarkdownView } from 'obsidian';
-import { QuietOutline } from './plugin';
 
 
 const store = reactive({
-    plugin: undefined as QuietOutline,
-
     activeView() {
         this.plugin.activateView();
         this.refreshTree();
     },
-
     headers: [] as HeadingCache[],
-    dark: document.body.hasClass("theme-dark"),
-
-    leaf_change: false,
+    dark: true,
+    markdown: true,
+    ellipsis: false,
+    leafChange: false,
+    searchSupport: true,
+    levelSwitch: true,
+    hideUnsearched: true,
+    regexSearch: false,
+    autoExpand: true,
+    dragModify: false,
     refreshTree() {
-        this.leaf_change = !this.leaf_change;
+        this.leafChange = !this.leafChange;
     },
 
-    current_note: null as MarkdownView
+    currentNote: null as MarkdownView
 });
 
 export { store };

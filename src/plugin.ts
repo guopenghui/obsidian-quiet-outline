@@ -19,24 +19,90 @@ export class QuietOutline extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		store.plugin = this;
-
-		this.registerEvent(this.app.workspace.on("css-change", () => {
-			store.dark = document.body.hasClass("theme-dark");
-		}));
-
-		this.registerView(
-			VIEW_TYPE,
-			(leaf) => new OutlineView(leaf, this)
-		);
-
-
 		// for test
 		// this.addRibbonIcon('bot', 'test something', (evt) => {
 		// 	const view = this.app.workspace.getActiveViewOfType(MarkdownView)
 		// 	console.dir(view.getState())
 		// })
 
+		this.registerView(
+			VIEW_TYPE,
+			(leaf) => new OutlineView(leaf, this)
+		);
+
+		this.registerListener();
+
+		this.registerCommand();
+
+		this.addSettingTab(new SettingTab(this.app, this));
+
+
+
+		// sync with markdown
+	}
+
+	initStore() {
+		store.headers = [];
+		store.dark = document.body.hasClass("theme-dark");
+		store.markdown = true;
+		store.ellipsis = false;
+		store.leafChange = false;
+		store.searchSupport = true;
+		store.levelSwitch = true;
+		store.hideUnsearched = true;
+		store.regexSearch = false;
+		store.autoExpand = true;
+		store.dragModify = false;
+	}
+	registerListener() {
+		this.registerEvent(this.app.workspace.on("css-change", () => {
+			store.dark = document.body.hasClass("theme-dark");
+		}));
+
+		// refresh headings
+		const refresh_outline = () => {
+			const current_file = this.app.workspace.getActiveFile();
+			if (current_file) {
+				const headers = this.app.metadataCache.getFileCache(current_file).headings;
+				if (headers) {
+					store.headers = headers;
+					return;
+				}
+			}
+			store.headers = [];
+		};
+
+		const refresh = debounce(refresh_outline, 300, true);
+		this.registerEvent(this.app.metadataCache.on('changed', () => {
+			refresh();
+		}));
+
+		this.registerEvent(this.app.workspace.on('active-leaf-change', async (leaf) => {
+
+			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
+			if (view) {
+				// 保证第一次获取标题信息时，也能正常展开到默认层级
+				if (!this.current_note) {
+					this.current_note = view;
+					this.current_file = view.file.path;
+					refresh_outline();
+					store.refreshTree();
+					return;
+				}
+
+				const pathEq = view.file.path === this.current_file;
+				if (!pathEq) {
+					store.refreshTree();
+				}
+
+				refresh_outline();
+				this.current_note = view;
+				this.current_file = view.file.path;
+			}
+		}));
+	}
+
+	registerCommand() {
 		this.addCommand({
 			id: "quiet-outline",
 			name: "Quiet Outline",
@@ -76,52 +142,6 @@ export class QuietOutline extends Plugin {
 			}
 		});
 
-		this.addSettingTab(new SettingTab(this.app, this));
-
-
-		// refresh headings
-		const refresh_outline = () => {
-			const current_file = this.app.workspace.getActiveFile();
-			if (current_file) {
-				const headers = this.app.metadataCache.getFileCache(current_file).headings;
-				if (headers) {
-					store.headers = headers;
-					return;
-				}
-			}
-			store.headers = [];
-		};
-
-		const refresh = debounce(refresh_outline, 300, true);
-		this.registerEvent(this.app.metadataCache.on('changed', () => {
-			refresh();
-		}));
-
-		this.registerEvent(this.app.workspace.on('active-leaf-change', async (leaf) => {
-
-			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
-			if (view) {
-				// 保证第一次获取标题信息时，也能正常展开到默认层级
-				if (!this.current_note) {
-					this.current_note = view;
-					this.current_file = view.file.path;
-					refresh_outline();
-					store.leaf_change = !store.leaf_change;
-					return;
-				}
-
-				const pathEq = view.file.path === this.current_file;
-				if (!pathEq) {
-					store.leaf_change = !store.leaf_change;
-				}
-
-				refresh_outline();
-				this.current_note = view;
-				this.current_file = view.file.path;
-			}
-		}));
-
-		// sync with markdown
 	}
 
 	onunload() {

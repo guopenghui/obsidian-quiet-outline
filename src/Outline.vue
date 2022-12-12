@@ -1,7 +1,7 @@
 <template>
     <div id="container">
         <NConfigProvider :theme="theme" :theme-overrides="themeConfig">
-            <div class="function-bar" v-if="store.plugin.settings.search_support">
+            <div class="function-bar" v-if="store.searchSupport">
                 <NButton size="small" circle @click="reset">
                     <template #icon>
                         <Icon>
@@ -11,20 +11,20 @@
                 </NButton>
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
-            <NSlider v-if="store.plugin.settings.level_switch" v-model:value="level" :marks="marks" step="mark" :min="0"
-                :max="5" style="margin:4px 0;" :format-tooltip="formatTooltip" />
+            <NSlider v-if="store.levelSwitch" v-model:value="level" :marks="marks" step="mark" :min="0" :max="5"
+                style="margin:4px 0;" :format-tooltip="formatTooltip" />
             <code v-if="pattern">{{ matchCount }} result(s): </code>
             <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
                 :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
-                :show-irrelevant-nodes="!store.plugin.settings.hide_unsearched"
-                :class="{ 'ellipsis': store.plugin.settings.ellipsis }" draggable @drop="handleDrop" />
+                :show-irrelevant-nodes="!store.hideUnsearched" :class="{ 'ellipsis': store.ellipsis }"
+                :draggable="store.dragModify" @drop="onDrop" />
         </NConfigProvider>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, unref, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h } from 'vue';
+import { ref, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h } from 'vue';
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
 import { Icon } from '@vicons/utils';
@@ -34,6 +34,7 @@ import { marked } from 'marked';
 import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
 import { store } from './store';
 import { QuietOutline } from "./plugin";
+import { TreeNodeProps } from 'naive-ui/lib/tree/src/interface';
 
 const themeConfig: GlobalThemeOverrides = {
     Slider: {
@@ -91,7 +92,7 @@ function _handleScroll(evt: Event) {
 
     let index = i;
 
-    if (store.plugin.settings.auto_expand) {
+    if (plugin.settings.auto_expand) {
         let should_expand = index < store.headers.length - 1 && store.headers[index].level < store.headers[index + 1].level
             ? [toKey(current_heading, index)]
             : [];
@@ -141,7 +142,7 @@ function setAttrs(info: { option: TreeOption; }): HTMLAttributes {
 }
 
 // switch heading expand levels
-let level = ref(parseInt(store.plugin.settings.expand_level));
+let level = ref(parseInt(plugin.settings.expand_level));
 let expanded = ref<string[]>([]);
 switchLevel(level.value);
 
@@ -173,13 +174,13 @@ watch(
 let update_tree = ref(0);
 
 watch(
-    () => store.leaf_change,
+    () => store.leafChange,
     () => {
         const old_level = level.value;
         const old_pattern = pattern.value;
 
         pattern.value = "";
-        level.value = parseInt(store.plugin.settings.expand_level);
+        level.value = parseInt(plugin.settings.expand_level);
         if (old_level === level.value) {
             switchLevel(level.value);
         }
@@ -212,7 +213,7 @@ function formatTooltip(value: number): string {
 
 // load settings
 let renderMethod = computed(() => {
-    if (store.plugin.settings.markdown) {
+    if (store.markdown) {
         return renderLabel;
     }
     return null;
@@ -231,7 +232,7 @@ function simpleFilter(pattern: string, option: TreeOption): boolean {
 }
 
 let filter = computed(() => {
-    return store.plugin.settings.regex_search ? regexFilter : simpleFilter;
+    return store.regexSearch ? regexFilter : simpleFilter;
 });
 
 let matchCount = computed(() => {
@@ -336,51 +337,128 @@ function renderLabel({ option }: { option: TreeOption; }) {
 
 // reset button
 function reset() {
-    store.dark = document.querySelector('body').classList.contains('theme-dark');
     pattern.value = "";
-    level.value = parseInt(store.plugin.settings.expand_level);
+    level.value = parseInt(plugin.settings.expand_level);
     switchLevel(level.value);
 }
 
 // drag and drop
-function getIndex(node: TreeOption, parent: TreeOption, children: TreeOption[]): [TreeOption, TreeOption[], number] {
-    if (!children) return [null, null, null];
-
-    for (let i = 0; i < children.length; ++i) {
-        if (node === children[i]) return [parent, children, i];
-
-        let [p, c, index] = getIndex(node, children[i], children[i].children);
-        if (index !== null) return [p, c, index];
-    }
-    return [null, null, null];
-}
-async function handleDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
+async function onDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
+    // return;
     const file = plugin.app.workspace.getActiveFile();
     let lines = (await plugin.app.vault.read(file)).split("\n");
+    let rawExpand = toRaw(expanded.value);
 
-    let data = unref(data2);
-    let [parent, children, index] = getIndex(dragNode, null, data);
-
-    children.splice(index, 1);
-    if (children.length === 0) parent.children = undefined;
-
-    const key_value = (dragNode.key as string).split("-");
-    const k = parseInt(key_value[2]);
-    const start = store.headers[k].position.start.line;
-    const end = store.headers[k + 1]?.position.start.line || lines.length;
-    let movedLines = lines.splice(start, end - start);
-
-    if (dropPosition === "before") {
-
-    } else if (dropPosition === "after") {
-
-    } else if (dropPosition === "inside") {
-
+    const dragStart = getNo(dragNode);
+    const dragEnd = dragStart + countTree(dragNode) - 1;
+    let moveStart = 0, moveEnd = 0;
+    switch (dropPosition) {
+        case "inside": {
+            node = node.children.last();
+        }
+        case "after": {
+            if (dragStart > getNo(node) + countTree(node)) {
+                moveStart = getNo(node) + countTree(node);
+                moveEnd = dragStart - 1;
+            } else {
+                moveStart = dragEnd + 1;
+                moveEnd = getNo(node) + countTree(node) - 1;
+            }
+            break;
+        }
+        case "before": {
+            if (dragStart > getNo(node)) {
+                moveStart = getNo(node);
+                moveEnd = dragStart - 1;
+            } else {
+                moveStart = dragStart + countTree(dragNode);
+                moveEnd = getNo(node) - 1;
+            }
+            break;
+        }
     }
+    const levDelta = getLevel(node) - getLevel(dragNode);
+    changeExpandKey(rawExpand, dragStart, dragEnd, moveStart, moveEnd, levDelta);
+    moveSection(
+        lines,
+        getLine(dragStart)[0],
+        getLine(dragEnd)[1] || lines.length - 1,
+        getLine(moveStart)[0],
+        getLine(moveEnd)[1] || lines.length - 1,
+        levDelta
+    );
 
+    plugin.app.vault.modify(file, lines.join("\n"));
 }
 
+function getLine(headNo: number) {
+    return [
+        store.headers[headNo].position.start.line,
+        store.headers[headNo + 1]?.position.start.line - 1
+    ];
+}
 
+// dls: drag lines start  mle: move lines end
+function moveSection(lines: string[], dls: number, dle: number, mls: number, mle: number, delta: number) {
+    let newPos = 0;
+    if (dls < mls) {
+        let moved = lines.splice(mls, mle - mls + 1);
+        lines.splice(dls, 0, ...moved);
+        newPos = dls + (mle - mls) + 1;
+    } else {
+        let moved = lines.splice(dls, dle - dls + 1);
+        lines.splice(mls, 0, ...moved);
+        newPos = mls;
+    }
+    for (let i = newPos; i <= newPos + (dle - dls); ++i) {
+        if (lines[i].match(/^#+ /)) {
+            delta > 0
+                ? lines[i] = Array(delta).fill("#").join("") + lines[i]
+                : lines[i] = lines[i].slice(-delta);
+        }
+    }
+}
+
+function changeExpandKey(expanded: string[], ds: number, de: number, ms: number, me: number, delta: number) {
+    let dNewPos = 0, mNewPos = 0;
+    if (ds < ms) {
+        mNewPos = ds;
+        dNewPos = ds + (me - ms) + 1;
+    } else {
+        dNewPos = ms;
+        mNewPos = ms + (de - ds) + 1;
+    }
+    expanded.forEach((key, i) => {
+        const no = getNo(key);
+        if (ds <= no && no <= de) {
+            expanded[i] = `item-${getLevel(key) + delta}-${dNewPos + (no - ds)}`;
+        }
+        if (ms <= no && no <= me) {
+            expanded[i] = `item-${getLevel(key)}-${mNewPos + (no - ms)}`;
+        }
+    });
+}
+
+function getNo(node: TreeOption | string): number {
+    if (typeof node !== "string") {
+        node = node.key as string;
+    }
+    return parseInt(node.split("-")[2]);
+}
+function getLevel(node: TreeOption | string): number {
+    if (typeof node !== "string") {
+        node = node.key as string;
+    }
+    return parseInt(node.split("-")[1]);
+
+}
+function countTree(node: TreeOption): number {
+    if (!node.children) return 1;
+
+    return node.children.reduce((sum, n) => {
+        return sum + countTree(n);
+    }, 1);
+}
 
 </script>
 
