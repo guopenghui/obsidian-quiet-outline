@@ -1,7 +1,7 @@
-import { App, PluginSettingTab, Setting } from "obsidian"
+import { App, PluginSettingTab, Setting } from "obsidian";
 import { QuietOutline } from "./plugin";
-import { store } from "./store"
-import { t } from "./lang/helper"
+import { store } from "./store";
+import { t } from "./lang/helper";
 interface QuietOutlineSettings {
     search_support: boolean;
     level_switch: boolean;
@@ -24,7 +24,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     // sync_with_markdown: "none",
     regex_search: false,
     ellipsis: false,
-}
+};
 
 class SettingTab extends PluginSettingTab {
     plugin: QuietOutline;
@@ -37,8 +37,8 @@ class SettingTab extends PluginSettingTab {
     display(): void {
         const { containerEl } = this;
 
-        containerEl.empty()
-        containerEl.createEl('h2', { text: t('Settings for Quiet Outline.') })
+        containerEl.empty();
+        containerEl.createEl('h2', { text: t('Settings for Quiet Outline.') });
 
         new Setting(containerEl)
             .setName(t('Render Markdown'))
@@ -46,10 +46,10 @@ class SettingTab extends PluginSettingTab {
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.markdown)
                 .onChange(async (value) => {
-                    store.plugin.settings.markdown = value
+                    store.plugin.settings.markdown = value;
                     await this.plugin.saveSettings();
                 })
-            )
+            );
 
         new Setting(containerEl)
             .setName(t('Ellipsis'))
@@ -57,10 +57,10 @@ class SettingTab extends PluginSettingTab {
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.ellipsis)
                 .onChange(async (value) => {
-                    store.plugin.settings.ellipsis = value
+                    store.plugin.settings.ellipsis = value;
                     await this.plugin.saveSettings();
                 })
-            )
+            );
 
         new Setting(containerEl)
             .setName(t("Search Support"))
@@ -68,10 +68,10 @@ class SettingTab extends PluginSettingTab {
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.search_support)
                 .onChange(async (value) => {
-                    store.plugin.settings.search_support = value
-                    await this.plugin.saveSettings()
+                    store.plugin.settings.search_support = value;
+                    await this.plugin.saveSettings();
                 })
-            )
+            );
 
         new Setting(containerEl)
             .setName(t("Level Switch"))
@@ -79,10 +79,10 @@ class SettingTab extends PluginSettingTab {
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.level_switch)
                 .onChange(async (value) => {
-                    store.plugin.settings.level_switch = value
-                    await this.plugin.saveSettings()
+                    store.plugin.settings.level_switch = value;
+                    await this.plugin.saveSettings();
                 })
-            )
+            );
 
         new Setting(containerEl)
             .setName(t("Default Level"))
@@ -96,10 +96,10 @@ class SettingTab extends PluginSettingTab {
                 .addOption("5", "H5")
                 .setValue(this.plugin.settings.expand_level)
                 .onChange(async (value) => {
-                    store.plugin.settings.expand_level = value
-                    await this.plugin.saveSettings()
+                    store.plugin.settings.expand_level = value;
+                    await this.plugin.saveSettings();
                 })
-            )
+            );
 
         new Setting(containerEl)
             .setName(t("Hide Unsearched"))
@@ -107,10 +107,10 @@ class SettingTab extends PluginSettingTab {
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.hide_unsearched)
                 .onChange(async (value) => {
-                    store.plugin.settings.hide_unsearched = value
-                    await this.plugin.saveSettings()
+                    store.plugin.settings.hide_unsearched = value;
+                    await this.plugin.saveSettings();
                 })
-            )
+            );
 
         new Setting(containerEl)
             .setName(t("Regex Search"))
@@ -118,10 +118,10 @@ class SettingTab extends PluginSettingTab {
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.regex_search)
                 .onChange(async (value) => {
-                    store.plugin.settings.regex_search = value
-                    await this.plugin.saveSettings()
+                    store.plugin.settings.regex_search = value;
+                    await this.plugin.saveSettings();
                 })
-            )
+            );
 
         new Setting(containerEl)
             .setName(t("Auto Expand"))
@@ -129,10 +129,10 @@ class SettingTab extends PluginSettingTab {
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.auto_expand)
                 .onChange(async (value) => {
-                    store.plugin.settings.auto_expand = value
-                    await this.plugin.saveSettings()
+                    store.plugin.settings.auto_expand = value;
+                    await this.plugin.saveSettings();
                 })
-            )
+            );
 
         // new Setting(containerEl)
         //     .setName("Sync With Markdown")
@@ -151,5 +151,5 @@ class SettingTab extends PluginSettingTab {
 }
 
 
-export { SettingTab, DEFAULT_SETTINGS }
-export type { QuietOutlineSettings }
+export { SettingTab, DEFAULT_SETTINGS };
+export type { QuietOutlineSettings };

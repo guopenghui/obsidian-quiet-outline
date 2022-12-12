@@ -19,4 +19,4 @@ export default {
     "Auto expand and collapse headings when scrolling": "Auto expand and collapse headings when scrolling",
     "Ellipsis": 'Ellipsis',
     "Keep one line per heading": "Keep one line per heading",
-}
+};

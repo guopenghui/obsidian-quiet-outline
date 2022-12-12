@@ -5,7 +5,7 @@
                 <NButton size="small" circle @click="reset">
                     <template #icon>
                         <Icon>
-                            <SettingsBackupRestoreRound :style="iconColor"/>
+                            <SettingsBackupRestoreRound :style="iconColor" />
                         </Icon>
                     </template>
                 </NButton>
@@ -13,136 +13,136 @@
             </div>
             <NSlider v-if="store.plugin.settings.level_switch" v-model:value="level" :marks="marks" step="mark" :min="0"
                 :max="5" style="margin:4px 0;" :format-tooltip="formatTooltip" />
-            <code v-if="pattern">{{matchCount}} result(s): </code>
+            <code v-if="pattern">{{ matchCount }} result(s): </code>
             <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
                 :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
-                :show-irrelevant-nodes="!store.plugin.settings.hide_unsearched" 
-                :class="{'ellipsis': store.plugin.settings.ellipsis}"/>
+                :show-irrelevant-nodes="!store.plugin.settings.hide_unsearched"
+                :class="{ 'ellipsis': store.plugin.settings.ellipsis }" draggable @drop="handleDrop" />
         </NConfigProvider>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h } from 'vue'
-import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian'
-import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides } from 'naive-ui'
-import { Icon } from '@vicons/utils'
-import { SettingsBackupRestoreRound } from '@vicons/material'
-import { marked } from 'marked'
+import { ref, unref, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h } from 'vue';
+import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
+import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
+import { Icon } from '@vicons/utils';
+import { SettingsBackupRestoreRound } from '@vicons/material';
+import { marked } from 'marked';
 
-import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser'
-import { store } from './store'
-import { QuietOutline } from "./plugin"
+import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
+import { store } from './store';
+import { QuietOutline } from "./plugin";
 
 const themeConfig: GlobalThemeOverrides = {
     Slider: {
         handleSize: "10px",
     }
-}
+};
 
 
 onMounted(() => {
-    addEventListener("quiet-outline-reset", reset)
-})
+    addEventListener("quiet-outline-reset", reset);
+});
 onUnmounted(() => {
-    removeEventListener("quiet-outline-reset", reset)
-})
+    removeEventListener("quiet-outline-reset", reset);
+});
 
-let compomentSelf = getCurrentInstance()
-let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline
-let container =compomentSelf .appContext.config.globalProperties.container as HTMLElement
+let compomentSelf = getCurrentInstance();
+let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline;
+let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
 
 // register scroll event
 onMounted(() => {
-    document.addEventListener("scroll", handleScroll, true)
-})
+    document.addEventListener("scroll", handleScroll, true);
+});
 
 onUnmounted(() => {
-    document.removeEventListener("scroll", handleScroll, true)
-})
+    document.removeEventListener("scroll", handleScroll, true);
+});
 
-let toKey = (h: HeadingCache, i: number) => "item-" + h.level + "-" + i
+let toKey = (h: HeadingCache, i: number) => "item-" + h.level + "-" + i;
 
-let handleScroll = debounce(_handleScroll, 100)
+let handleScroll = debounce(_handleScroll, 100);
 
 function _handleScroll(evt: Event) {
-    let target = evt.target as HTMLElement
+    let target = evt.target as HTMLElement;
     if (!target.classList.contains("markdown-preview-view") && !target.classList.contains("cm-scroller")) {
-        return
+        return;
     }
-    const view = plugin.app.workspace.getActiveViewOfType(MarkdownView)
+    const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
 
-    if(!view) return
+    if (!view) return;
 
-    let current_line = view.currentMode.getScroll() + 8
+    let current_line = view.currentMode.getScroll() + 8;
     let current_heading = null;
 
-    let i = store.headers.length
+    let i = store.headers.length;
     while (--i >= 0) {
         if (store.headers[i].position.start.line <= current_line) {
-            current_heading = store.headers[i]
-            break
+            current_heading = store.headers[i];
+            break;
         }
     }
     if (!current_heading) {
-        return
+        return;
     }
 
-    let index = i
+    let index = i;
 
     if (store.plugin.settings.auto_expand) {
         let should_expand = index < store.headers.length - 1 && store.headers[index].level < store.headers[index + 1].level
             ? [toKey(current_heading, index)]
-            : []
+            : [];
 
-        let level = current_heading.level
+        let level = current_heading.level;
         while (i-- > 0) {
             if (store.headers[i].level < level) {
-                should_expand.push(toKey(store.headers[i], i))
-                level = store.headers[i].level
+                should_expand.push(toKey(store.headers[i], i));
+                level = store.headers[i].level;
             }
             if (level === 1) {
-                break
+                break;
             }
         }
-        expanded.value = should_expand
+        expanded.value = should_expand;
     }
-    let prevLocation = container.querySelector(".n-tree-node.located")
+    let prevLocation = container.querySelector(".n-tree-node.located");
     if (prevLocation) {
-        prevLocation.removeClass("located")
+        prevLocation.removeClass("located");
     }
-    let curLocation = container.querySelector(`#no-${index}`)
+    let curLocation = container.querySelector(`#no-${index}`);
     if (curLocation) {
-        curLocation.addClass("located")
-        curLocation.scrollIntoView({block: "center", behavior: "smooth"})
+        curLocation.addClass("located");
+        curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
     } else {
         setTimeout(() => {
-            let curLocation = container.querySelector(`#no-${index}`)
+            let curLocation = container.querySelector(`#no-${index}`);
             if (curLocation) {
-                curLocation.addClass("located")
-                curLocation.scrollIntoView({block: "center", behavior: "smooth"})
+                curLocation.addClass("located");
+                curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
             }
-        },0)
+        }, 0);
     }
 }
 
 
 // add html attributes to nodes
-function setAttrs(info: { option: TreeOption }): HTMLAttributes {
-    let lev = parseInt((info.option.key as string).split('-')[1])
-    let no = parseInt((info.option.key as string).split('-')[2])
+function setAttrs(info: { option: TreeOption; }): HTMLAttributes {
+    let lev = parseInt((info.option.key as string).split('-')[1]);
+    let no = parseInt((info.option.key as string).split('-')[2]);
 
     return {
         class: `level-${lev}`,
         id: `no-${no}`,
-        title: plugin.settings.ellipsis? info.option.label: "",
-    }
+        title: plugin.settings.ellipsis ? info.option.label : "",
+    };
 }
 
 // switch heading expand levels
 let level = ref(parseInt(store.plugin.settings.expand_level));
-let expanded = ref<string[]>([])
+let expanded = ref<string[]>([]);
 switchLevel(level.value);
 
 function expand(keys: string[], option: TreeOption[]) {
@@ -152,44 +152,44 @@ function expand(keys: string[], option: TreeOption[]) {
 function switchLevel(lev: number) {
     expanded.value = store.headers
         .map((h, i) => {
-            return "item-" + h.level + "-" + i
+            return "item-" + h.level + "-" + i;
         })
         .filter((key, i, arr) => {
-            const get_level = (k: string): number => parseInt(k.split('-')[1])
-            if (i === arr.length - 1) return false
-            if (get_level(arr[i]) >= get_level(arr[i + 1])) return false
-            return get_level(key) <= lev
-        })
+            const get_level = (k: string): number => parseInt(k.split('-')[1]);
+            if (i === arr.length - 1) return false;
+            if (get_level(arr[i]) >= get_level(arr[i + 1])) return false;
+            return get_level(key) <= lev;
+        });
 }
 
 watch(
     level,
     (cur, prev) => {
-        switchLevel(cur)
+        switchLevel(cur);
     }
-)
+);
 
 // force remake tree
-let update_tree = ref(0)
+let update_tree = ref(0);
 
 watch(
     () => store.leaf_change,
     () => {
-        const old_level = level.value
-        const old_pattern = pattern.value
+        const old_level = level.value;
+        const old_pattern = pattern.value;
 
-        pattern.value = ""
-        level.value = parseInt(store.plugin.settings.expand_level)
+        pattern.value = "";
+        level.value = parseInt(store.plugin.settings.expand_level);
         if (old_level === level.value) {
-            switchLevel(level.value)
+            switchLevel(level.value);
         }
-        
+
         nextTick(() => {
-            pattern.value = old_pattern
-        })
+            pattern.value = old_pattern;
+        });
 
     }
-)
+);
 
 const marks = {
     0: "",
@@ -198,178 +198,193 @@ const marks = {
     3: "",
     4: "",
     5: "",
-}
+};
 
 function formatTooltip(value: number): string {
-    let num = store.headers.filter((h) => h.level === value).length
+    let num = store.headers.filter((h) => h.level === value).length;
 
     if (value > 0) {
-        return `H${value}: ${num}`
+        return `H${value}: ${num}`;
     }
-    return "No expand"
+    return "No expand";
 }
 
 
 // load settings
 let renderMethod = computed(() => {
     if (store.plugin.settings.markdown) {
-        return renderLabel
+        return renderLabel;
     }
-    return null
-})
+    return null;
+});
 
 // search
-let pattern = ref("")
+let pattern = ref("");
 
-function regexFilter(pattern: string, option: TreeOption) : boolean {
-    let rule = RegExp(pattern, "i")
-    return rule.test(option.label)
+function regexFilter(pattern: string, option: TreeOption): boolean {
+    let rule = RegExp(pattern, "i");
+    return rule.test(option.label);
 }
 
-function simpleFilter(pattern: string, option: TreeOption) : boolean {
-    return option.label.toLowerCase().contains(pattern.toLowerCase())
+function simpleFilter(pattern: string, option: TreeOption): boolean {
+    return option.label.toLowerCase().contains(pattern.toLowerCase());
 }
 
 let filter = computed(() => {
-    return store.plugin.settings.regex_search ? regexFilter: simpleFilter
-}) 
+    return store.plugin.settings.regex_search ? regexFilter : simpleFilter;
+});
 
 let matchCount = computed(() => {
     return store.headers.filter((h) => {
-        let node = {label: h.heading} as TreeOption
-        return filter.value(pattern.value, node)
-    }).length
-})
+        let node = { label: h.heading } as TreeOption;
+        return filter.value(pattern.value, node);
+    }).length;
+});
 
 
 // toggle light/dark theme
 let theme: any = computed(() => {
     if (store.dark) {
-        return darkTheme
+        return darkTheme;
     }
-    return null
-})
+    return null;
+});
 let iconColor = computed(() => {
-    if(store.dark) {
-        return {color: "#a3a3a3"}
+    if (store.dark) {
+        return { color: "#a3a3a3" };
     }
-    return {color: "#727272"}
-})
+    return { color: "#727272" };
+});
 
 // click and jump
 async function jump(_selected: any, nodes: TreeOption[]): Promise<number> {
     if (nodes[0] === undefined) {
-        return
+        return;
     }
 
-    const key_value = (nodes[0].key as string).split("-")
-    const key = parseInt(key_value[2])
-    let line: number = store.headers[key].position.start.line
+    const key_value = (nodes[0].key as string).split("-");
+    const key = parseInt(key_value[2]);
+    let line: number = store.headers[key].position.start.line;
 
     // const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
-    const view = plugin.current_note
+    const view = plugin.current_note;
     if (view) {
-        view.setEphemeralState({ line })
-        setTimeout(() => { view.setEphemeralState({ line }) }, 100)
+        view.setEphemeralState({ line });
+        setTimeout(() => { view.setEphemeralState({ line }); }, 100);
     }
 }
 
 // prepare data for tree component
 let data2 = computed(() => {
-    return makeTree(store.headers)
-})
+    return makeTree(store.headers);
+});
 
 function makeTree(headers: HeadingCache[]): TreeOption[] {
 
-    let tree: TreeOption[] = arrToTree(headers)
-    return tree
+    let tree: TreeOption[] = arrToTree(headers);
+    return tree;
 }
 
 function arrToTree(headers: HeadingCache[]): TreeOption[] {
-    const root: TreeOption = { children: [] }
-    const stack = [{ node: root, level: -1 }]
+    const root: TreeOption = { children: [] };
+    const stack = [{ node: root, level: -1 }];
 
     headers.forEach((h, i) => {
         let node: TreeOption = {
             label: h.heading,
             key: "item-" + h.level + "-" + i,
             line: h.position.start.line,
-        }
+        };
 
         while (h.level <= stack.last().level) {
-            stack.pop()
+            stack.pop();
         }
 
-        let parent = stack.last().node
+        let parent = stack.last().node;
         if (parent.children === undefined) {
-            parent.children = []
+            parent.children = [];
         }
-        parent.children.push(node)
-        stack.push({ node, level: h.level })
-    })
+        parent.children.push(node);
+        stack.push({ node, level: h.level });
+    });
 
-    return root.children
+    return root.children;
 }
 
 
 // render markdown
-marked.use({ extensions: [formula, internal_link, highlight, tag] })
-marked.use({ walkTokens: remove_href })
-marked.use({ renderer })
+marked.use({ extensions: [formula, internal_link, highlight, tag] });
+marked.use({ walkTokens: remove_href });
+marked.use({ renderer });
 
-function renderLabel({ option }: { option: TreeOption }) {
-    let result = marked.parse(option.label).trim()
+function renderLabel({ option }: { option: TreeOption; }) {
+    let result = marked.parse(option.label).trim();
 
     // save mjx elements
-    let i = 0
-    let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g)
+    let i = 0;
+    let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g);
 
-    result = sanitizeHTMLToDom(`<div>${result}</div>`).children[0].innerHTML
+    result = sanitizeHTMLToDom(`<div>${result}</div>`).children[0].innerHTML;
 
     // restore mjx elements
     result = result.replace(/<math.*?>.*?<\/math>/g, () => {
-        return mjxes[i++]
-    })
-    
-    return h("div", {innerHTML: result})
+        return mjxes[i++];
+    });
+
+    return h("div", { innerHTML: result });
 }
 
 // reset button
 function reset() {
-    store.dark = document.querySelector('body').classList.contains('theme-dark')
-    pattern.value = ""
-    level.value = parseInt(store.plugin.settings.expand_level)
-    switchLevel(level.value)
+    store.dark = document.querySelector('body').classList.contains('theme-dark');
+    pattern.value = "";
+    level.value = parseInt(store.plugin.settings.expand_level);
+    switchLevel(level.value);
 }
 
+// drag and drop
+function getIndex(node: TreeOption, parent: TreeOption, children: TreeOption[]): [TreeOption, TreeOption[], number] {
+    if (!children) return [null, null, null];
 
-// sync with markdown
-// watch(expanded, (ex) => {
-//     let expandedIndex = expanded.value.map(key =>parseInt(key.split("-")[2]))
-//     let folds: {from: number, to: number}[] = []
-//     store.headers.forEach((h, i) => {
-//         if(!expandedIndex.contains(i)) {
-//             let from = h.position.start.line
-//             folds.push({
-//                 from,
-//                 to: from + 1,
-//             })
-//         }
-//     })
-    
-//     let mdView = plugin.app.workspace.getActiveViewOfType(MarkdownView)
-    
-//     if(mdView && plugin.settings.sync_with_markdown === "bidirectional") {
-//         (mdView.currentMode as any).applyFoldInfo({
-//             folds,
-//             lines: mdView.editor.lineCount()
-//         })
-//     }
-// })
+    for (let i = 0; i < children.length; ++i) {
+        if (node === children[i]) return [parent, children, i];
+
+        let [p, c, index] = getIndex(node, children[i], children[i].children);
+        if (index !== null) return [p, c, index];
+    }
+    return [null, null, null];
+}
+async function handleDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
+    const file = plugin.app.workspace.getActiveFile();
+    let lines = (await plugin.app.vault.read(file)).split("\n");
+
+    let data = unref(data2);
+    let [parent, children, index] = getIndex(dragNode, null, data);
+
+    children.splice(index, 1);
+    if (children.length === 0) parent.children = undefined;
+
+    const key_value = (dragNode.key as string).split("-");
+    const k = parseInt(key_value[2]);
+    const start = store.headers[k].position.start.line;
+    const end = store.headers[k + 1]?.position.start.line || lines.length;
+    let movedLines = lines.splice(start, end - start);
+
+    if (dropPosition === "before") {
+
+    } else if (dropPosition === "after") {
+
+    } else if (dropPosition === "inside") {
+
+    }
+
+}
+
 
 
 </script>
 
 
 <style>
+
 </style>

@@ -19,4 +19,4 @@ export default {
     "Auto expand and collapse headings when scrolling": "當捲動頁面時，自動跟隨目前所在標題並展開",
     "Ellipsis": "省略長標題",
     "Keep one line per heading": "保持標題只有一行，省略多餘部分",
-}
+};

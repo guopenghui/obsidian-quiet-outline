@@ -1,7 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from 'builtin-modules'
-import vue from 'esbuild-plugin-vue3'
+import vue from '@the_tree/esbuild-plugin-vue3'
 
 const banner =
 	`/*
@@ -16,7 +16,7 @@ esbuild.build({
 	banner: {
 		js: banner,
 	},
-	plugins: [vue()],
+	plugins: [vue({isProd: true})],
 	entryPoints: ['main.ts'],
 	bundle: true,
 	external: [

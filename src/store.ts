@@ -1,14 +1,14 @@
-import { reactive } from 'vue'
-import { HeadingCache, MarkdownView } from 'obsidian'
-import { QuietOutline } from './plugin'
+import { reactive } from 'vue';
+import { HeadingCache, MarkdownView } from 'obsidian';
+import { QuietOutline } from './plugin';
 
 
 const store = reactive({
     plugin: undefined as QuietOutline,
 
     activeView() {
-        this.plugin.activateView()
-        this.refreshTree()
+        this.plugin.activateView();
+        this.refreshTree();
     },
 
     headers: [] as HeadingCache[],
@@ -16,10 +16,10 @@ const store = reactive({
 
     leaf_change: false,
     refreshTree() {
-        this.leaf_change = !this.leaf_change
+        this.leaf_change = !this.leaf_change;
     },
 
     current_note: null as MarkdownView
-})
+});
 
-export { store }
+export { store };

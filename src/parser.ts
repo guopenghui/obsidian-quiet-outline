@@ -1,129 +1,129 @@
-import { marked } from 'marked'
-import { renderMath, finishRenderMath, loadMathJax } from 'obsidian'
-import { store } from './store'
+import { marked } from 'marked';
+import { renderMath, finishRenderMath, loadMathJax } from 'obsidian';
+import { store } from './store';
 
-type Extension = marked.TokenizerExtension & marked.RendererExtension
+type Extension = marked.TokenizerExtension & marked.RendererExtension;
 
 // parse $xxx$ format
 export const formula: Extension = {
     name: "formula",
     level: "inline",
     start(src) {
-        return src.match(/\$/)?.index
+        return src.match(/\$/)?.index;
     },
     tokenizer(src, tokens) {
-        const rule = /^\$([^\$]+)\$/
-        const match = rule.exec(src)
+        const rule = /^\$([^\$]+)\$/;
+        const match = rule.exec(src);
         if (match) {
             return {
                 type: 'formula',
                 raw: match[0],
                 formula: match[1].trim(),
-            }
+            };
         }
     },
     renderer(token) {
         try {
-            const formula = renderMath(token.formula, false).outerHTML
-            finishRenderMath()
-            return formula
+            const formula = renderMath(token.formula, false).outerHTML;
+            finishRenderMath();
+            return formula;
         } catch {
             loadMathJax().then(() => {
                 //store.activeView()
-                store.refreshTree()
-            })
-            return false
+                store.refreshTree();
+            });
+            return false;
         }
     }
-}
+};
 
 // parse [[xxx]] format
 export const internal_link: Extension = {
     name: "internal",
     level: "inline",
     start(src) {
-        return src.match(/\[\[/)?.index
+        return src.match(/\[\[/)?.index;
     },
     tokenizer(src, token) {
-        const rule = /^\[\[([^\[\]]+?)\]\]/
-        const match = rule.exec(src)
+        const rule = /^\[\[([^\[\]]+?)\]\]/;
+        const match = rule.exec(src);
         if (match) {
-            const alias = /.*\|(.*)/.exec(match[1])
+            const alias = /.*\|(.*)/.exec(match[1]);
             return {
                 type: "internal",
                 raw: match[0],
                 internal: alias ? alias[1] : match[1],
-            }
+            };
         }
     },
     renderer(token) {
-        return `<span class="internal-link">${token.internal}</span>`
+        return `<span class="internal-link">${token.internal}</span>`;
     }
-}
+};
 
 // parse ==xxx== format
 export const highlight: Extension = {
     name: "highlight",
     level: "inline",
     start(src) {
-        return src.match(/==/)?.index
+        return src.match(/==/)?.index;
     },
     tokenizer(src, token) {
         const rule = /^==([^=]+)==/;
-        const match = rule.exec(src)
+        const match = rule.exec(src);
         if (match) {
             return {
                 type: "highlight",
                 raw: match[0],
                 internal: match[1],
-            }
+            };
         }
     },
     renderer(token) {
-        return `<mark>${token.internal}</mark>`
+        return `<mark>${token.internal}</mark>`;
     }
-}
+};
 
 export const tag: Extension = {
     name: "tag",
     level: "inline",
     start(src) {
-        return src.match(/\s#/)?.index
+        return src.match(/\s#/)?.index;
     },
     tokenizer(src, token) {
         const rule = /^\s#([^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
-        const match = rule.exec(src)
+        const match = rule.exec(src);
         if (match) {
             return {
                 type: "tag",
                 raw: match[0],
                 internal: match[1],
-            }
+            };
         }
     },
     renderer(token) {
-        return `<a href="" class="tag" target="_blank" rel="noopener">#${token.internal}</a>`
+        return `<a href="" class="tag" target="_blank" rel="noopener">#${token.internal}</a>`;
     }
-}
+};
 
 // remove url inside <a>
 export const remove_href = (token: marked.Token) => {
     if (token.type === "link") {
-        token.href = "javascript:void(0);"
+        token.href = "javascript:void(0);";
     }
-}
+};
 
 
 // remove <ol>
 export const renderer = {
     list(body: string, ordered: boolean, start: number) {
         if (ordered)
-            return `<p>${start}. ${body}</p>`
+            return `<p>${start}. ${body}</p>`;
         else
-            return `<p>${body}</p>`
+            return `<p>${body}</p>`;
     },
     listitem(text: string, task: boolean, checked: boolean) {
-        return `${text}`
+        return `${text}`;
     }
 
-}
+};
