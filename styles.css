@@ -2,6 +2,10 @@
   font-size: var(--nav-item-size);
 }
 
+ .quiet-outline .n-tree-node-indent {
+  flex: 0 0 13px !important;
+}
+
 
 .quiet-outline .n-tree-node-wrapper {
   padding: 0px;
