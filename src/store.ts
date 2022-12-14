@@ -11,6 +11,7 @@ const store = reactive({
     dark: true,
     markdown: true,
     ellipsis: false,
+    labelDirection: "left" as "top" | "bottom" | "left" | "right",
     leafChange: false,
     searchSupport: true,
     levelSwitch: true,

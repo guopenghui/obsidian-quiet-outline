@@ -18,6 +18,7 @@ export default {
     "Auto Expand": '自动展开',
     "Auto expand and collapse headings when scrolling": "当滚动页面时，自动跟踪当前所在标题并展开",
     "Ellipsis": "省略长标题",
+    "Tooltip direction": '完整标题显示方向',
     "Keep one line per heading": "保持标题只有一行,省略多余部分",
     "Drag headings to modify note": "启用拖拽标题来调整文档结果",
     "❗ This will modify note content, be careful.": "❗ 拖拽操作会改变文档内容，小心使用",

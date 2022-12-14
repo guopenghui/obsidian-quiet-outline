@@ -34,14 +34,12 @@ import { marked } from 'marked';
 import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
 import { store } from './store';
 import { QuietOutline } from "./plugin";
-import { TreeNodeProps } from 'naive-ui/lib/tree/src/interface';
 
 const themeConfig: GlobalThemeOverrides = {
     Slider: {
         handleSize: "10px",
     }
 };
-
 
 onMounted(() => {
     addEventListener("quiet-outline-reset", reset);
@@ -130,16 +128,24 @@ function _handleScroll(evt: Event) {
 
 
 // add html attributes to nodes
-function setAttrs(info: { option: TreeOption; }): HTMLAttributes {
-    let lev = parseInt((info.option.key as string).split('-')[1]);
-    let no = parseInt((info.option.key as string).split('-')[2]);
-
-    return {
-        class: `level-${lev}`,
-        id: `no-${no}`,
-        title: plugin.settings.ellipsis ? info.option.label : "",
-    };
+interface HTMLAttr extends HTMLAttributes {
+    "aria-label-position": "top" | "bottom" | "left" | "right";
 }
+
+const setAttrs = computed(() => {
+    return (info: { option: TreeOption; }): HTMLAttr => {
+        let lev = parseInt((info.option.key as string).split('-')[1]);
+        let no = parseInt((info.option.key as string).split('-')[2]);
+
+        return {
+            class: `level-${lev}`,
+            id: `no-${no}`,
+            "aria-label": store.ellipsis ? info.option.label : "",
+            "aria-label-position": store.labelDirection,
+        };
+    };
+});
+
 
 // switch heading expand levels
 let level = ref(parseInt(plugin.settings.expand_level));

@@ -12,6 +12,7 @@ interface QuietOutlineSettings {
     // sync_with_markdown: string;
     regex_search: boolean;
     ellipsis: boolean;
+    label_direction: "top" | "bottom" | "left" | "right";
     drag_modify: boolean;
 }
 
@@ -25,6 +26,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     // sync_with_markdown: "none",
     regex_search: false,
     ellipsis: false,
+    label_direction: "left",
     drag_modify: false,
 };
 
@@ -63,8 +65,28 @@ class SettingTab extends PluginSettingTab {
                     this.plugin.settings.ellipsis = value;
                     store.ellipsis = value;
                     await this.plugin.saveSettings();
+                    store.refreshTree();
+                    this.display();
                 })
             );
+
+        if (this.plugin.settings.ellipsis) {
+            new Setting(containerEl)
+                .setName(t("Tooltip direction"))
+                .addDropdown(level => level
+                    .addOption("left", "Left")
+                    .addOption("right", "Right")
+                    .addOption("top", "Top")
+                    .addOption("bottom", "Bottom")
+                    .setValue(this.plugin.settings.label_direction)
+                    .onChange(async (value: "top" | "bottom" | "left" | "right") => {
+                        this.plugin.settings.label_direction = value;
+                        store.labelDirection = value;
+                        await this.plugin.saveSettings();
+                        store.refreshTree();
+                    })
+                );
+        }
 
         new Setting(containerEl)
             .setName(t("Search Support"))

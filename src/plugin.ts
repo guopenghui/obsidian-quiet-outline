@@ -25,6 +25,8 @@ export class QuietOutline extends Plugin {
 		// 	console.dir(view.getState())
 		// })
 
+		this.initStore();
+
 		this.registerView(
 			VIEW_TYPE,
 			(leaf) => new OutlineView(leaf, this)
@@ -36,23 +38,22 @@ export class QuietOutline extends Plugin {
 
 		this.addSettingTab(new SettingTab(this.app, this));
 
-
-
 		// sync with markdown
 	}
 
 	initStore() {
 		store.headers = [];
 		store.dark = document.body.hasClass("theme-dark");
-		store.markdown = true;
-		store.ellipsis = false;
+		store.markdown = this.settings.markdown;
+		store.ellipsis = this.settings.ellipsis;
+		store.labelDirection = this.settings.label_direction;
 		store.leafChange = false;
-		store.searchSupport = true;
-		store.levelSwitch = true;
-		store.hideUnsearched = true;
-		store.regexSearch = false;
-		store.autoExpand = true;
-		store.dragModify = false;
+		store.searchSupport = this.settings.search_support;
+		store.levelSwitch = this.settings.level_switch;
+		store.hideUnsearched = this.settings.hide_unsearched;
+		store.regexSearch = this.settings.regex_search;
+		store.autoExpand = this.settings.auto_expand;
+		store.dragModify = this.settings.drag_modify;
 	}
 	registerListener() {
 		this.registerEvent(this.app.workspace.on("css-change", () => {
