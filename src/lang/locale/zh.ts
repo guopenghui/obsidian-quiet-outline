@@ -2,6 +2,9 @@
 
 export default {
     'Settings for Quiet Outline.': 'Quiet Outline 的设置页面',
+    "Set Primary Color": '设置主颜色 明/暗',
+    "Patch default color": '用设置覆盖默认主颜色',
+    "Set Rainbow Line Color": '设置彩虹大纲线颜色',
     'Render Markdown': '渲染markdown元素',
     'Render heading string as markdown format.': '以markdown格式渲染标题文本',
     "Search Support": '开启搜索',

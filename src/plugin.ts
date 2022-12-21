@@ -37,8 +37,6 @@ export class QuietOutline extends Plugin {
 		this.registerCommand();
 
 		this.addSettingTab(new SettingTab(this.app, this));
-
-		// sync with markdown
 	}
 
 	initStore() {
@@ -54,10 +52,20 @@ export class QuietOutline extends Plugin {
 		store.regexSearch = this.settings.regex_search;
 		store.autoExpand = this.settings.auto_expand;
 		store.dragModify = this.settings.drag_modify;
+		store.patchColor = this.settings.patch_color;
+		store.primaryColorLight = this.settings.primary_color_light;
+		store.primaryColorDark = this.settings.primary_color_dark;
+		store.rainbowLine = this.settings.rainbow_line;
+		store.rainbowColor1 = this.settings.rainbow_color_1;
+		store.rainbowColor2 = this.settings.rainbow_color_2;
+		store.rainbowColor3 = this.settings.rainbow_color_3;
+		store.rainbowColor4 = this.settings.rainbow_color_4;
+		store.rainbowColor5 = this.settings.rainbow_color_5;
 	}
 	registerListener() {
 		this.registerEvent(this.app.workspace.on("css-change", () => {
 			store.dark = document.body.hasClass("theme-dark");
+			store.cssChange = !store.cssChange;
 		}));
 
 		// refresh headings

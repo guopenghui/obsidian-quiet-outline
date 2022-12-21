@@ -1,6 +1,6 @@
 <template>
     <div id="container">
-        <NConfigProvider :theme="theme" :theme-overrides="themeConfig">
+        <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
             <div class="function-bar" v-if="store.searchSupport">
                 <NButton size="small" circle @click="reset">
                     <template #icon>
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h } from 'vue';
+import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
 import { Icon } from '@vicons/utils';
@@ -35,11 +35,119 @@ import { formula, internal_link, highlight, tag, remove_href, renderer } from '.
 import { store } from './store';
 import { QuietOutline } from "./plugin";
 
-const themeConfig: GlobalThemeOverrides = {
+const lightThemeConfig = reactive<GlobalThemeOverrides>({
+    common: {
+        primaryColor: "",
+        primaryColorHover: "",
+    },
     Slider: {
         handleSize: "10px",
+        fillColor: "",
+        fillColorHover: "",
+        dotBorderActive: ""
+    },
+});
+
+const darkThemeConfig = reactive<GlobalThemeOverrides>({
+    common: {
+        primaryColor: "",
+        primaryColorHover: "",
+    },
+    Slider: {
+        handleSize: "10px",
+        fillColor: "",
+        fillColorHover: "",
+        dotBorderActive: ""
     }
-};
+});
+
+// toggle light/dark theme
+let theme: any = computed(() => {
+    if (store.dark) {
+        return darkTheme;
+    }
+    return null;
+});
+let iconColor = computed(() => {
+    if (store.dark) {
+        return { color: "#a3a3a3" };
+    }
+    return { color: "#727272" };
+});
+
+function getDefaultColor() {
+    let button = document.body.createEl("button", { cls: "mod-cta", attr: { style: "width: 0px; height: 0px;" } });
+    let color = getComputedStyle(button, null).getPropertyValue("background-color");
+    button.remove();
+    return color;
+}
+
+watchEffect(() => {
+    if (store.patchColor) {
+        lightThemeConfig.common.primaryColor
+            = lightThemeConfig.common.primaryColorHover
+            = lightThemeConfig.Slider.fillColor
+            = lightThemeConfig.Slider.fillColorHover
+            = store.primaryColorLight;
+        lightThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorLight}`;
+
+        darkThemeConfig.common.primaryColor
+            = darkThemeConfig.common.primaryColorHover
+            = darkThemeConfig.Slider.fillColor
+            = darkThemeConfig.Slider.fillColorHover
+            = store.primaryColorDark;
+        darkThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorDark}`;
+        return;
+    }
+    // when css changed, recompute
+    if (store.cssChange === store.cssChange) {
+        let color = getDefaultColor();
+        lightThemeConfig.common.primaryColor
+            = lightThemeConfig.common.primaryColorHover
+            = lightThemeConfig.Slider.fillColor
+            = lightThemeConfig.Slider.fillColorHover
+            = darkThemeConfig.common.primaryColor
+            = darkThemeConfig.common.primaryColorHover
+            = darkThemeConfig.Slider.fillColor
+            = darkThemeConfig.Slider.fillColorHover
+            = color;
+        lightThemeConfig.Slider.dotBorderActive
+            = darkThemeConfig.Slider.dotBorderActive
+            = `2px solid ${color}`;
+
+    }
+});
+
+let rainbowColor1 = ref("");
+let rainbowColor2 = ref("");
+let rainbowColor3 = ref("");
+let rainbowColor4 = ref("");
+let rainbowColor5 = ref("");
+
+function hexToRGB(hex: string) {
+    return `${parseInt(hex.slice(1, 3), 16)},`
+        + `${parseInt(hex.slice(3, 5), 16)},`
+        + `${parseInt(hex.slice(5, 7), 16)}`;
+}
+
+watchEffect(() => {
+    if (store.rainbowLine) {
+        rainbowColor1.value = `rgba(${hexToRGB(store.rainbowColor1)}, 0.6)`;
+        rainbowColor2.value = `rgba(${hexToRGB(store.rainbowColor2)}, 0.6)`;
+        rainbowColor3.value = `rgba(${hexToRGB(store.rainbowColor3)}, 0.6)`;
+        rainbowColor4.value = `rgba(${hexToRGB(store.rainbowColor4)}, 0.6)`;
+        rainbowColor5.value = `rgba(${hexToRGB(store.rainbowColor5)}, 0.6)`;
+        return;
+    }
+    if (store.cssChange === store.cssChange) {
+        rainbowColor1.value
+            = rainbowColor2.value
+            = rainbowColor3.value
+            = rainbowColor4.value
+            = rainbowColor5.value
+            = "var(--nav-indentation-guide-color)";
+    }
+});
 
 onMounted(() => {
     addEventListener("quiet-outline-reset", reset);
@@ -249,20 +357,6 @@ let matchCount = computed(() => {
 });
 
 
-// toggle light/dark theme
-let theme: any = computed(() => {
-    if (store.dark) {
-        return darkTheme;
-    }
-    return null;
-});
-let iconColor = computed(() => {
-    if (store.dark) {
-        return { color: "#a3a3a3" };
-    }
-    return { color: "#727272" };
-});
-
 // click and jump
 async function jump(_selected: any, nodes: TreeOption[]): Promise<number> {
     if (nodes[0] === undefined) {
@@ -470,5 +564,48 @@ function countTree(node: TreeOption): number {
 
 
 <style>
+/* ============ */
+/*  彩虹大纲线   */
+/* rainbow line */
+/* ============ */
+.quiet-outline .n-tree .n-tree-node-indent {
+    content: "";
+    height: unset;
+    align-self: stretch;
+}
 
+.quiet-outline .level-2 .n-tree-node-indent,
+.quiet-outline .level-3 .n-tree-node-indent:first-child,
+.quiet-outline .level-4 .n-tree-node-indent:first-child,
+.quiet-outline .level-5 .n-tree-node-indent:first-child,
+.quiet-outline .level-6 .n-tree-node-indent:first-child {
+    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor1);
+    /* border-right: 2px solid rgb(253, 139, 31, 0.6); */
+}
+
+.quiet-outline .level-3 .n-tree-node-indent,
+.quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
+.quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(2) {
+    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor2);
+    /* border-right: 2px solid rgb(255, 223, 0, 0.6); */
+}
+
+.quiet-outline .level-4 .n-tree-node-indent,
+.quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(3) {
+    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor3);
+    /* border-right: 2px solid rgb(7, 235, 35, 0.6); */
+}
+
+.quiet-outline .level-5 .n-tree-node-indent,
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(4) {
+    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor4);
+    /* border-right: 2px solid rgb(45, 143, 240, 0.6); */
+}
+
+.quiet-outline .level-6 .n-tree-node-indent {
+    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor5);
+    /* border-right: 2px solid rgb(188, 1, 226, 0.6); */
+}
 </style>

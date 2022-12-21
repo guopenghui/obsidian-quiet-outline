@@ -3,6 +3,15 @@ import { QuietOutline } from "./plugin";
 import { store } from "./store";
 import { t } from "./lang/helper";
 interface QuietOutlineSettings {
+    patch_color: boolean;
+    primary_color_light: string;
+    primary_color_dark: string;
+    rainbow_line: boolean;
+    rainbow_color_1: string;
+    rainbow_color_2: string;
+    rainbow_color_3: string;
+    rainbow_color_4: string;
+    rainbow_color_5: string;
     search_support: boolean;
     level_switch: boolean;
     markdown: boolean;
@@ -17,6 +26,15 @@ interface QuietOutlineSettings {
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
+    patch_color: true,
+    primary_color_light: "18a058",
+    primary_color_dark: "63e2b7",
+    rainbow_line: false,
+    rainbow_color_1: "#FD8B1F",
+    rainbow_color_2: "#FFDF00",
+    rainbow_color_3: "#07EB23",
+    rainbow_color_4: "#2D8FF0",
+    rainbow_color_5: "#BC01E2",
     search_support: true,
     level_switch: true,
     markdown: true,
@@ -43,6 +61,87 @@ class SettingTab extends PluginSettingTab {
 
         containerEl.empty();
         containerEl.createEl('h2', { text: t('Settings for Quiet Outline.') });
+
+        new Setting(containerEl)
+            .setName(t("Set Primary Color"))
+            .addToggle(toggle => toggle
+                .setTooltip(t("Patch default color"))
+                .setValue(this.plugin.settings.patch_color)
+                .onChange(async (value) => {
+                    this.plugin.settings.patch_color = value;
+                    store.patchColor = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.primary_color_light)
+                .onChange(async (value) => {
+                    this.plugin.settings.primary_color_light = value;
+                    store.primaryColorLight = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.primary_color_dark)
+                .onChange(async (value) => {
+                    this.plugin.settings.primary_color_dark = value;
+                    store.primaryColorDark = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName(t("Set Rainbow Line Color"))
+            .addToggle(toggle => toggle
+                .setTooltip(t("Patch default color"))
+                .setValue(this.plugin.settings.rainbow_line)
+                .onChange(async (value) => {
+                    this.plugin.settings.rainbow_line = value;
+                    store.rainbowLine = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.rainbow_color_1)
+                .onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_1 = value;
+                    store.rainbowColor1 = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.rainbow_color_2)
+                .onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_2 = value;
+                    store.rainbowColor2 = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.rainbow_color_3)
+                .onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_3 = value;
+                    store.rainbowColor3 = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.rainbow_color_4)
+                .onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_4 = value;
+                    store.rainbowColor4 = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.rainbow_color_5)
+                .onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_5 = value;
+                    store.rainbowColor5 = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
 
         new Setting(containerEl)
             .setName(t('Render Markdown'))

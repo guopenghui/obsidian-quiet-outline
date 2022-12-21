@@ -1,7 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from 'builtin-modules'
-import vue from '@the_tree/esbuild-plugin-vue3'
+import builtins from 'builtin-modules';
+import vue from '@the_tree/esbuild-plugin-vue3';
 
 const banner =
 	`/*
@@ -12,11 +12,11 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = (process.argv[2] === 'production');
 
-esbuild.build({
+await esbuild.build({
 	banner: {
 		js: banner,
 	},
-	plugins: [vue({isProd: true})],
+	plugins: [vue({ isProd: true })],
 	entryPoints: ['main.ts'],
 	bundle: true,
 	external: [
@@ -53,3 +53,12 @@ esbuild.build({
 	treeShaking: true,
 	outfile: 'main.js',
 }).catch(() => process.exit(1));
+
+await esbuild.build({
+	entryPoints: ["./src/main.css"],
+	outfile: "styles.css",
+	watch: !prod,
+	bundle: true,
+	allowOverwrite: true,
+	minify: false,
+});

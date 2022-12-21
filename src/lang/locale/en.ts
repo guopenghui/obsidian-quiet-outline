@@ -2,6 +2,9 @@
 
 export default {
     'Settings for Quiet Outline.': 'Settings for Quiet Outline.',
+    "Set Primary Color": 'Set Primary Color Light/Dark',
+    "Patch default color": 'Patch default color',
+    "Set Rainbow Line Color": 'Set Rainbow Line Color',
     'Render Markdown': 'Render Markdown',
     'Render heading string as markdown format.': 'Render heading string as markdown format',
     "Search Support": 'Search Support',
