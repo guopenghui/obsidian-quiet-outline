@@ -27,8 +27,8 @@ interface QuietOutlineSettings {
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
     patch_color: true,
-    primary_color_light: "18a058",
-    primary_color_dark: "63e2b7",
+    primary_color_light: "#18a058",
+    primary_color_dark: "#63e2b7",
     rainbow_line: false,
     rainbow_color_1: "#FD8B1F",
     rainbow_color_2: "#FFDF00",

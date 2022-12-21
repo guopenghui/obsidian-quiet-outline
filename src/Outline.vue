@@ -337,8 +337,14 @@ let renderMethod = computed(() => {
 let pattern = ref("");
 
 function regexFilter(pattern: string, option: TreeOption): boolean {
-    let rule = RegExp(pattern, "i");
-    return rule.test(option.label);
+    let rule = /.*/;
+    try {
+        rule = RegExp(pattern, "i");
+    } catch (e) {
+
+    } finally {
+        return rule.test(option.label);
+    }
 }
 
 function simpleFilter(pattern: string, option: TreeOption): boolean {
