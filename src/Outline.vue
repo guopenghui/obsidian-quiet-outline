@@ -178,7 +178,8 @@ function _handleScroll(evt: Event) {
     if (!target.classList.contains("markdown-preview-view") && !target.classList.contains("cm-scroller")) {
         return;
     }
-    const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+    // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+    const view = plugin.current_note;
 
     if (!view) return;
 

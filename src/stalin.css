@@ -107,8 +107,11 @@
     border-radius:var(--radius-s);
   }
   
-  .quiet-outline .internal-link {
+  .quiet-outline a:not(.tag) {
     color: var(--link-external-color);
+  }
+  .quiet-outline span.internal-link {
+    color: var(--link-color);
   }
   
   .quiet-outline mark {
