@@ -84,14 +84,15 @@ export const highlight: Extension = {
     }
 };
 
+// parse tags eg. #tag
 export const tag: Extension = {
     name: "tag",
     level: "inline",
     start(src) {
-        return src.match(/\s#/)?.index;
+        return src.match(/^#|(?<=\s)#/)?.index;
     },
     tokenizer(src, token) {
-        const rule = /^\s#([^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
+        const rule = /^#([^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
         const match = rule.exec(src);
         if (match) {
             return {
