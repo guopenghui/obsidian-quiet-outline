@@ -2,7 +2,14 @@
     <div id="container">
         <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
             <div class="function-bar" v-if="store.searchSupport">
-                <NButton size="small" circle @click="reset">
+                <NButton size="small" circle @click="toBottom" aria-label="To Bottom">
+                    <template #icon>
+                        <Icon>
+                            <ArrowCircleDownRound :style="iconColor" />
+                        </Icon>
+                    </template>
+                </NButton>
+                <NButton size="small" circle @click="reset" aria-label="Reset">
                     <template #icon>
                         <Icon>
                             <SettingsBackupRestoreRound :style="iconColor" />
@@ -28,7 +35,7 @@ import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInsta
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
 import { Icon } from '@vicons/utils';
-import { SettingsBackupRestoreRound } from '@vicons/material';
+import { SettingsBackupRestoreRound, ArrowCircleDownRound } from '@vicons/material';
 import { marked } from 'marked';
 
 import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
@@ -82,6 +89,8 @@ function getDefaultColor() {
     return color;
 }
 
+let locatedColor = ref(getDefaultColor());
+
 watchEffect(() => {
     if (store.patchColor) {
         lightThemeConfig.common.primaryColor
@@ -114,7 +123,7 @@ watchEffect(() => {
         lightThemeConfig.Slider.dotBorderActive
             = darkThemeConfig.Slider.dotBorderActive
             = `2px solid ${color}`;
-
+        locatedColor.value = color;
     }
 });
 
@@ -441,7 +450,20 @@ function renderLabel({ option }: { option: TreeOption; }) {
 
     return h("div", { innerHTML: result });
 }
+// to-bottom button
+async function toBottom() {
+    const file = plugin.app.workspace.getActiveFile();
+    let lines = (await plugin.app.vault.read(file)).split("\n");
+    const view = plugin.current_note;
+    
+    const scroll = () => {
+        // For some reason, scrolling to last 4 lines gets an error.
+        view.setEphemeralState({ line: lines.length - 5 });
+    }
 
+    scroll();
+    setTimeout(scroll, 100);
+}
 // reset button
 function reset() {
     pattern.value = "";
@@ -614,5 +636,10 @@ function countTree(node: TreeOption): number {
 .quiet-outline .level-6 .n-tree-node-indent {
     border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor5);
     /* border-right: 2px solid rgb(188, 1, 226, 0.6); */
+}
+
+/* located heading*/
+.n-tree-node.located p{
+    color: v-bind('locatedColor');
 }
 </style>

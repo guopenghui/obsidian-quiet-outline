@@ -153,5 +153,8 @@
 .quiet-outline .level-6 .n-tree-node-indent {
   border-right: var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor5);
 }
+.n-tree-node.located p {
+  color: var(--762e1073-locatedColor);
+}
 
 /* src/main.css */
