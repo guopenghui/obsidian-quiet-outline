@@ -71,8 +71,9 @@ export class QuietOutline extends Plugin {
 		// refresh headings
 		const refresh_outline = () => {
 			const current_file = this.app.workspace.getActiveFile();
-			if (current_file) {
-				const headers = this.app.metadataCache.getFileCache(current_file).headings;
+			const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+			if (activeView) {
+				const headers = this.app.metadataCache.getFileCache(activeView.file)?.headings;
 				if (headers) {
 					store.headers = headers;
 					return;
