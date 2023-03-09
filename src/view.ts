@@ -22,7 +22,7 @@ export class OutlineView extends ItemView {
     }
 
     getIcon(): string {
-        return "lines-of-text";
+        return "list";
     }
 
     async onOpen(this: OutlineView) {

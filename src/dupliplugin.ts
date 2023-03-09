@@ -14,6 +14,7 @@ export class QuietOutline extends Plugin {
 		console.log("tytytyty");
 		await this.loadSettings();
 		this.addSettingTab(new SettingTab(this.app, this));
+
 		// for test
 		// this.addRibbonIcon('bot', 'test something', (evt) => {
 		// 	const view = this.app.workspace.getActiveViewOfType(MarkdownView)
@@ -53,65 +54,68 @@ export class QuietOutline extends Plugin {
 		store.rainbowColor5 = this.settings.rainbow_color_5;
 	}
 	registerListener() {
-		this.registerEvent(
-			this.app.workspace.on("css-change", () => {
-				store.dark = document.body.hasClass("theme-dark");
-				store.cssChange = !store.cssChange;
-			})
-		);
+		this.app.workspace.onLayoutReady(() => {
+			this.registerEvent(
+				this.app.workspace.on("css-change", () => {
+					store.dark = document.body.hasClass("theme-dark");
+					store.cssChange = !store.cssChange;
+				})
+			);
 
-		// refresh headings
-		const refresh_outline = () => {
-			const activeView =
-				this.app.workspace.getActiveViewOfType(MarkdownView);
-			if (activeView) {
-				const headers = this.app.metadataCache.getFileCache(
-					activeView.file
-				)?.headings;
-				if (headers) {
-					store.headers = headers;
-					return;
-				}
-			}
-			store.headers = [];
-		};
-
-		const refresh = debounce(refresh_outline, 300, true);
-		this.registerEvent(
-			this.app.metadataCache.on("changed", () => {
-				refresh();
-			})
-		);
-
-		this.registerEvent(
-			this.app.workspace.on("active-leaf-change", async (leaf) => {
-				let view = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (view) {
-					// 保证第一次获取标题信息时，也能正常展开到默认层级
-					if (!this.current_note) {
-						this.current_note = view;
-						this.current_file = view.file.path;
-						refresh_outline();
-						store.refreshTree();
+			// refresh headings
+			const refresh_outline = () => {
+				const activeView =
+					this.app.workspace.getActiveViewOfType(MarkdownView);
+				if (activeView) {
+					const headers = this.app.metadataCache.getFileCache(
+						activeView.file
+					)?.headings;
+					if (headers) {
+						store.headers = headers;
 						return;
 					}
-
-					const pathEq = view.file.path === this.current_file;
-					if (!pathEq) {
-						store.refreshTree();
-					}
-
-					refresh_outline();
-					this.current_note = view;
-					this.current_file = view.file.path;
 				}
-			})
-		);
-		this.activateView();
+				store.headers = [];
+			};
+
+			const refresh = debounce(refresh_outline, 300, true);
+			this.registerEvent(
+				this.app.metadataCache.on("changed", () => {
+					refresh();
+				})
+			);
+
+			this.registerEvent(
+				this.app.workspace.on("layout-change", async (leaf) => {
+					let view =
+						this.app.workspace.getActiveViewOfType(MarkdownView);
+					if (view) {
+						// 保证第一次获取标题信息时，也能正常展开到默认层级
+						if (!this.current_note) {
+							this.current_note = view;
+							this.current_file = view.file.path;
+							refresh_outline();
+							store.refreshTree();
+							return;
+						}
+
+						const pathEq = view.file.path === this.current_file;
+						if (!pathEq) {
+							store.refreshTree();
+						}
+
+						refresh_outline();
+						this.current_note = view;
+						this.current_file = view.file.path;
+					}
+					this.activateView();
+				})
+			);
+		});
 	}
 
 	registerCommand() {
-		this.addCommand({ // shouldn't be needed anymore
+		this.addCommand({
 			id: "quiet-outline",
 			name: "Quiet Outline",
 			callback: () => {
@@ -155,12 +159,10 @@ export class QuietOutline extends Plugin {
 
 	async onunload() {
 		this.app.workspace.detachLeavesOfType(VIEW_TYPE);
-		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0) {
-			this.app.workspace.getRightLeaf(false).setViewState({
-				type: "outline",
-				active: true,
-			});
-		}
+		// await this.app.workspace.getRightLeaf(false).setViewState({
+		// 	type: "outline",
+		// 	active: true,
+		// });
 	}
 
 	async loadSettings() {
@@ -176,16 +178,18 @@ export class QuietOutline extends Plugin {
 	}
 
 	async activateView() {
-		this.app.workspace.detachLeavesOfType("outline");
-		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0) {
-			this.app.workspace.createLeafInParent(rightSplit, 3)
+		const viewTypeLeaves = this.app.workspace.getLeavesOfType(VIEW_TYPE);
+		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+
+		if (activeView && !viewTypeLeaves) {
 			await this.app.workspace.getRightLeaf(false).setViewState({
 				type: VIEW_TYPE,
 				active: true,
 			});
-			this.app.workspace.revealLeaf(
-				this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
-			);
+			this.app.workspace.revealLeaf(viewTypeLeaves[0]);
+			this.app.workspace.detachLeavesOfType("outline");
+		} else {
+			this.app.workspace.detachLeavesOfType(VIEW_TYPE);
 		}
 	}
 }
