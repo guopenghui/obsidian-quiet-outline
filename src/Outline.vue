@@ -440,6 +440,9 @@ function renderLabel({ option }: { option: TreeOption; }) {
     // save mjx elements
     let i = 0;
     let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g);
+    result = result.replace(/<mjx-container.*?>.*?<\/mjx-container>/g, () => {
+        return `<math></math>`;
+    });
 
     result = sanitizeHTMLToDom(`<div>${result}</div>`).children[0].innerHTML;
 
