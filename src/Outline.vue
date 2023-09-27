@@ -196,8 +196,9 @@ function _handleScroll(evt: Event) {
     // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const view = plugin.current_note;
 
-    if (!view) return;
+    if (!view || view.getViewType() !== "markdown") return;
 
+    // @ts-ignore
     let current_line = view.currentMode.getScroll() + 8;
     let current_heading = null;
 
@@ -387,14 +388,15 @@ async function jump(_selected: any, nodes: TreeOption[]): Promise<number> {
 
     const key_value = (nodes[0].key as string).split("-");
     const key = parseInt(key_value[2]);
-    let line: number = store.headers[key].position.start.line;
 
     // const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
-    const view = plugin.current_note;
-    if (view) {
-        view.setEphemeralState({ line });
-        setTimeout(() => { view.setEphemeralState({ line }); }, 100);
-    }
+    // let line: number = store.headers[key].position.start.line;
+    // const view = plugin.current_note;
+    // if (view) {
+    //     view.setEphemeralState({ line });
+    //     setTimeout(() => { view.setEphemeralState({ line }); }, 100);
+    // }
+    store.jumpBy(plugin, key);
 }
 
 // prepare data for tree component

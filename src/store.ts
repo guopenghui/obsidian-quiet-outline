@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import { HeadingCache, MarkdownView } from 'obsidian';
+import { dummyJump } from "./plugin"
 
 
 const store = reactive({
@@ -8,6 +9,7 @@ const store = reactive({
         this.refreshTree();
     },
     headers: [] as HeadingCache[],
+    jumpBy: dummyJump,
     dark: true,
     cssChange: false,
     markdown: true,

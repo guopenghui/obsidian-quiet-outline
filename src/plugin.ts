@@ -1,8 +1,10 @@
 import {
 	debounce,
+	FileView,
 	MarkdownView,
 	Notice,
 	Plugin,
+	View,
 } from 'obsidian';
 
 import { OutlineView, VIEW_TYPE } from './view';
@@ -13,7 +15,7 @@ import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";
 
 export class QuietOutline extends Plugin {
 	settings: QuietOutlineSettings;
-	current_note: MarkdownView;
+	current_note: FileView;
 	current_file: string;
 
 	async onload() {
@@ -87,8 +89,18 @@ export class QuietOutline extends Plugin {
 		}));
 
 		this.registerEvent(this.app.workspace.on('active-leaf-change', async (leaf) => {
+			// @ts-ignore
+			let view: FileView = this.app.workspace.getActiveFileView(); 
+			if (!view) return;
 
-			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
+			if (view.getViewType() === "markdown") {
+				store.jumpBy = markdownJump
+			} else if (view.getViewType() === "kanban") {
+				store.jumpBy = kanbanJump
+			} else {
+				store.jumpBy = dummyJump
+			}
+
 			if (view) {
 				// 保证第一次获取标题信息时，也能正常展开到默认层级
 				if (!this.current_note) {
@@ -107,6 +119,7 @@ export class QuietOutline extends Plugin {
 				refresh_outline();
 				this.current_note = view;
 				this.current_file = view.file.path;
+				return;
 			}
 		}));
 	}
@@ -178,6 +191,24 @@ export class QuietOutline extends Plugin {
 	}
 
 }
+export function dummyJump(plugin: QuietOutline, key: number) {}
 
+function markdownJump(plugin: QuietOutline, key: number) {
+    let line: number = store.headers[key].position.start.line;
 
+    // const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
+    const view = plugin.current_note;
+    if (view) {
+        view.setEphemeralState({ line });
+        setTimeout(() => { view.setEphemeralState({ line }); }, 100);
+    }
+}
+
+function kanbanJump(plugin: QuietOutline, key: number) {
+	const panes = document.querySelectorAll(
+		'.workspace-leaf[style=""] .kanban-plugin__lane-wrapper'
+	);
+	
+	panes[key]?.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+}
 
