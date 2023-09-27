@@ -72,9 +72,9 @@ export class QuietOutline extends Plugin {
 		const refresh_outline = () => {
 			const current_file = this.app.workspace.getActiveFile();
 			if (current_file) {
-				const headers = this.app.metadataCache.getFileCache(current_file).headings;
-				if (headers) {
-					store.headers = headers;
+				const cache = this.app.metadataCache.getFileCache(current_file);
+				if (cache && cache.headings) {
+					store.headers = cache.headings;
 					return;
 				}
 			}
