@@ -22,11 +22,11 @@ export class OutlineView extends ItemView {
     }
 
     getIcon(): string {
-        return "lines-of-text";
+        return "list";
     }
 
     async onOpen(this: OutlineView) {
-        const container = this.containerEl.children[1];
+        const container = this.containerEl;
         container.empty();
         const mountPoint = container.createEl("div", {
             cls: "quiet-outline"

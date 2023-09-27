@@ -1,1 +1,35 @@
-.quiet-outline .n-tree .n-tree-node-indent{content:"";height:unset;align-self:stretch}.quiet-outline .level-2 .n-tree-node-indent,.quiet-outline .level-3 .n-tree-node-indent:first-child,.quiet-outline .level-4 .n-tree-node-indent:first-child,.quiet-outline .level-5 .n-tree-node-indent:first-child,.quiet-outline .level-6 .n-tree-node-indent:first-child{border-right:var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor1)}.quiet-outline .level-3 .n-tree-node-indent,.quiet-outline .level-4 .n-tree-node-indent:nth-child(2),.quiet-outline .level-5 .n-tree-node-indent:nth-child(2),.quiet-outline .level-6 .n-tree-node-indent:nth-child(2){border-right:var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor2)}.quiet-outline .level-4 .n-tree-node-indent,.quiet-outline .level-5 .n-tree-node-indent:nth-child(3),.quiet-outline .level-6 .n-tree-node-indent:nth-child(3){border-right:var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor3)}.quiet-outline .level-5 .n-tree-node-indent,.quiet-outline .level-6 .n-tree-node-indent:nth-child(4){border-right:var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor4)}.quiet-outline .level-6 .n-tree-node-indent{border-right:var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor5)}.n-tree-node.located p{color:var(--762e1073-locatedColor)}
+/* sfc-style:D:\DD-profil\Documents\Obsidian Vault\.obsidian\plugins\obsidian-quiet-outline\src\Outline.vue?type=style&index=0 */
+.quiet-outline .n-tree .n-tree-node-indent {
+  content: "";
+  height: unset;
+  align-self: stretch;
+}
+.quiet-outline .level-2 .n-tree-node-indent,
+.quiet-outline .level-3 .n-tree-node-indent:first-child,
+.quiet-outline .level-4 .n-tree-node-indent:first-child,
+.quiet-outline .level-5 .n-tree-node-indent:first-child,
+.quiet-outline .level-6 .n-tree-node-indent:first-child {
+  border-right: var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor1);
+}
+.quiet-outline .level-3 .n-tree-node-indent,
+.quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
+.quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(2) {
+  border-right: var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor2);
+}
+.quiet-outline .level-4 .n-tree-node-indent,
+.quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(3) {
+  border-right: var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor3);
+}
+.quiet-outline .level-5 .n-tree-node-indent,
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(4) {
+  border-right: var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor4);
+}
+.quiet-outline .level-6 .n-tree-node-indent {
+  border-right: var(--nav-indentation-guide-width) solid var(--762e1073-rainbowColor5);
+}
+.n-tree-node.located p {
+  color: var(--762e1073-locatedColor);
+}
+/*# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsic2ZjLXN0eWxlOkQ6XFxERC1wcm9maWxcXERvY3VtZW50c1xcT2JzaWRpYW4gVmF1bHRcXC5vYnNpZGlhblxccGx1Z2luc1xcb2JzaWRpYW4tcXVpZXQtb3V0bGluZVxcc3JjXFxPdXRsaW5lLnZ1ZT90eXBlPXN0eWxlJmluZGV4PTAiXSwKICAic291cmNlc0NvbnRlbnQiOiBbIlxyXG4vKiA9PT09PT09PT09PT0gKi9cclxuLyogIFx1NUY2OVx1ODY3OVx1NTkyN1x1N0VCMlx1N0VCRiAgICovXHJcbi8qIHJhaW5ib3cgbGluZSAqL1xyXG4vKiA9PT09PT09PT09PT0gKi9cbi5xdWlldC1vdXRsaW5lIC5uLXRyZWUgLm4tdHJlZS1ub2RlLWluZGVudCB7XHJcbiAgICBjb250ZW50OiBcIlwiO1xyXG4gICAgaGVpZ2h0OiB1bnNldDtcclxuICAgIGFsaWduLXNlbGY6IHN0cmV0Y2g7XG59XG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtMiAubi10cmVlLW5vZGUtaW5kZW50LFxyXG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtMyAubi10cmVlLW5vZGUtaW5kZW50OmZpcnN0LWNoaWxkLFxyXG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtNCAubi10cmVlLW5vZGUtaW5kZW50OmZpcnN0LWNoaWxkLFxyXG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtNSAubi10cmVlLW5vZGUtaW5kZW50OmZpcnN0LWNoaWxkLFxyXG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtNiAubi10cmVlLW5vZGUtaW5kZW50OmZpcnN0LWNoaWxkIHtcclxuICAgIGJvcmRlci1yaWdodDogdmFyKC0tbmF2LWluZGVudGF0aW9uLWd1aWRlLXdpZHRoKSBzb2xpZCB2YXIoLS03NjJlMTA3My1yYWluYm93Q29sb3IxKTtcclxuICAgIC8qIGJvcmRlci1yaWdodDogMnB4IHNvbGlkIHJnYigyNTMsIDEzOSwgMzEsIDAuNik7ICovXG59XG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtMyAubi10cmVlLW5vZGUtaW5kZW50LFxyXG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtNCAubi10cmVlLW5vZGUtaW5kZW50Om50aC1jaGlsZCgyKSxcclxuLnF1aWV0LW91dGxpbmUgLmxldmVsLTUgLm4tdHJlZS1ub2RlLWluZGVudDpudGgtY2hpbGQoMiksXHJcbi5xdWlldC1vdXRsaW5lIC5sZXZlbC02IC5uLXRyZWUtbm9kZS1pbmRlbnQ6bnRoLWNoaWxkKDIpIHtcclxuICAgIGJvcmRlci1yaWdodDogdmFyKC0tbmF2LWluZGVudGF0aW9uLWd1aWRlLXdpZHRoKSBzb2xpZCB2YXIoLS03NjJlMTA3My1yYWluYm93Q29sb3IyKTtcclxuICAgIC8qIGJvcmRlci1yaWdodDogMnB4IHNvbGlkIHJnYigyNTUsIDIyMywgMCwgMC42KTsgKi9cbn1cbi5xdWlldC1vdXRsaW5lIC5sZXZlbC00IC5uLXRyZWUtbm9kZS1pbmRlbnQsXHJcbi5xdWlldC1vdXRsaW5lIC5sZXZlbC01IC5uLXRyZWUtbm9kZS1pbmRlbnQ6bnRoLWNoaWxkKDMpLFxyXG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtNiAubi10cmVlLW5vZGUtaW5kZW50Om50aC1jaGlsZCgzKSB7XHJcbiAgICBib3JkZXItcmlnaHQ6IHZhcigtLW5hdi1pbmRlbnRhdGlvbi1ndWlkZS13aWR0aCkgc29saWQgdmFyKC0tNzYyZTEwNzMtcmFpbmJvd0NvbG9yMyk7XHJcbiAgICAvKiBib3JkZXItcmlnaHQ6IDJweCBzb2xpZCByZ2IoNywgMjM1LCAzNSwgMC42KTsgKi9cbn1cbi5xdWlldC1vdXRsaW5lIC5sZXZlbC01IC5uLXRyZWUtbm9kZS1pbmRlbnQsXHJcbi5xdWlldC1vdXRsaW5lIC5sZXZlbC02IC5uLXRyZWUtbm9kZS1pbmRlbnQ6bnRoLWNoaWxkKDQpIHtcclxuICAgIGJvcmRlci1yaWdodDogdmFyKC0tbmF2LWluZGVudGF0aW9uLWd1aWRlLXdpZHRoKSBzb2xpZCB2YXIoLS03NjJlMTA3My1yYWluYm93Q29sb3I0KTtcclxuICAgIC8qIGJvcmRlci1yaWdodDogMnB4IHNvbGlkIHJnYig0NSwgMTQzLCAyNDAsIDAuNik7ICovXG59XG4ucXVpZXQtb3V0bGluZSAubGV2ZWwtNiAubi10cmVlLW5vZGUtaW5kZW50IHtcclxuICAgIGJvcmRlci1yaWdodDogdmFyKC0tbmF2LWluZGVudGF0aW9uLWd1aWRlLXdpZHRoKSBzb2xpZCB2YXIoLS03NjJlMTA3My1yYWluYm93Q29sb3I1KTtcclxuICAgIC8qIGJvcmRlci1yaWdodDogMnB4IHNvbGlkIHJnYigxODgsIDEsIDIyNiwgMC42KTsgKi9cbn1cclxuXHJcbi8qIGxvY2F0ZWQgaGVhZGluZyovXG4ubi10cmVlLW5vZGUubG9jYXRlZCBwe1xyXG4gICAgY29sb3I6IHZhcigtLTc2MmUxMDczLWxvY2F0ZWRDb2xvcik7XG59XHJcbiJdLAogICJtYXBwaW5ncyI6ICI7QUFLQTtBQUNJO0FBQ0E7QUFDQTtBQUFBO0FBRUo7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUtJO0FBQUE7QUFHSjtBQUFBO0FBQUE7QUFBQTtBQUlJO0FBQUE7QUFHSjtBQUFBO0FBQUE7QUFHSTtBQUFBO0FBR0o7QUFBQTtBQUVJO0FBQUE7QUFHSjtBQUNJO0FBQUE7QUFLSjtBQUNJO0FBQUE7IiwKICAibmFtZXMiOiBbXQp9Cg== */
