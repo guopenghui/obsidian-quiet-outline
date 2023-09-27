@@ -61,6 +61,30 @@ export const internal_link: Extension = {
     }
 };
 
+// remove ref (^ab123ce) format
+export const remove_ref: Extension = {
+    name: "ref",
+    level: "inline",
+    start(src) {
+        return src.match(/\^/)?.index;
+    },
+    tokenizer(src, tokens) {
+        const rule = /^(\^[A-Za-z0-9\-]+)$/;
+        const match = rule.exec(src);
+        
+        if (match) {
+            return {
+                type: 'ref',
+                raw: match[0],
+                ref: match[1].trim(),
+            };
+        }
+    },
+    renderer(token) {
+        return "";
+    }
+};
+
 // parse ==xxx== format
 export const highlight: Extension = {
     name: "highlight",

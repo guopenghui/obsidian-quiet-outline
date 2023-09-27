@@ -99,7 +99,7 @@
   }
   
   .quiet-outline code {
-    color:var(--text-color-code, var(--code-normal));
+    /* color:var(--text-color-code, var(--code-normal)); */
     font-weight: bold;
     /* font-size: var(--font-size-code, var(--code-size)); */
     font-family: var(--font-monospace);

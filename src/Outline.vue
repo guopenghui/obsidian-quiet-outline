@@ -38,7 +38,7 @@ import { Icon } from '@vicons/utils';
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from '@vicons/material';
 import { marked } from 'marked';
 
-import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
+import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref } from './parser';
 import { store } from './store';
 import { QuietOutline } from "./plugin";
 
@@ -53,6 +53,9 @@ const lightThemeConfig = reactive<GlobalThemeOverrides>({
         fillColorHover: "",
         dotBorderActive: ""
     },
+    Tree: {
+        nodeTextColor: "var(--nav-item-color)",
+    },
 });
 
 const darkThemeConfig = reactive<GlobalThemeOverrides>({
@@ -65,6 +68,9 @@ const darkThemeConfig = reactive<GlobalThemeOverrides>({
         fillColor: "",
         fillColorHover: "",
         dotBorderActive: ""
+    },
+    Tree: {
+        nodeTextColor: "var(--nav-item-color)",
     }
 });
 
@@ -77,9 +83,9 @@ let theme: any = computed(() => {
 });
 let iconColor = computed(() => {
     if (store.dark) {
-        return { color: "#a3a3a3" };
+        return { color: "var(--icon-color)" };
     }
-    return { color: "#727272" };
+    return { color: "var(--icon-color)" };
 });
 
 function getDefaultColor() {
@@ -430,7 +436,7 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
 
 
 // render markdown
-marked.use({ extensions: [formula, internal_link, highlight, tag] });
+marked.use({ extensions: [formula, internal_link, highlight, tag, remove_ref] });
 marked.use({ walkTokens: remove_href });
 marked.use({ renderer });
 

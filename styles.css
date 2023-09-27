@@ -65,7 +65,6 @@
   font-size: 22px;
 }
 .quiet-outline code {
-  color: var(--text-color-code, var(--code-normal));
   font-weight: bold;
   font-family: var(--font-monospace);
   background-color: var(--code-background);
