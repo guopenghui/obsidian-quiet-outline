@@ -38,7 +38,7 @@ import { Icon } from '@vicons/utils';
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from '@vicons/material';
 import { marked } from 'marked';
 
-import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref } from './parser';
+import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
 import { store } from './store';
 import { QuietOutline } from "./plugin";
 
@@ -190,9 +190,14 @@ let handleScroll = debounce(_handleScroll, 100);
 
 function _handleScroll(evt: Event) {
     let target = evt.target as HTMLElement;
-    if (!target.classList.contains("markdown-preview-view") && !target.classList.contains("cm-scroller")) {
+    if (!target.classList.contains("markdown-preview-view") && 
+        !target.classList.contains("cm-scroller") &&
+        // fix conflict with outliner
+        // https://github.com/guopenghui/obsidian-quiet-outline/issues/133
+        !target.classList.contains("outliner-plugin-list-lines-scroller")) {
         return;
     }
+    
     // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const view = plugin.current_note;
 
@@ -438,7 +443,7 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
 
 
 // render markdown
-marked.use({ extensions: [formula, internal_link, highlight, tag, remove_ref] });
+marked.use({ extensions: [formula, internal_link, highlight, tag, remove_ref, nolist] });
 marked.use({ walkTokens: remove_href });
 marked.use({ renderer });
 

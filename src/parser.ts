@@ -141,14 +141,55 @@ export const remove_href = (token: marked.Token) => {
 
 // remove <ol>
 export const renderer = {
-    list(body: string, ordered: boolean, start: number) {
-        if (ordered)
-            return `<p>${start}. ${body}</p>`;
-        else
-            return `<p>${body}</p>`;
-    },
     listitem(text: string, task: boolean, checked: boolean) {
         return `${text}`;
     }
 
 };
+
+// remove list format rendering
+export const nolist: Extension = {
+    name: "nolist",
+    level: "block",
+    start(src) {
+        return src.match(/^([+\-*]|\d+\.) /)?.index
+    },
+    tokenizer(src, tokens) {
+        const rule = /^(([+\-*])|(\d+)\.) (.*)/;
+        const match = rule.exec(src);
+        let token = undefined;
+        if (match && match[2]) {
+            token = {
+                type: "nolist",
+                raw: match[0],
+                ordered: false,
+                marker: match[2],
+                start: "",
+                body: match[4],
+                tokens: [],
+            };
+        } else if (match && match[3]) {
+            token = {
+                type: "nolist",
+                raw: match[0],
+                ordered: true,
+                marker: "",
+                start: match[3],
+                body: match[4],
+                tokens: [],
+            };
+        }
+        
+        token && this.lexer.inline(token.body, token.tokens);
+        
+        return token;
+    },
+    renderer(token) {
+        let body = this.parser.parseInline(token.tokens, null);
+        
+        if (token.ordered)
+            return `<p>${token.start}. ${body}</p>`;
+        else
+            return `<p>${token.marker} ${body}</p>`;
+    }
+}
