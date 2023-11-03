@@ -41,6 +41,7 @@ import { marked } from 'marked';
 import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
 import { store } from './store';
 import { QuietOutline } from "./plugin";
+import { getApi as getIconShortcodesApi } from "@aidenlx/obsidian-icon-shortcodes"
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -422,12 +423,13 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
     headers.forEach((h, i) => {
         let label = h.heading;
 
-        const pluginIconShortcodes = (app as any).plugins.plugins['obsidian-icon-shortcodes'];
+        const iconShortcodesApi = getIconShortcodesApi();
 
-        if (pluginIconShortcodes) {
-            const { api } = pluginIconShortcodes;
-
-            label = api.postProcessor(label, (iconText: string) => api.getIcon(iconText).outerHTML);
+        if (iconShortcodesApi) {
+            label = iconShortcodesApi.postProcessor(
+                label,
+                (iconText: string) => iconShortcodesApi.getIcon(iconText).outerHTML
+            );
         }
 
         let node: TreeOption = {
