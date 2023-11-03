@@ -190,14 +190,14 @@ let handleScroll = debounce(_handleScroll, 100);
 
 function _handleScroll(evt: Event) {
     let target = evt.target as HTMLElement;
-    if (!target.classList.contains("markdown-preview-view") && 
+    if (!target.classList.contains("markdown-preview-view") &&
         !target.classList.contains("cm-scroller") &&
         // fix conflict with outliner
         // https://github.com/guopenghui/obsidian-quiet-outline/issues/133
         !target.classList.contains("outliner-plugin-list-lines-scroller")) {
         return;
     }
-    
+
     // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const view = plugin.current_note;
 
@@ -420,8 +420,18 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
     const stack = [{ node: root, level: -1 }];
 
     headers.forEach((h, i) => {
+        let label = h.heading;
+
+        const pluginIconShortcodes = (app as any).plugins.plugins['obsidian-icon-shortcodes'];
+
+        if (pluginIconShortcodes) {
+            const { api } = pluginIconShortcodes;
+
+            label = api.postProcessor(label, (iconText: string) => api.getIcon(iconText).outerHTML);
+        }
+
         let node: TreeOption = {
-            label: h.heading,
+            label,
             key: "item-" + h.level + "-" + i,
             line: h.position.start.line,
         };
@@ -471,7 +481,7 @@ async function toBottom() {
     const file = plugin.app.workspace.getActiveFile();
     let lines = (await plugin.app.vault.read(file)).split("\n");
     const view = plugin.current_note;
-    
+
     const scroll = () => {
         // For some reason, scrolling to last 4 lines gets an error.
         view.setEphemeralState({ line: lines.length - 5 });
