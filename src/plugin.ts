@@ -193,9 +193,14 @@ export class QuietOutline extends Plugin {
 }
 export function dummyJump(plugin: QuietOutline, key: number) {}
 
+export let lineJump: number;
+export function resetLineJump() {
+	lineJump = null;
+}
+
 function markdownJump(plugin: QuietOutline, key: number) {
     let line: number = store.headers[key].position.start.line;
-
+	lineJump = line;
     // const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
     const view = plugin.current_note;
     if (view) {

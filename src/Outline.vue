@@ -41,6 +41,7 @@ import { marked } from 'marked';
 import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
 import { store } from './store';
 import { QuietOutline } from "./plugin";
+import { lineJump, resetLineJump } from "./plugin";
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -205,6 +206,12 @@ function _handleScroll(evt: Event) {
 
     // @ts-ignore
     let current_line = view.currentMode.getScroll() + 8;
+
+	if (lineJump != null) {
+		current_line = lineJump;
+		resetLineJump();
+	}
+
     let current_heading = null;
 
     let i = store.headers.length;
