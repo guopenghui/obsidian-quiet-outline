@@ -15,6 +15,7 @@
   line-height: 1.6em;
   min-height: 10px;
 }
+.quiet-outline .n-tree.ellipsis .n-tree-node .n-tree-node-content div,
 .quiet-outline .n-tree-node-content__text p {
   margin: 0;
 }
