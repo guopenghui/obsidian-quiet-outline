@@ -20,6 +20,8 @@ export default {
     "Search headings using regular expression": '支持使用正则表达式来搜索',
     "Auto Expand": '自动展开',
     "Auto expand and collapse headings when scrolling": "当滚动页面时，自动跟踪当前所在标题并展开",
+    "Locate By Cursor": "定位到光标处",
+   "Highlight and Auto expand postion will be determined by cursor position": "高亮和自动展开位置将由光标位置决定", 
     "Ellipsis": "省略长标题",
     "Tooltip direction": '完整标题显示方向',
     "Keep one line per heading": "保持标题只有一行,省略多余部分",

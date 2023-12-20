@@ -11,6 +11,8 @@ import { OutlineView, VIEW_TYPE } from './view';
 import { store } from './store';
 
 import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";
+import { editorEvent } from "./editorExt"
+import {EditorView} from "@codemirror/view"
 
 
 export class QuietOutline extends Plugin {
@@ -21,7 +23,7 @@ export class QuietOutline extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// for test
+		// TEST: 测试插件功能
 		// this.addRibbonIcon('bot', 'test something', (evt) => {
 		// 	const view = this.app.workspace.getActiveViewOfType(MarkdownView)
 		// 	console.dir(view.getState())
@@ -39,6 +41,8 @@ export class QuietOutline extends Plugin {
 		this.registerCommand();
 
 		this.addSettingTab(new SettingTab(this.app, this));
+		
+		this.registerExt();
 	}
 
 	initStore() {
@@ -69,7 +73,7 @@ export class QuietOutline extends Plugin {
 			store.dark = document.body.hasClass("theme-dark");
 			store.cssChange = !store.cssChange;
 		}));
-
+		
 		// refresh headings
 		const refresh_outline = () => {
 			const current_file = this.app.workspace.getActiveFile();
@@ -164,6 +168,12 @@ export class QuietOutline extends Plugin {
 			}
 		});
 
+	}
+	
+	registerExt() {
+		this.registerEditorExtension([
+			editorEvent
+		]);
 	}
 
 	onunload() {

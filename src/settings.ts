@@ -23,6 +23,7 @@ interface QuietOutlineSettings {
     ellipsis: boolean;
     label_direction: "top" | "bottom" | "left" | "right";
     drag_modify: boolean;
+    locate_by_cursor: boolean;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -46,6 +47,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     ellipsis: false,
     label_direction: "left",
     drag_modify: false,
+    locate_by_cursor: false,
 };
 
 class SettingTab extends PluginSettingTab {
@@ -260,6 +262,18 @@ class SettingTab extends PluginSettingTab {
                 .onChange(async (value) => {
                     this.plugin.settings.auto_expand = value;
                     store.autoExpand = value;
+                    await this.plugin.saveSettings();
+                })
+            );
+        
+            
+        new Setting(containerEl)
+            .setName(t("Locate By Cursor"))
+            .setDesc(t("Highlight and Auto expand postion will be determined by cursor position"))
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.locate_by_cursor)
+                .onChange(async (value) => {
+                    this.plugin.settings.locate_by_cursor = value;
                     await this.plugin.saveSettings();
                 })
             );

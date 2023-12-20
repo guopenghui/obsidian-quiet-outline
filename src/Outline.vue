@@ -185,6 +185,7 @@ onUnmounted(() => {
 });
 
 let toKey = (h: HeadingCache, i: number) => "item-" + h.level + "-" + i;
+let fromKey = (key: string) => parseInt((key as string).split('-')[2]);
 
 let handleScroll = debounce(_handleScroll, 100);
 
@@ -198,18 +199,55 @@ function _handleScroll(evt: Event) {
         return;
     }
     
+    if (plugin.settings.locate_by_cursor) {
+        return;
+    }
+    
+    onPosChange();
+}
+
+function onPosChange() {
+    let current = currentLine();
+    let index = nearestHeading(current);
+    if (index === undefined) return;
+
+    autoExpand(index);
+    resetLocated(index);
+}
+
+onMounted(() => {
+    document.addEventListener("quiet-outline-cursorchange", handleCursorChange);
+});
+
+onUnmounted(() => {
+    document.removeEventListener("quiet-outline-cursorchange", handleCursorChange);
+});
+
+function handleCursorChange() {
+    
+    if (plugin.settings.locate_by_cursor) {
+        onPosChange();
+    }
+}
+
+function currentLine() {
     // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const view = plugin.current_note;
-
     if (!view || view.getViewType() !== "markdown") return;
 
-    // @ts-ignore
-    let current_line = view.currentMode.getScroll() + 8;
-    let current_heading = null;
+    if (plugin.settings.locate_by_cursor) {
+        return (view as MarkdownView).editor.getCursor("from").line;
+    } else {
+        // @ts-ignore
+        return view.currentMode.getScroll() + 8;
+    }
+}
 
+function nearestHeading(line: number): undefined | number {
+    let current_heading = null;
     let i = store.headers.length;
     while (--i >= 0) {
-        if (store.headers[i].position.start.line <= current_line) {
+        if (store.headers[i].position.start.line <= line) {
             current_heading = store.headers[i];
             break;
         }
@@ -218,14 +256,18 @@ function _handleScroll(evt: Event) {
         return;
     }
 
-    let index = i;
+    return i;
+}
 
+function autoExpand(index: number) {
     if (plugin.settings.auto_expand) {
+        let current_heading = store.headers[index];
         let should_expand = index < store.headers.length - 1 && store.headers[index].level < store.headers[index + 1].level
             ? [toKey(current_heading, index)]
             : [];
 
         let level = current_heading.level;
+        let i = index;
         while (i-- > 0) {
             if (store.headers[i].level < level) {
                 should_expand.push(toKey(store.headers[i], i));
@@ -237,6 +279,13 @@ function _handleScroll(evt: Event) {
         }
         expanded.value = should_expand;
     }
+}
+
+function resetLocated(idx: number) {
+    let path = getPath(idx)
+    let index = path.find((v) => !expanded.value.contains(toKey(store.headers[v], v)));
+    index = index === undefined ? path[path.length - 1] : index;
+
     let prevLocation = container.querySelector(".n-tree-node.located");
     if (prevLocation) {
         prevLocation.removeClass("located");
@@ -252,10 +301,9 @@ function _handleScroll(evt: Event) {
                 curLocation.addClass("located");
                 curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
             }
-        }, 0);
+        }, 100);
     }
 }
-
 
 // add html attributes to nodes
 interface HTMLAttr extends HTMLAttributes {
@@ -441,6 +489,26 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
     return root.children;
 }
 
+function getPath(index: number) {
+    let res: number[] = [];
+    function pushLastGreatEq(nodes: TreeOption[]) {
+        if (!nodes || nodes.length === 0) {
+            return;
+        }
+        let idx = 0;
+        for(let i = nodes.length - 1; i >= 0 ; i--) {
+            let pos = fromKey(nodes[i].key as string);
+            if (pos <= index) {
+                res.push(pos);
+                idx = i;
+                break;
+            }
+        }
+        pushLastGreatEq(nodes[idx].children);
+    }
+    pushLastGreatEq(data2.value);
+    return res;
+}
 
 // render markdown
 marked.use({ extensions: [formula, internal_link, highlight, tag, remove_ref, nolist] });
