@@ -21,6 +21,8 @@ export default {
     "Auto Expand": 'Auto Expand',
     "Auto expand and collapse headings when scrolling": "Auto expand and collapse headings when scrolling",
     "Locate By Cursor": 'Locate By Cursor',
+    "Show Popover on hover": 'Show Popover on hover',
+    "Press Ctrl and move cursor to heading": 'Press Ctrl and move cursor to heading',
     "Highlight and Auto expand postion will be determined by cursor position": "Highlight and Auto expand postion will be determined by cursor position",
     "Ellipsis": 'Ellipsis',
     "Tooltip direction": 'Tooltip direction',

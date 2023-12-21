@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
-import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
+import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache } from 'obsidian';
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
 import { Icon } from '@vicons/utils';
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from '@vicons/material';
@@ -308,22 +308,106 @@ function resetLocated(idx: number) {
 // add html attributes to nodes
 interface HTMLAttr extends HTMLAttributes {
     "aria-label-position": "top" | "bottom" | "left" | "right";
+    "raw": string;
 }
 
 const setAttrs = computed(() => {
     return (info: { option: TreeOption; }): HTMLAttr => {
         let lev = parseInt((info.option.key as string).split('-')[1]);
         let no = parseInt((info.option.key as string).split('-')[2]);
+        let raw = info.option.label; 
 
         return {
             class: `level-${lev}`,
             id: `no-${no}`,
             "aria-label": store.ellipsis ? info.option.label : "",
             "aria-label-position": store.labelDirection,
+            raw,
         };
     };
 });
 
+// on Mouseover, show popover
+let triggerNode: HTMLElement = undefined;
+let mouseEvent: MouseEvent = undefined;
+let prevShowed = ""
+function onMouseEnter(event: MouseEvent) {
+    let target = event.target as HTMLElement;
+    
+    let node = target.closest(".n-tree-node") as HTMLElement;
+    if (!node || !plugin.settings.show_popover) {
+        return;
+    }
+    triggerNode = node;
+    mouseEvent = event;
+    addEventListener("keydown", openPopover)
+}
+
+function onMouseLeave(event: MouseEvent) {
+    let target = event.target as HTMLElement;
+    let node = target.closest(".n-tree-node") as HTMLElement;
+    if (!node || !plugin.settings.show_popover) {
+        return;
+    }
+    triggerNode = node;
+    mouseEvent = event;
+    removeEventListener("keydown", openPopover)
+}
+
+function _openPopover(e: KeyboardEvent) {
+    if (e.key === "Control") {
+        plugin.app.workspace.trigger("hover-link", {
+            event: mouseEvent,
+            source: "preview",
+            targetEl: triggerNode,
+            hoverParent: {hoverPopover: null},
+            linktext: "#" + triggerNode.getAttribute("raw"),
+            sourcePath: plugin.current_note.file?.path,
+        });
+    }
+}
+
+const openPopover = debounce(_openPopover, 100);
+
+// excute on first time, and wait until next fresh
+// ... or take a break when node pointed changes
+function debounce(func: (_: any) => void, delay: number) {
+    let fresh = true;
+    let timeoutId: any;
+
+    return function (...args: any) {
+        const context = this;
+        let currentLink = triggerNode?.getAttribute("raw");
+        if ( currentLink !== prevShowed || fresh) {
+            func.apply(context, args);
+            
+            fresh = false;
+            prevShowed = currentLink;
+            return;
+        }
+
+        // 如果已经设置了定时器，清除之前的定时器
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+
+        // 设置新的定时器
+        timeoutId = setTimeout(() => {
+            fresh = true;
+        }, delay);
+    };
+}
+
+
+onMounted(() => {
+    container.addEventListener("mouseover", onMouseEnter);
+    container.addEventListener("mouseout", onMouseLeave);
+});
+
+onUnmounted(() => {
+    container.removeEventListener("mouseover", onMouseEnter);
+    container.removeEventListener("mouseout", onMouseLeave);
+});
 
 // switch heading expand levels
 let level = ref(parseInt(plugin.settings.expand_level));

@@ -24,6 +24,7 @@ interface QuietOutlineSettings {
     label_direction: "top" | "bottom" | "left" | "right";
     drag_modify: boolean;
     locate_by_cursor: boolean;
+    show_popover: boolean;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -48,6 +49,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     label_direction: "left",
     drag_modify: false,
     locate_by_cursor: false,
+    show_popover: true,
 };
 
 class SettingTab extends PluginSettingTab {
@@ -274,6 +276,17 @@ class SettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.locate_by_cursor)
                 .onChange(async (value) => {
                     this.plugin.settings.locate_by_cursor = value;
+                    await this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName(t("Show Popover on hover"))
+            .setDesc(t("Press Ctrl and move cursor to heading"))
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.show_popover)
+                .onChange(async (value) => {
+                    this.plugin.settings.show_popover = value;
                     await this.plugin.saveSettings();
                 })
             );
