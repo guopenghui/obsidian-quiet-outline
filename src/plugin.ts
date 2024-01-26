@@ -43,6 +43,8 @@ export class QuietOutline extends Plugin {
 		this.addSettingTab(new SettingTab(this.app, this));
 		
 		this.registerExt();
+		
+		this.activateView();
 	}
 
 	initStore() {

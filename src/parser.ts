@@ -152,10 +152,10 @@ export const nolist: Extension = {
     name: "nolist",
     level: "block",
     start(src) {
-        return src.match(/^([+\-*]|\d+\.) /)?.index
+        return src.match(/^([+\-*]|\d+[\.)]) /)?.index
     },
     tokenizer(src, tokens) {
-        const rule = /^(([+\-*])|(\d+)\.) (.*)/;
+        const rule = /^(([+\-*])|(\d+[\.)])) (.*)/;
         const match = rule.exec(src);
         let token = undefined;
         if (match && match[2]) {
@@ -188,7 +188,7 @@ export const nolist: Extension = {
         let body = this.parser.parseInline(token.tokens, null);
         
         if (token.ordered)
-            return `<p>${token.start}. ${body}</p>`;
+            return `<p>${token.start} ${body}</p>`;
         else
             return `<p>${token.marker} ${body}</p>`;
     }

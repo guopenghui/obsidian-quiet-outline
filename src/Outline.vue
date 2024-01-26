@@ -331,31 +331,31 @@ const setAttrs = computed(() => {
 let triggerNode: HTMLElement = undefined;
 let mouseEvent: MouseEvent = undefined;
 let prevShowed = ""
+
 function onMouseEnter(event: MouseEvent) {
     let target = event.target as HTMLElement;
     
     let node = target.closest(".n-tree-node") as HTMLElement;
-    if (!node || !plugin.settings.show_popover) {
+    if (!node) {
         return;
     }
     triggerNode = node;
     mouseEvent = event;
     addEventListener("keydown", openPopover)
-}
+} 
 
 function onMouseLeave(event: MouseEvent) {
-    let target = event.target as HTMLElement;
-    let node = target.closest(".n-tree-node") as HTMLElement;
-    if (!node || !plugin.settings.show_popover) {
-        return;
-    }
-    triggerNode = node;
-    mouseEvent = event;
     removeEventListener("keydown", openPopover)
 }
 
+const funcKeyPressed = (event: KeyboardEvent): boolean => {
+    return plugin.settings.show_popover_key === "ctrlKey" && event.ctrlKey
+        || plugin.settings.show_popover_key === "altKey" && event.altKey
+        || plugin.settings.show_popover_key === "metaKey" && event.metaKey
+}
+
 function _openPopover(e: KeyboardEvent) {
-    if (e.key === "Control") {
+    if (funcKeyPressed(e)) {
         plugin.app.workspace.trigger("hover-link", {
             event: mouseEvent,
             source: "preview",
@@ -407,6 +407,7 @@ onMounted(() => {
 onUnmounted(() => {
     container.removeEventListener("mouseover", onMouseEnter);
     container.removeEventListener("mouseout", onMouseLeave);
+    removeEventListener("keydown", openPopover);
 });
 
 // switch heading expand levels

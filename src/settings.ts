@@ -24,7 +24,9 @@ interface QuietOutlineSettings {
     label_direction: "top" | "bottom" | "left" | "right";
     drag_modify: boolean;
     locate_by_cursor: boolean;
-    show_popover: boolean;
+    // show_popover: boolean;
+    show_popover_key: "ctrlKey" | "altKey" | "metaKey" | "disable";
+    
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -49,7 +51,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     label_direction: "left",
     drag_modify: false,
     locate_by_cursor: false,
-    show_popover: true,
+    show_popover_key: "ctrlKey",
 };
 
 class SettingTab extends PluginSettingTab {
@@ -282,11 +284,15 @@ class SettingTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName(t("Show Popover on hover"))
-            .setDesc(t("Press Ctrl and move cursor to heading"))
-            .addToggle(toggle => toggle
-                .setValue(this.plugin.settings.show_popover)
-                .onChange(async (value) => {
-                    this.plugin.settings.show_popover = value;
+            .setDesc(t("Press functional key and move cursor to heading"))
+            .addDropdown(funcKey => funcKey
+                .addOption("ctrlKey", "Ctrl")
+                .addOption("altKey", "Alt")
+                .addOption("metaKey", "Meta")
+                .addOption("disable", t("Disable"))
+                .setValue(this.plugin.settings.show_popover_key)
+                .onChange(async (value: "ctrlKey" | "altKey" | "metaKey" | "disable") => {
+                    this.plugin.settings.show_popover_key= value;
                     await this.plugin.saveSettings();
                 })
             );
