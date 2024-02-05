@@ -191,15 +191,11 @@ export class QuietOutline extends Plugin {
 	}
 
 	async activateView() {
-		const untilSplitExists = async () => {
-			while (this.app.workspace.rightSplit === null) {
-				await sleep(100);
-			}
-		}
-
-		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0) {
-			// https://github.com/guopenghui/obsidian-quiet-outline/issues/154
-			await untilSplitExists();
+		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0
+		// fix console error
+		// https://github.com/guopenghui/obsidian-quiet-outline/issues/154
+		&& this.app.workspace.rightSplit !== null
+		) {
 			await this.app.workspace.getRightLeaf(false).setViewState({
 				type: VIEW_TYPE,
 				active: true,
