@@ -191,10 +191,11 @@ export class QuietOutline extends Plugin {
 	}
 
 	async activateView() {
-		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0
 		// fix console error
 		// https://github.com/guopenghui/obsidian-quiet-outline/issues/154
-		&& this.app.workspace.rightSplit !== null
+		if (this.app.workspace.rightSplit === null) return;
+
+		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0
 		) {
 			await this.app.workspace.getRightLeaf(false).setViewState({
 				type: VIEW_TYPE,
