@@ -28,6 +28,8 @@ export default {
     "Ellipsis": 'Ellipsis',
     "Tooltip direction": 'Tooltip direction',
     "Keep one line per heading": "Keep one line per heading",
+    "Remember States": "Remember States",
+    "Remember expanded/collapsed state of headings of opened notes": "Remember expanded/collapsed state of headings of opened notes",
     "Drag headings to modify note": "Drag headings to modify note",
     "❗ This will modify note content, be careful.": "❗ This will modify note content, be careful"
 };

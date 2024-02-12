@@ -19,6 +19,7 @@ export class QuietOutline extends Plugin {
 	settings: QuietOutlineSettings;
 	current_note: FileView;
 	current_file: string;
+	heading_states: Record<string, string[]> = {};
 
 	async onload() {
 		await this.loadSettings();
@@ -74,6 +75,19 @@ export class QuietOutline extends Plugin {
 		this.registerEvent(this.app.workspace.on("css-change", () => {
 			store.dark = document.body.hasClass("theme-dark");
 			store.cssChange = !store.cssChange;
+		}));
+		
+		// remove states from closed notes
+		this.registerEvent(this.app.workspace.on("layout-change", () => {
+			const leaves = this.app.workspace.getLeavesOfType("markdown");
+			let filteredStates: Record<string, string[]> = {};
+			leaves.forEach((leaf) => {
+				const path = (leaf.view as MarkdownView).file.path;
+				this.heading_states[path] && 
+					(filteredStates[path] = this.heading_states[path]);
+			})
+
+			this.heading_states = filteredStates;
 		}));
 		
 		// refresh headings

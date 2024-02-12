@@ -18,7 +18,7 @@
                 </NButton>
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
-            <NSlider v-if="store.levelSwitch" v-model:value="level" :marks="marks" step="mark" :min="0" :max="5"
+            <NSlider v-if="store.levelSwitch" :value="level" :on-update:value="switchLevel" :marks="marks" step="mark" :min="0" :max="5"
                 style="margin:4px 0;" :format-tooltip="formatTooltip" />
             <code v-if="pattern">{{ matchCount }} result(s): </code>
             <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
@@ -277,7 +277,7 @@ function autoExpand(index: number) {
                 break;
             }
         }
-        expanded.value = should_expand;
+        modifyExpandKeys(should_expand);
     }
 }
 
@@ -415,29 +415,41 @@ let level = ref(parseInt(plugin.settings.expand_level));
 let expanded = ref<string[]>([]);
 switchLevel(level.value);
 
+function modifyExpandKeys(newKeys: string[]){
+    expanded.value = newKeys;
+    syncExpandKeys();
+}
+
+function syncExpandKeys(){
+    if (!plugin.current_file) return;
+
+    plugin.heading_states[plugin.current_file] = toRaw(expanded.value);
+}
+
 function expand(keys: string[], option: TreeOption[]) {
-    expanded.value = keys;
+    modifyExpandKeys(keys);
 }
 
 function switchLevel(lev: number) {
-    expanded.value = store.headers
+    level.value = lev;
+    const newKeys = store.headers
         .map((h, i) => {
-            return "item-" + h.level + "-" + i;
+            return {level: h.level, no: i}
         })
-        .filter((key, i, arr) => {
-            const get_level = (k: string): number => parseInt(k.split('-')[1]);
-            if (i === arr.length - 1) return false;
-            if (get_level(arr[i]) >= get_level(arr[i + 1])) return false;
-            return get_level(key) <= lev;
+        .filter((_, i, arr) => {
+            // leaf heading cannot be expanded
+            if (i === arr.length - 1 || arr[i].level >= arr[i + 1].level) {
+                return false;
+            }
+            return arr[i].level <= lev;
+        })
+        .map(h => {
+            return "item-" + h.level + "-" + h.no;
         });
+
+    modifyExpandKeys(newKeys);
 }
 
-watch(
-    level,
-    (cur, prev) => {
-        switchLevel(cur);
-    }
-);
 
 // force remake tree
 let update_tree = ref(0);
@@ -445,20 +457,24 @@ let update_tree = ref(0);
 watch(
     () => store.leafChange,
     () => {
-        const old_level = level.value;
         const old_pattern = pattern.value;
 
         pattern.value = "";
         level.value = parseInt(plugin.settings.expand_level);
-        if (old_level === level.value) {
+
+        const old_state = plugin.heading_states[plugin.current_file];
+        if (plugin.settings.remember_state && old_state) {
+            modifyExpandKeys(old_state);
+        } else {
             switchLevel(level.value);
         }
 
         nextTick(() => {
+            handleCursorChange();
             pattern.value = old_pattern;
         });
 
-    }
+    },
 );
 
 const marks = {
@@ -735,6 +751,7 @@ function changeExpandKey(expanded: string[], ds: number, de: number, ms: number,
             expanded[i] = `item-${getLevel(key)}-${mNewPos + (no - ms)}`;
         }
     });
+    syncExpandKeys();
 }
 
 function getNo(node: TreeOption | string): number {

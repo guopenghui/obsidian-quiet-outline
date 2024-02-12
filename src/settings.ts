@@ -26,7 +26,7 @@ interface QuietOutlineSettings {
     locate_by_cursor: boolean;
     // show_popover: boolean;
     show_popover_key: "ctrlKey" | "altKey" | "metaKey" | "disable";
-    
+    remember_state: boolean;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -52,6 +52,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     drag_modify: false,
     locate_by_cursor: false,
     show_popover_key: "ctrlKey",
+    remember_state: true,
 };
 
 class SettingTab extends PluginSettingTab {
@@ -293,6 +294,17 @@ class SettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.show_popover_key)
                 .onChange(async (value: "ctrlKey" | "altKey" | "metaKey" | "disable") => {
                     this.plugin.settings.show_popover_key= value;
+                    await this.plugin.saveSettings();
+                })
+            );
+            
+        new Setting(containerEl)
+            .setName(t("Remember States"))
+            .setDesc(t("Remember expanded/collapsed state of headings of opened notes"))
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.remember_state)
+                .onChange(async (value) => {
+                    this.plugin.settings.remember_state = value;
                     await this.plugin.saveSettings();
                 })
             );
