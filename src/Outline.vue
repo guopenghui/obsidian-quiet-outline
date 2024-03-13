@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
-import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache } from 'obsidian';
+import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
 import { Icon } from '@vicons/utils';
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from '@vicons/material';
@@ -199,16 +199,16 @@ function _handleScroll(evt: Event) {
         return;
     }
     
-    if (plugin.settings.locate_by_cursor) {
-        return;
-    }
+    // if (plugin.settings.locate_by_cursor) {
+    //     return;
+    // }
     
-    onPosChange();
+    onPosChange(true);
 }
 
-function onPosChange() {
-    let current = currentLine();
-    let index = nearestHeading(current);
+function onPosChange(fromScroll: boolean) {
+    const current = currentLine(fromScroll);
+    const index = nearestHeading(current);
     if (index === undefined) return;
 
     autoExpand(index);
@@ -226,16 +226,16 @@ onUnmounted(() => {
 function handleCursorChange() {
     
     if (plugin.settings.locate_by_cursor) {
-        onPosChange();
+        onPosChange(false);
     }
 }
 
-function currentLine() {
+function currentLine(fromScroll: boolean) {
     // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const view = plugin.current_note;
     if (!view || view.getViewType() !== "markdown") return;
 
-    if (plugin.settings.locate_by_cursor) {
+    if (plugin.settings.locate_by_cursor && !fromScroll) {
         return (view as MarkdownView).editor.getCursor("from").line;
     } else {
         // @ts-ignore
@@ -367,11 +367,11 @@ function _openPopover(e: KeyboardEvent) {
     }
 }
 
-const openPopover = debounce(_openPopover, 100);
+const openPopover = customDebounce(_openPopover, 100);
 
 // excute on first time, and wait until next fresh
 // ... or take a break when node pointed changes
-function debounce(func: (_: any) => void, delay: number) {
+function customDebounce(func: (_: any) => void, delay: number) {
     let fresh = true;
     let timeoutId: any;
 
