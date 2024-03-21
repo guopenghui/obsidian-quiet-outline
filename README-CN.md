@@ -47,6 +47,17 @@ Quiet Outline:
 ![拖拽](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/drag.gif)
 
 
+### 在 Canvas 中导航
+![Canvas](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/nav_in_canvas.gif)
+
+### 在 Kanban 中导航
+
+### 鼠标悬浮显示预览窗口
+![Popover](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/popover.gif)
+
+
+### 记忆展开状态
+在切换已打开的笔记时，展开状态会被记录和恢复
 
 ## 局限
 + 由于内置编辑器的懒加载策略(只加载你当前在窗口中能看到的东西。如果你滚动地太快，可以看见有些文本来不及被渲染成相应的元素，如公式、表格、图片)，有时只点一下没办法跳转到你想要的位置，尤其是第一次打开这个笔记的时候。 Obsidian内置的核心大纲插件也存在这个问题。  解决方法很简单：**再点一次**。

@@ -22,7 +22,8 @@
                 style="margin:4px 0;" :format-tooltip="formatTooltip" />
             <code v-if="pattern">{{ matchCount }} result(s): </code>
             <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
-                :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
+                :render-label="renderMethod" :render-prefix="renderPrefix" :node-props="setAttrs"
+                :expanded-keys="expanded" :render-switcher-icon="renderSwitcherIcon"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
                 :show-irrelevant-nodes="!store.hideUnsearched" :class="{ 'ellipsis': store.ellipsis }"
                 :draggable="store.dragModify" @drop="onDrop" />
@@ -31,16 +32,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
-import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
+import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect, VNodeChild } from 'vue';
+import { Notice, MarkdownView, sanitizeHTMLToDom, debounce, FileView } from 'obsidian';
 import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
 import { Icon } from '@vicons/utils';
-import { SettingsBackupRestoreRound, ArrowCircleDownRound } from '@vicons/material';
+import { 
+    SettingsBackupRestoreRound,
+    ArrowCircleDownRound,
+    ArticleOutlined,
+    AudiotrackOutlined,
+    CategoryOutlined,
+    ImageOutlined,
+    PublicOutlined,
+    TextFieldsOutlined,
+    FilePresentOutlined,
+    ArrowForwardIosRound,
+    OndemandVideoOutlined,
+} from '@vicons/material';
 import { marked } from 'marked';
 
 import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
-import { store } from './store';
-import { QuietOutline } from "./plugin";
+import { store, SupportedIcon, Heading } from './store';
+import { QuietOutline, setEphemeralState } from "./plugin";
+
+type TreeOptionX = TreeOption & {
+    icon?: SupportedIcon,
+}
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -164,6 +181,68 @@ watchEffect(() => {
     }
 });
 
+// switch icon
+function renderSwitcherIcon() {
+    return h(
+        Icon,
+        {size: "12px"},
+        // null,
+        {
+            default: () => h(ArrowForwardIosRound),
+        }
+    )
+}
+
+// Prefix Icon
+function renderPrefix({option}: {option: TreeOptionX}): VNodeChild {
+    let iConChild: VNodeChild = null;
+   
+    switch(option.icon) {
+        case "ArticleOutlined": {
+            iConChild = h(ArticleOutlined)
+            break;
+        }
+        case "AudiotrackOutlined": {
+            iConChild = h(AudiotrackOutlined)
+            break;
+        }
+        case "OndemandVideoOutlined": {
+            iConChild = h(OndemandVideoOutlined)
+            break;
+        }
+        case "CategoryOutlined": {
+            iConChild = h(CategoryOutlined)
+            break;
+        }
+        case "FilePresentOutlined": {
+            iConChild = h(FilePresentOutlined)
+            break;
+        }
+        case "ImageOutlined": {
+            iConChild = h(ImageOutlined)
+            break;
+        }
+        case "PublicOutlined": {
+            iConChild = h(PublicOutlined)
+            break;
+        }
+        case "TextFieldsOutlined": {
+            iConChild = h(TextFieldsOutlined)
+            break;
+        }
+        default: {
+            return null;
+        }
+    }
+    return h(
+        Icon,
+        { size: "1.2em" },
+        {
+            default: () => iConChild
+        }
+    )
+}
+
 onMounted(() => {
     addEventListener("quiet-outline-reset", reset);
 });
@@ -184,7 +263,7 @@ onUnmounted(() => {
     document.removeEventListener("scroll", handleScroll, true);
 });
 
-let toKey = (h: HeadingCache, i: number) => "item-" + h.level + "-" + i;
+let toKey = (h: Heading, i: number) => "item-" + h.level + "-" + i;
 let fromKey = (key: string) => parseInt((key as string).split('-')[2]);
 
 let handleScroll = debounce(_handleScroll, 100);
@@ -197,6 +276,13 @@ function _handleScroll(evt: Event) {
         // https://github.com/guopenghui/obsidian-quiet-outline/issues/133
         !target.classList.contains("outliner-plugin-list-lines-scroller")) {
         return;
+    }
+    
+    if (plugin.jumping && 
+        (plugin.current_note as MarkdownView).getMode() === "source")
+    {
+        onPosChange(false);
+        return
     }
     
     // if (plugin.settings.locate_by_cursor) {
@@ -224,7 +310,6 @@ onUnmounted(() => {
 });
 
 function handleCursorChange() {
-    
     if (plugin.settings.locate_by_cursor) {
         onPosChange(false);
     }
@@ -233,7 +318,9 @@ function handleCursorChange() {
 function currentLine(fromScroll: boolean) {
     // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const view = plugin.current_note;
-    if (!view || view.getViewType() !== "markdown") return;
+    if (!view || (plugin.current_view_type !== "markdown" /*&& plugin.current_view_type !== "embed-markdown-file"*/)) {
+        return;
+    }
 
     if (plugin.settings.locate_by_cursor && !fromScroll) {
         return (view as MarkdownView).editor.getCursor("from").line;
@@ -558,21 +645,22 @@ let data2 = computed(() => {
     return makeTree(store.headers);
 });
 
-function makeTree(headers: HeadingCache[]): TreeOption[] {
+function makeTree(headers: Heading[]): TreeOption[] {
 
     let tree: TreeOption[] = arrToTree(headers);
     return tree;
 }
 
-function arrToTree(headers: HeadingCache[]): TreeOption[] {
+function arrToTree(headers: Heading[]): TreeOption[] {
     const root: TreeOption = { children: [] };
     const stack = [{ node: root, level: -1 }];
 
     headers.forEach((h, i) => {
-        let node: TreeOption = {
+        let node: TreeOptionX = {
             label: h.heading,
             key: "item-" + h.level + "-" + i,
             line: h.position.start.line,
+            icon: h.icon,
         };
 
         while (h.level <= stack.last().level) {
@@ -637,13 +725,28 @@ function renderLabel({ option }: { option: TreeOption; }) {
 }
 // to-bottom button
 async function toBottom() {
-    const file = plugin.app.workspace.getActiveFile();
-    let lines = (await plugin.app.vault.read(file)).split("\n");
+    // const file = plugin.app.workspace.getActiveFile();
+    // const file = plugin.current_note.file;
+    // TODO: 临时措施，各View的类型不一致
+    let text = plugin.current_note.data;
+    if (text === undefined) {
+        // @ts-ignore
+        text = plugin.current_note.text;
+    }
+    // if (!file) {
+    // }
+
+    // let lines = (await plugin.app.vault.read(file)).split("\n");
+    let lines = text.split("\n");
     const view = plugin.current_note;
     
     const scroll = () => {
-        // For some reason, scrolling to last 4 lines gets an error.
-        view.setEphemeralState({ line: lines.length - 5 });
+        if (view instanceof FileView) {
+            // For some reason, scrolling to last 4 lines gets an error.
+            view.setEphemeralState({ line: lines.length - 5 });
+        } else {
+            setEphemeralState(view, { line: lines.length - 5 });
+        }
     }
 
     scroll();
@@ -659,7 +762,11 @@ function reset() {
 // drag and drop
 async function onDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
     // return;
-    const file = plugin.app.workspace.getActiveFile();
+    if (!plugin.current_note || plugin.current_view_type !== "markdown") {
+        return;
+    }
+
+    const file = plugin.current_note.file;
     let lines = (await plugin.app.vault.read(file)).split("\n");
     let rawExpand = toRaw(expanded.value);
 
@@ -827,5 +934,22 @@ function countTree(node: TreeOption): number {
 /* located heading*/
 .n-tree-node.located p{
     color: v-bind('locatedColor');
+}
+
+/* adjust indent */
+
+/* .quiet-outline .n-tree .n-tree-node .n-tree-node-content {
+    padding-left: 0;
+} */
+.quiet-outline .n-tree .n-tree-node .n-tree-node-content .n-tree-node-content__prefix {
+    margin-right: 0;
+}
+.quiet-outline .n-tree .n-tree-node .n-tree-node-content .n-tree-node-content__prefix>*:last-child {
+    margin-right: 8px;
+}
+.n-tree-node-switcher__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>

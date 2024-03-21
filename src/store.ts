@@ -2,13 +2,27 @@ import { reactive } from 'vue';
 import { HeadingCache, MarkdownView } from 'obsidian';
 import { dummyJump } from "./plugin"
 
+export type SupportedIcon = 
+      "AudiotrackOutlined" 
+    | "OndemandVideoOutlined"
+    | "ArticleOutlined" 
+    | "ImageOutlined" 
+    | "TextFieldsOutlined" 
+    | "CategoryOutlined" 
+    | "PublicOutlined" 
+    | "FilePresentOutlined"
+
+export type Heading = HeadingCache & {
+    id?: string,
+    icon?: SupportedIcon,
+}
 
 const store = reactive({
     activeView() {
         this.plugin.activateView();
         this.refreshTree();
     },
-    headers: [] as HeadingCache[],
+    headers: [] as Heading[],
     jumpBy: dummyJump,
     dark: true,
     cssChange: false,

@@ -49,7 +49,17 @@ use regex:
 ![拖拽](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/drag.gif)
 
 
+### Navigate in Canvas
+![Canvas](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/nav_in_canvas.gif)
 
+### Navigate in Kanban
+
+### Show content when hovering on heading
+![Popover](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/popover.gif)
+
+
+### Remember State
+Memorizing the expanded title state when switching between open notes
 
 
 ## Limitations
