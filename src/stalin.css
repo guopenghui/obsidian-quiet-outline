@@ -186,6 +186,11 @@
   }
   
   
+  /*fix content blur in canvas embed markdown*/
+  .canvas-node .markdown-embed-content .is-flashing {
+    mix-blend-mode: normal;
+  }
+  
   
   /* experimental */
   

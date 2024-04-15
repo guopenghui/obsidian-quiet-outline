@@ -20,8 +20,8 @@ import {
 import { AllCanvasNodeData } from "obsidian/canvas";
 
 import { OutlineView, VIEW_TYPE } from './view';
-import { store, Heading, SupportedIcon } from './store';
-import { parseMetaDataCache } from "./utils"
+import { store, Heading, SupportedIcon, ModifyKeys } from './store';
+import { parseMetaDataCache, diff, calcModifies } from "./utils"
 
 import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";
 import { editorEvent } from "./editorExt"
@@ -133,7 +133,7 @@ export class QuietOutline extends Plugin {
 
 		const refresh = debounce(this.refresh_outline, 300, true);
 		this.registerEvent(this.app.metadataCache.on('changed', () => {
-			refresh();
+			refresh("file-modify");
 		}));
 		
 		// @ts-ignore
@@ -180,7 +180,7 @@ export class QuietOutline extends Plugin {
 		}));
 	}
 	// refresh headings
-	refresh_outline = async () => {
+	refresh_outline = async (reason?: "file-modify") => {
 		const view = this.current_note
 		const viewType = this.current_view_type
 
@@ -188,6 +188,10 @@ export class QuietOutline extends Plugin {
 			const current_file = view.file;
 			const cache = this.app.metadataCache.getFileCache(current_file);
 			if (cache && cache.headings) {
+				// if markdown content has changed, calculate headings' diff to remain expanded state
+				if(reason === "file-modify") {
+					store.modifyKeys = calcModifies(store.headers, cache.headings);
+				}
 				store.headers = cache.headings;
 				return;
 			}

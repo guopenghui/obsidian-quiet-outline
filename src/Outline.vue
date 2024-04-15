@@ -537,6 +537,41 @@ function switchLevel(lev: number) {
     modifyExpandKeys(newKeys);
 }
 
+function offset(key: string, offset: number) {
+    const parts = key.split("-");
+    return `item-${parts[1]}-${parseInt(parts[2]) + offset}`;
+}
+// calculate expanded keys using diff
+watch(
+    () => store.modifyKeys,
+    ({modifies, removes, adds}) => {
+        const newExpandKeys = 
+            expanded.value.filter(key => {
+                const index = fromKey(key);
+                return !removes.some(remove =>(
+                    remove.begin <= index && index < remove.begin + remove.length
+                ))
+            }).map(key => {
+                const index = fromKey(key)
+                const offsetBase = modifies.findLastIndex(modify => modify.begin <= index)
+                if(offsetBase !== -1) {
+                    return offset(key, modifies[offsetBase].offset)
+                }else {
+                    return key
+                }
+            })
+        // make the added's parent headings expand
+        adds.forEach(add => {
+            const path = getPathFromArr(add.begin);
+            path.pop(); // remove itself
+            path.forEach(index => {
+                newExpandKeys.push(`item-${store.headers[index].level}-${index}`);
+            })
+        })
+        modifyExpandKeys([...new Set(newExpandKeys)])
+    }
+)
+
 
 // force remake tree
 let update_tree = ref(0);
@@ -678,6 +713,7 @@ function arrToTree(headers: Heading[]): TreeOption[] {
     return root.children;
 }
 
+// get ancestor heading indexes of a given heading
 function getPath(index: number) {
     let res: number[] = [];
     function pushLastGreatEq(nodes: TreeOption[]) {
@@ -697,6 +733,18 @@ function getPath(index: number) {
     }
     pushLastGreatEq(data2.value);
     return res;
+}
+// calculate path of heading by store.header array
+function getPathFromArr(index: number) {
+    let res: number[] = [];
+    let curLevel = store.headers[index].level + 1;
+    for(let i = index; i >= 0 ; i--) {
+        if(store.headers[i].level < curLevel) {
+            res.push(i)
+            curLevel--;
+        }
+    }
+    return res.reverse();
 }
 
 // render markdown

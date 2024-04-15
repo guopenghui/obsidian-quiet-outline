@@ -17,6 +17,20 @@ export type Heading = HeadingCache & {
     icon?: SupportedIcon,
 }
 
+export type ModifyKeys = {
+    modifies: {
+        begin: number,
+        offset: number,
+    }[]
+    removes: {
+        begin: number,
+        length: number,
+    }[]
+    adds: {
+        begin: number,
+    }[]
+}
+
 const store = reactive({
     activeView() {
         this.plugin.activateView();
@@ -35,6 +49,7 @@ const store = reactive({
     hideUnsearched: true,
     regexSearch: false,
     autoExpand: true,
+    modifyKeys: {} as ModifyKeys,
     dragModify: false,
     refreshTree() {
         this.leafChange = !this.leafChange;

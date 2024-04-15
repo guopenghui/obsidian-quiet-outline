@@ -120,6 +120,9 @@
 .n-tree__empty {
   display: none;
 }
+.canvas-node .markdown-embed-content .is-flashing {
+  mix-blend-mode: normal;
+}
 
 /* main.css */
 .quiet-outline .n-tree .n-tree-node-indent {
