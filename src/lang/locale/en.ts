@@ -22,6 +22,8 @@ export default {
     "Auto expand and collapse headings when scrolling and cursor position change":  "Auto expand and collapse headings when scrolling and cursor position change",
     "Only Expand": 'Only Expand',
     "Expand and Collapse Rest": 'Expand and Collapse Rest',
+    "Expand and Collapse Rest to Default": 'Expand and Collapse Rest to Default',
+    "Expand and Collapse Rest to Setting Level (Level Switch)": 'Expand and Collapse Rest to Setting Level (Level Switch)',
     "Disabled": 'Disabled',
     "Locate By Cursor": 'Locate By Cursor',
     "Show Popover on hover": 'Show Popover on hover',

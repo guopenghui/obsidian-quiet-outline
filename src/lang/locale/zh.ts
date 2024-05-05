@@ -22,6 +22,8 @@ export default {
     "Auto expand and collapse headings when scrolling and cursor position change":  "当滚动页面时，自动跟踪当前所在标题并展开",
     "Only Expand": '仅展开当前标题',
     "Expand and Collapse Rest": '展开同时折叠剩余标题',
+    "Expand and Collapse Rest to Default": '展开同时折叠剩余标题至默认层级',
+    "Expand and Collapse Rest to Setting Level (Level Switch)": '展开同时折叠剩余标题至设置层级(层级切换器)',
     "Disabled": '关闭自动展开',
     "Locate By Cursor": "定位到光标处",
     "Highlight and Auto expand postion will be determined by cursor position": "高亮和自动展开位置将由光标位置决定", 

@@ -354,20 +354,27 @@ function autoExpand(index: number) {
             ? [toKey(current_heading, index)]
             : [];
 
-        let level = current_heading.level;
+        let curLevel = current_heading.level;
         let i = index;
         while (i-- > 0) {
-            if (store.headers[i].level < level) {
+            if (store.headers[i].level < curLevel) {
                 should_expand.push(toKey(store.headers[i], i));
-                level = store.headers[i].level;
+                curLevel = store.headers[i].level;
             }
-            if (level === 1) {
+            if (curLevel === 1) {
                 break;
             }
         }
+        
+        if(plugin.settings.auto_expand_ext === "expand-and-collapse-rest-to-setting") {
+            expanded.value = filterKeysLessThanEqual(level.value);
+        } else if(plugin.settings.auto_expand_ext === "expand-and-collapse-rest-to-default") {
+            expanded.value = filterKeysLessThanEqual(parseInt(plugin.settings.expand_level));
+        }
+        
         modifyExpandKeys(
             should_expand,
-            plugin.settings.auto_expand_ext === "only-expand" ? "add" : "replace"
+            "add",
         );
     }
 }
@@ -528,6 +535,12 @@ function expand(keys: string[], option: TreeOption[]) {
 
 function switchLevel(lev: number) {
     level.value = lev;
+
+    const newKeys = filterKeysLessThanEqual(lev);
+    modifyExpandKeys(newKeys);
+}
+
+function filterKeysLessThanEqual(lev: number): string[] {
     const newKeys = store.headers
         .map((h, i) => {
             return {level: h.level, no: i}
@@ -543,7 +556,7 @@ function switchLevel(lev: number) {
             return "item-" + h.level + "-" + h.no;
         });
 
-    modifyExpandKeys(newKeys);
+    return newKeys
 }
 
 function offset(key: string, offset: number) {

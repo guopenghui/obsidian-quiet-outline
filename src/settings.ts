@@ -17,7 +17,7 @@ interface QuietOutlineSettings {
     markdown: boolean;
     expand_level: string;
     hide_unsearched: boolean;
-    auto_expand_ext: "only-expand" | "exand-and-collapse-rest" | "disable";
+    auto_expand_ext: "only-expand" | "expand-and-collapse-rest-to-default" | "expand-and-collapse-rest-to-setting" | "disable";
     // sync_with_markdown: string;
     regex_search: boolean;
     ellipsis: boolean;
@@ -259,25 +259,16 @@ class SettingTab extends PluginSettingTab {
                 })
             );
 
-        // new Setting(containerEl)
-        //     .addToggle(toggle => toggle
-        //         .setValue(this.plugin.settings.auto_expand)
-        //         .onChange(async (value) => {
-        //             this.plugin.settings.auto_expand = value;
-        //             store.autoExpand = value;
-        //             await this.plugin.saveSettings();
-        //         })
-        //     );
-
         new Setting(containerEl)
             .setName(t("Auto Expand"))
             .setDesc(t("Auto expand and collapse headings when scrolling and cursor position change"))
             .addDropdown(mode => mode
                 .addOption("only-expand", t("Only Expand"))
-                .addOption("expand-and-collapse-rest", t("Expand and Collapse Rest"))
+                .addOption("expand-and-collapse-rest-to-default", t("Expand and Collapse Rest to Default"))
+                .addOption("expand-and-collapse-rest-to-setting", t("Expand and Collapse Rest to Setting Level (Level Switch)"))
                 .addOption("disable", t("Disabled"))
                 .setValue(this.plugin.settings.auto_expand_ext)
-                .onChange(async (value: "only-expand" | "exand-and-collapse-rest" | "disable") => {
+                .onChange(async (value: "only-expand" | "expand-and-collapse-rest-to-default" | "expand-and-collapse-rest-to-setting" | "disable") => {
                     this.plugin.settings.auto_expand_ext= value;
                     await this.plugin.saveSettings();
                 })
