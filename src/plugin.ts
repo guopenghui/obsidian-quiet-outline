@@ -77,7 +77,7 @@ export class QuietOutline extends Plugin {
 		store.levelSwitch = this.settings.level_switch;
 		store.hideUnsearched = this.settings.hide_unsearched;
 		store.regexSearch = this.settings.regex_search;
-		store.autoExpand = this.settings.auto_expand;
+		// store.autoExpand = this.settings.auto_expand;
 		store.dragModify = this.settings.drag_modify;
 		store.patchColor = this.settings.patch_color;
 		store.primaryColorLight = this.settings.primary_color_light;

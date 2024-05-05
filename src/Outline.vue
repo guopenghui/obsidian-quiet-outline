@@ -347,8 +347,9 @@ function nearestHeading(line: number): undefined | number {
 }
 
 function autoExpand(index: number) {
-    if (plugin.settings.auto_expand) {
+    if (plugin.settings.auto_expand_ext !== "disable") {
         let current_heading = store.headers[index];
+        // if current heading is a parent, expand itself as well
         let should_expand = index < store.headers.length - 1 && store.headers[index].level < store.headers[index + 1].level
             ? [toKey(current_heading, index)]
             : [];
@@ -364,7 +365,10 @@ function autoExpand(index: number) {
                 break;
             }
         }
-        modifyExpandKeys(should_expand);
+        modifyExpandKeys(
+            should_expand,
+            plugin.settings.auto_expand_ext === "only-expand" ? "add" : "replace"
+        );
     }
 }
 
@@ -502,8 +506,13 @@ let level = ref(parseInt(plugin.settings.expand_level));
 let expanded = ref<string[]>([]);
 switchLevel(level.value);
 
-function modifyExpandKeys(newKeys: string[]){
-    expanded.value = newKeys;
+function modifyExpandKeys(newKeys: string[], mode: "add" | "replace" = "replace") {
+    if(mode === "replace"){
+        expanded.value = newKeys;
+    }else {
+        const mergeSet = new Set([...expanded.value, ...newKeys]);
+        expanded.value = [...mergeSet];    
+    }
     syncExpandKeys();
 }
 

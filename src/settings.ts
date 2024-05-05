@@ -17,7 +17,7 @@ interface QuietOutlineSettings {
     markdown: boolean;
     expand_level: string;
     hide_unsearched: boolean;
-    auto_expand: boolean;
+    auto_expand_ext: "only-expand" | "exand-and-collapse-rest" | "disable";
     // sync_with_markdown: string;
     regex_search: boolean;
     ellipsis: boolean;
@@ -44,7 +44,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     markdown: true,
     expand_level: "0",
     hide_unsearched: true,
-    auto_expand: true,
+    auto_expand_ext: "only-expand",
     // sync_with_markdown: "none",
     regex_search: false,
     ellipsis: false,
@@ -259,14 +259,26 @@ class SettingTab extends PluginSettingTab {
                 })
             );
 
+        // new Setting(containerEl)
+        //     .addToggle(toggle => toggle
+        //         .setValue(this.plugin.settings.auto_expand)
+        //         .onChange(async (value) => {
+        //             this.plugin.settings.auto_expand = value;
+        //             store.autoExpand = value;
+        //             await this.plugin.saveSettings();
+        //         })
+        //     );
+
         new Setting(containerEl)
             .setName(t("Auto Expand"))
-            .setDesc(t("Auto expand and collapse headings when scrolling"))
-            .addToggle(toggle => toggle
-                .setValue(this.plugin.settings.auto_expand)
-                .onChange(async (value) => {
-                    this.plugin.settings.auto_expand = value;
-                    store.autoExpand = value;
+            .setDesc(t("Auto expand and collapse headings when scrolling and cursor position change"))
+            .addDropdown(mode => mode
+                .addOption("only-expand", t("Only Expand"))
+                .addOption("expand-and-collapse-rest", t("Expand and Collapse Rest"))
+                .addOption("disable", t("Disabled"))
+                .setValue(this.plugin.settings.auto_expand_ext)
+                .onChange(async (value: "only-expand" | "exand-and-collapse-rest" | "disable") => {
+                    this.plugin.settings.auto_expand_ext= value;
                     await this.plugin.saveSettings();
                 })
             );

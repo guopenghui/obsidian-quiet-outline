@@ -48,7 +48,7 @@ const store = reactive({
     levelSwitch: true,
     hideUnsearched: true,
     regexSearch: false,
-    autoExpand: true,
+    // autoExpand: true,
     modifyKeys: {} as ModifyKeys,
     dragModify: false,
     refreshTree() {
