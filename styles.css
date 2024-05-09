@@ -21,6 +21,7 @@
 .quiet-outline .n-tree.ellipsis {
   overflow-x: hidden;
 }
+.quiet-outline .n-tree.ellipsis .n-tree-node .n-tree-node-content div,
 .quiet-outline .n-tree.ellipsis .n-tree-node .n-tree-node-content p {
   overflow: hidden;
   text-overflow: ellipsis;
