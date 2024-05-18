@@ -18,7 +18,7 @@ export type Heading = HeadingCache & {
 }
 
 export type ModifyKeys = {
-    modifies: {
+    offsetModifies: {
         begin: number,
         offset: number,
     }[]
@@ -29,6 +29,11 @@ export type ModifyKeys = {
     adds: {
         begin: number,
     }[]
+	modifies: {
+		oldBegin: number,
+		newBegin: number, 
+		levelChangeType: "parent2parent" | "parent2child" | "child2parent",
+	}[]
 }
 
 const store = reactive({

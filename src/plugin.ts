@@ -21,7 +21,8 @@ import { AllCanvasNodeData } from "obsidian/canvas";
 
 import { OutlineView, VIEW_TYPE } from './view';
 import { store, Heading, SupportedIcon, ModifyKeys } from './store';
-import { parseMetaDataCache, diff, calcModifies } from "./utils"
+import { parseMetaDataCache, calcModifies } from "./utils/diff"
+import { debounceCb } from "./utils/debounce"
 
 import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";
 import { editorEvent } from "./editorExt"
@@ -38,6 +39,11 @@ export class QuietOutline extends Plugin {
 	jumping: boolean;
 	heading_states: Record<string, string[]> = {};
 	klasses: Record<string, Constructor<any>> = {};
+	
+	allow_scroll = true;
+	block_scroll: () => void;
+	allow_cursor_change = true;
+	block_cursor_change: () => void;
 
 	async onload() {
 		await this.loadSettings();
@@ -64,6 +70,17 @@ export class QuietOutline extends Plugin {
 		this.registerExt();
 		
 		this.activateView();
+		
+		this.block_scroll = debounceCb(
+			() => { this.allow_scroll = false; }, 
+			300, 
+			() => { this.allow_scroll = true; }, 
+		);
+		this.block_cursor_change = debounceCb(
+			() => { this.allow_cursor_change = false; },
+			300,
+			() => { this.allow_cursor_change = true; },
+		);
 	}
 
 	initStore() {
@@ -175,6 +192,9 @@ export class QuietOutline extends Plugin {
 			if (!view || view !== leaf.view) {
 				return;
 			}
+
+			// block cursor change event to trigger auto-expand when switching between notes
+			this.block_cursor_change() 
 
 			this.changeCurrentView(view, view.getViewType());
 		}));

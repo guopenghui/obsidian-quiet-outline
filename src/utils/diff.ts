@@ -1,5 +1,5 @@
 import {App, CachedMetadata} from "obsidian";
-import type {Heading, ModifyKeys} from "./store"
+import type {Heading, ModifyKeys} from "../store"
 
 // a trick to use obsidian builtin function to parse markdown headings
 export async function parseMetaDataCache(app: App, text: string): Promise<CachedMetadata> {
@@ -8,10 +8,20 @@ export async function parseMetaDataCache(app: App, text: string): Promise<Cached
     return res;
 }
 
-type Diff = {
-    type: 'add' | 'remove' | 'modify',
+type Diff = AddOrRmDiff | ModifyDiff
+
+type AddOrRmDiff ={
+    type: 'add' | 'remove',
     begin: number,
     length: number,
+}
+
+type ModifyDiff = {
+	type: 'modify',	
+    begin: number,
+    length: number,
+	levelChange: boolean,
+	levelChangeType: "parent2parent" | "parent2child" | "child2parent" | "child2child",
 }
 
 const MODIFY_CHECK_STEP = 5;
@@ -20,18 +30,32 @@ export function diff(prev: Heading[], cur: Heading[]): Diff[] {
     let res: Diff[] = []
     while(i < prev.length && j < cur.length) {
         // same heading, pass
-        if(prev[i].heading === cur[j].heading) {
+        if(prev[i].heading === cur[j].heading && prev[i].level === cur[j].level) {
             i++; j++;
             continue;
         }
 
         // decide add or remove or modify by least steps
         const action = addOrRemoveOrModify(prev, cur, i, j);
-        res.push({
-            type: action.type,
-            begin: i,
-            length: action.length,
-        });
+		if(action.type == "modify") {
+			const levelChangeType =
+				prev[i].level < prev[i+1].level
+				? cur[j].level < cur[j+1].level ? "parent2parent" : "parent2child"
+				: cur[j].level < cur[j+1].level ? "child2parent" : "child2child"
+			res.push({
+				type: action.type,
+				begin: i,
+				length: action.length,
+				levelChange: prev[i].level !== cur[j].level,
+				levelChangeType: levelChangeType
+			})	
+		} else {
+			res.push({
+				type: action.type,
+				begin: i,
+				length: action.length,
+			});
+		}
         action.type === "add" 
             ? j += action.length
             : action.type === "remove"
@@ -97,7 +121,7 @@ function findModifyStep(prev: Heading[], cur: Heading[], i: number, j: number) {
 
 export function calcModifies(prev: Heading[], cur: Heading[]) {
     const headingDiff = diff(prev, cur);
-    const modifyKeys: ModifyKeys = {modifies: [], removes: [], adds: []};
+    const modifyKeys: ModifyKeys = {offsetModifies: [], removes: [], adds: [], modifies: []};
     let offset = 0;
     headingDiff.forEach(diff => {
         switch(diff.type) {
@@ -107,7 +131,7 @@ export function calcModifies(prev: Heading[], cur: Heading[]) {
                     begin: offset + diff.begin,
                 })
                 offset += diff.length;
-                modifyKeys.modifies.push({
+                modifyKeys.offsetModifies.push({
                     begin: diff.begin,
                     offset,
                 })
@@ -115,7 +139,7 @@ export function calcModifies(prev: Heading[], cur: Heading[]) {
             }
             case "remove": {
                 offset -= diff.length;
-                modifyKeys.modifies.push({
+                modifyKeys.offsetModifies.push({
                     begin: diff.begin + diff.length,
                     offset,
                 })
@@ -125,6 +149,17 @@ export function calcModifies(prev: Heading[], cur: Heading[]) {
                 })
                 break;
             }
+			case "modify": {
+				if (!diff.levelChange || diff.levelChangeType === "child2child") {
+					break	
+				}
+				modifyKeys.modifies.push({
+					oldBegin: diff.begin,
+					newBegin: diff.begin + offset,
+					levelChangeType: diff.levelChangeType,
+				})
+				break;
+			}
         }
     })
     return modifyKeys;

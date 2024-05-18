@@ -32,24 +32,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect, VNodeChild } from 'vue';
-import { Notice, MarkdownView, sanitizeHTMLToDom, debounce, FileView } from 'obsidian';
-import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
-import { Icon } from '@vicons/utils';
 import { 
-    SettingsBackupRestoreRound,
-    ArrowCircleDownRound,
-    ArticleOutlined,
-    AudiotrackOutlined,
-    CategoryOutlined,
-    ImageOutlined,
-    PublicOutlined,
-    TextFieldsOutlined,
-    FilePresentOutlined,
-    ArrowForwardIosRound,
-    OndemandVideoOutlined,
+	ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance,
+	onMounted, onUnmounted, HTMLAttributes, h, watchEffect, VNodeChild
+} from 'vue';
+
+import { 
+	NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider,
+	darkTheme, GlobalThemeOverrides, TreeDropInfo
+} from 'naive-ui';
+
+import { 
+    SettingsBackupRestoreRound, ArrowCircleDownRound, ArticleOutlined,
+    AudiotrackOutlined, CategoryOutlined, ImageOutlined, PublicOutlined,
+    TextFieldsOutlined, FilePresentOutlined, ArrowForwardIosRound, OndemandVideoOutlined,
 } from '@vicons/material';
+
+import { Icon } from '@vicons/utils';
+
 import { marked } from 'marked';
+import { Notice, MarkdownView, sanitizeHTMLToDom, debounce, FileView } from 'obsidian';
 
 import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
 import { store, SupportedIcon, Heading } from './store';
@@ -269,6 +271,10 @@ let fromKey = (key: string) => parseInt((key as string).split('-')[2]);
 let handleScroll = debounce(_handleScroll, 100);
 
 function _handleScroll(evt: Event) {
+	if(!plugin.allow_scroll) {
+		return
+	}
+
     let target = evt.target as HTMLElement;
     if (!target.classList.contains("markdown-preview-view") && 
         !target.classList.contains("cm-scroller") &&
@@ -310,7 +316,12 @@ onUnmounted(() => {
 });
 
 function handleCursorChange() {
+	if(!plugin.allow_cursor_change) {
+		return
+	}
     if (plugin.settings.locate_by_cursor) {
+		// fix conflict with cursor-change and scroll both triggering highlight heading change
+		plugin.block_scroll()
         onPosChange(false);
     }
 }
@@ -379,28 +390,13 @@ function autoExpand(index: number) {
     }
 }
 
+let locateIdx = ref(0);
 function resetLocated(idx: number) {
     let path = getPath(idx)
     let index = path.find((v) => !expanded.value.contains(toKey(store.headers[v], v)));
     index = index === undefined ? path[path.length - 1] : index;
-
-    let prevLocation = container.querySelector(".n-tree-node.located");
-    if (prevLocation) {
-        prevLocation.removeClass("located");
-    }
-    let curLocation = container.querySelector(`#no-${index}`);
-    if (curLocation) {
-        curLocation.addClass("located");
-        curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
-    } else {
-        setTimeout(() => {
-            let curLocation = container.querySelector(`#no-${index}`);
-            if (curLocation) {
-                curLocation.addClass("located");
-                curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
-            }
-        }, 100);
-    }
+	
+	locateIdx.value = index
 }
 
 // add html attributes to nodes
@@ -414,9 +410,11 @@ const setAttrs = computed(() => {
         let lev = parseInt((info.option.key as string).split('-')[1]);
         let no = parseInt((info.option.key as string).split('-')[2]);
         let raw = info.option.label; 
+		
+		let locate = locateIdx.value === no ? "located" : ""
 
         return {
-            class: `level-${lev}`,
+            class: `level-${lev} ${locate}`,
             id: `no-${no}`,
             "aria-label": store.ellipsis ? info.option.label : "",
             "aria-label-position": store.labelDirection,
@@ -565,27 +563,49 @@ function offset(key: string, offset: number) {
 }
 // calculate expanded keys using diff
 watch(
-    () => store.modifyKeys,
-    ({modifies, removes, adds}) => {
+    () => toRaw(store.modifyKeys),
+    ({offsetModifies, removes, adds, modifies}) => {
+		// 1. remove deleted headings
+		// 2. remove headings which are not parent anymore (remove some '#')
+		// 3. transform index according adding and removing situations 
+		// 4. transform key's level for those headings which changed its level (remove some '#'), but is still a parent
         const newExpandKeys = 
             expanded.value.filter(key => {
                 const index = fromKey(key);
-                return !removes.some(remove =>(
+				const notRemove = !removes.some(remove =>(
                     remove.begin <= index && index < remove.begin + remove.length
-                ))
+				));
+				const notParent2Child = !modifies.some(modify => (
+					modify.oldBegin === index && modify.levelChangeType === "parent2child"
+				));
+                return notRemove && notParent2Child
             }).map(key => {
                 const index = fromKey(key)
-                const offsetBase = modifies.findLastIndex(modify => modify.begin <= index)
-                if(offsetBase !== -1) {
-                    return offset(key, modifies[offsetBase].offset)
-                }else {
-                    return key
-                }
+				const Parent2Parent = modifies.find(modify => modify.oldBegin === index)
+                const offsetBase = offsetModifies.findLastIndex(modify => modify.begin <= index)
+				let newKey = offsetBase === -1 ? key : offset(key, offsetModifies[offsetBase].offset);
+				
+				let newIndex = fromKey(newKey)
+				if(Parent2Parent){
+					return `item-${store.headers[Parent2Parent.newBegin].level}-${newIndex}`	
+				}else {
+					return newKey
+				}
             })
+		
+		// for those headings which changed its level to become a parent, add its key to expanded array
+		modifies.filter(modify => modify.levelChangeType === "child2parent")
+			.forEach(modify => {
+				newExpandKeys.push(`item-${store.headers[modify.newBegin].level}-${modify.newBegin}`)	
+			})
+
         // make the added's parent headings expand
         adds.forEach(add => {
             const path = getPathFromArr(add.begin);
-            path.pop(); // remove itself
+			if(add.begin >= store.headers.length - 1
+			|| store.headers[add.begin].level >= store.headers[add.begin + 1].level){
+				path.pop(); // remove itself
+			}
             path.forEach(index => {
                 newExpandKeys.push(`item-${store.headers[index].level}-${index}`);
             })
