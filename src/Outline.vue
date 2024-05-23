@@ -52,6 +52,7 @@ import { Icon } from '@vicons/utils';
 
 import { marked } from 'marked';
 import { Notice, MarkdownView, sanitizeHTMLToDom, debounce, FileView } from 'obsidian';
+import { EditorView } from "@codemirror/view";
 
 import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
 import { store, SupportedIcon, Heading } from './store';
@@ -333,12 +334,36 @@ function currentLine(fromScroll: boolean) {
         return;
     }
 
+	let markdownView = view as MarkdownView;
     if (plugin.settings.locate_by_cursor && !fromScroll) {
-        return (view as MarkdownView).editor.getCursor("from").line;
+        return markdownView.editor.getCursor("from").line;
     } else {
         // @ts-ignore
-        return view.currentMode.getScroll() + 8;
+		return getCurrentLineFromEditor(markdownView.editor.cm);
+
+        // return view.currentMode.getScroll() + 8;
     }
+}
+
+// line above and nearest to middle of the editor
+function getCurrentLineFromEditor(editorView: EditorView): number {
+	const { y, height } = editorView.dom.getBoundingClientRect()
+	const middle = y + height / 2
+	const lineBlocks = editorView.viewportLineBlocks;
+
+	let line: number;
+	lineBlocks.forEach(lb => {
+		const node = editorView.domAtPos(lb.from).node;
+		const el = (node.nodeName == "#text" ? node.parentNode : node) as HTMLElement;
+		const elRect = el.getBoundingClientRect()
+		const base = elRect.y + elRect.height / 2
+
+		if(base <= middle) {
+			line = editorView.state.doc.lineAt(lb.from).number
+		}
+	})
+	
+	return Math.max(line - 2, 0)
 }
 
 function nearestHeading(line: number): undefined | number {
@@ -397,6 +422,14 @@ function resetLocated(idx: number) {
     index = index === undefined ? path[path.length - 1] : index;
 	
 	locateIdx.value = index
+
+	setTimeout(() => {
+		let curLocation = container.querySelector(`#no-${index}`);
+		if (curLocation) {
+			curLocation.addClass("located");
+			curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
+		}
+	}, 100);
 }
 
 // add html attributes to nodes
