@@ -51,7 +51,7 @@ import {
 import { Icon } from '@vicons/utils';
 
 import { marked } from 'marked';
-import { Notice, MarkdownView, sanitizeHTMLToDom, debounce, FileView } from 'obsidian';
+import { MarkdownView, sanitizeHTMLToDom, debounce, FileView, MarkdownPreviewSection} from 'obsidian';
 import { EditorView } from "@codemirror/view";
 
 import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
@@ -269,7 +269,7 @@ onUnmounted(() => {
 let toKey = (h: Heading, i: number) => "item-" + h.level + "-" + i;
 let fromKey = (key: string) => parseInt((key as string).split('-')[2]);
 
-let handleScroll = debounce(_handleScroll, 100);
+let handleScroll = debounce(_handleScroll, 200, true);
 
 function _handleScroll(evt: Event) {
 	if(!plugin.allow_scroll) {
@@ -284,23 +284,26 @@ function _handleScroll(evt: Event) {
         !target.classList.contains("outliner-plugin-list-lines-scroller")) {
         return;
     }
+	
+	let isSourcemode = (plugin.current_note as MarkdownView).getMode() === "source";
     
-    if (plugin.jumping && 
-        (plugin.current_note as MarkdownView).getMode() === "source")
-    {
-        onPosChange(false);
-        return
-    }
+    if (plugin.jumping) {
+		if (isSourcemode) {
+			onPosChange(false, isSourcemode);
+			return
+		}
+	} 
     
     // if (plugin.settings.locate_by_cursor) {
     //     return;
     // }
+
+	onPosChange(true, isSourcemode);
     
-    onPosChange(true);
 }
 
-function onPosChange(fromScroll: boolean) {
-    const current = currentLine(fromScroll);
+function onPosChange(fromScroll: boolean, isSourcemode: boolean) {
+    const current = currentLine(fromScroll, isSourcemode);
     const index = nearestHeading(current);
     if (index === undefined) return;
 
@@ -323,11 +326,11 @@ function handleCursorChange() {
     if (plugin.settings.locate_by_cursor) {
 		// fix conflict with cursor-change and scroll both triggering highlight heading change
 		plugin.block_scroll()
-        onPosChange(false);
+        onPosChange(false, true);
     }
 }
 
-function currentLine(fromScroll: boolean) {
+function currentLine(fromScroll: boolean, isSourcemode: boolean) {
     // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const view = plugin.current_note;
     if (!view || (plugin.current_view_type !== "markdown" /*&& plugin.current_view_type !== "embed-markdown-file"*/)) {
@@ -338,10 +341,12 @@ function currentLine(fromScroll: boolean) {
     if (plugin.settings.locate_by_cursor && !fromScroll) {
         return markdownView.editor.getCursor("from").line;
     } else {
-        // @ts-ignore
-		return getCurrentLineFromEditor(markdownView.editor.cm);
-
-        // return view.currentMode.getScroll() + 8;
+		if(isSourcemode) {
+			// @ts-ignore
+			return getCurrentLineFromEditor(markdownView.editor.cm);
+		} else {
+			return getCurrentLineFromPreview(markdownView);	
+		}
     }
 }
 
@@ -364,6 +369,25 @@ function getCurrentLineFromEditor(editorView: EditorView): number {
 	})
 	
 	return Math.max(line - 2, 0)
+}
+
+function getCurrentLineFromPreview(view: MarkdownView): number {
+	const renderer = view.previewMode.renderer;
+	const previewEl = (renderer as any).previewEl as HTMLElement;
+	const rect = previewEl.getBoundingClientRect()
+	const middle = rect.y + rect.height / 2
+
+	const elsInViewport = previewEl.querySelectorAll(".markdown-preview-sizer>div:not(.markdown-preview-pusher)")
+	
+	let line: number;
+	elsInViewport.forEach(el => {
+		const { y } = el.getBoundingClientRect()
+		if(y <= middle) {
+			line = ((renderer as any).getSectionForElement(el) as MarkdownPreviewSection).lineStart
+		}
+	})
+	
+	return line
 }
 
 function nearestHeading(line: number): undefined | number {
@@ -426,7 +450,6 @@ function resetLocated(idx: number) {
 	setTimeout(() => {
 		let curLocation = container.querySelector(`#no-${index}`);
 		if (curLocation) {
-			curLocation.addClass("located");
 			curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
 		}
 	}, 100);
