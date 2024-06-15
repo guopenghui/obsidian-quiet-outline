@@ -57,7 +57,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     show_popover_key: "ctrlKey",
     remember_state: true,
 
-    export_format: "    {title}",
+    export_format: "{title}",
 };
 
 class SettingTab extends PluginSettingTab {
