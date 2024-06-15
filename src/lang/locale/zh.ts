@@ -37,4 +37,6 @@ export default {
     "Remember expanded/collapsed state of headings of opened notes": "记忆已打开笔记的标题展开状态",
     "Drag headings to modify note": "启用拖拽标题来调整文档结果",
     "❗ This will modify note content, be careful.": "❗ 拖拽操作会改变文档内容，小心使用",
+
+	"Export Format": "标题输出格式",
 };

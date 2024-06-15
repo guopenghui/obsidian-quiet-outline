@@ -2,6 +2,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import { QuietOutline } from "./plugin";
 import { store } from "./store";
 import { t } from "./lang/helper";
+import {text} from "stream/consumers";
 interface QuietOutlineSettings {
     patch_color: boolean;
     primary_color_light: string;
@@ -27,6 +28,8 @@ interface QuietOutlineSettings {
     // show_popover: boolean;
     show_popover_key: "ctrlKey" | "altKey" | "metaKey" | "disable";
     remember_state: boolean;
+
+    export_format: string;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -53,6 +56,8 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     locate_by_cursor: false,
     show_popover_key: "ctrlKey",
     remember_state: true,
+
+    export_format: "    {title}",
 };
 
 class SettingTab extends PluginSettingTab {
@@ -323,6 +328,17 @@ class SettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 })
             );
+			
+		new Setting(containerEl)
+			.setName(t("Export Format"))
+			.addText(text => text
+				.setValue(this.plugin.settings.export_format)
+				.onChange(async (value) => {
+					this.plugin.settings.export_format = value
+					await this.plugin.saveSettings()	
+				})
+				.inputEl.setAttribute("style", "width: 100%;")
+			)
 
         // new Setting(containerEl)
         //     .setName("Sync With Markdown")

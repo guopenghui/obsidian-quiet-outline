@@ -36,5 +36,7 @@ export default {
     "Remember States": "Remember States",
     "Remember expanded/collapsed state of headings of opened notes": "Remember expanded/collapsed state of headings of opened notes",
     "Drag headings to modify note": "Drag headings to modify note",
-    "❗ This will modify note content, be careful.": "❗ This will modify note content, be careful"
+    "❗ This will modify note content, be careful.": "❗ This will modify note content, be careful",
+
+	"Export Format": "Export Format",
 };
