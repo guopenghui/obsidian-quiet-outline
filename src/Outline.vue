@@ -415,6 +415,20 @@ function nearestHeading(line: number): undefined | number {
     return i;
 }
 
+function getDefaultLevel(): number {
+	let level = undefined
+	if(plugin.current_note?.file) {
+		const cache = plugin.app.metadataCache.getFileCache(plugin.current_note.file)
+		level = cache?.frontmatter?.["qo-default-level"];
+		if(typeof level === "string") {
+			level = parseInt(level)
+		}
+	}
+	
+	return level || parseInt(plugin.settings.expand_level)
+	
+}
+
 function autoExpand(index: number) {
     if (plugin.settings.auto_expand_ext !== "disable") {
         let current_heading = store.headers[index];
@@ -438,7 +452,9 @@ function autoExpand(index: number) {
         if(plugin.settings.auto_expand_ext === "expand-and-collapse-rest-to-setting") {
             expanded.value = filterKeysLessThanEqual(level.value);
         } else if(plugin.settings.auto_expand_ext === "expand-and-collapse-rest-to-default") {
-            expanded.value = filterKeysLessThanEqual(parseInt(plugin.settings.expand_level));
+			const defaultLevel = getDefaultLevel()
+            expanded.value = filterKeysLessThanEqual(defaultLevel);
+            // expanded.value = filterKeysLessThanEqual(parseInt(plugin.settings.expand_level));
         }
         
         modifyExpandKeys(
@@ -572,7 +588,8 @@ onUnmounted(() => {
 });
 
 // switch heading expand levels
-let level = ref(parseInt(plugin.settings.expand_level));
+// let level = ref(parseInt(plugin.settings.expand_level));
+let level = ref(getDefaultLevel());
 let expanded = ref<string[]>([]);
 switchLevel(level.value);
 
@@ -689,7 +706,8 @@ watch(
         const old_pattern = pattern.value;
 
         pattern.value = "";
-        level.value = parseInt(plugin.settings.expand_level);
+        level.value = getDefaultLevel()
+		//  parseInt(plugin.settings.expand_level);
 
         const old_state = plugin.heading_states[plugin.current_file];
         if (plugin.settings.remember_state && old_state) {
@@ -910,7 +928,8 @@ async function toBottom() {
 // reset button
 function reset() {
     pattern.value = "";
-    level.value = parseInt(plugin.settings.expand_level);
+    level.value = getDefaultLevel()
+	// parseInt(plugin.settings.expand_level);
     switchLevel(level.value);
 }
 
