@@ -266,6 +266,15 @@ onUnmounted(() => {
     document.removeEventListener("scroll", handleScroll, true);
 });
 
+// support multiple windows
+plugin.app.workspace.on("window-open", (spaceWin, win) => {
+	spaceWin.doc.addEventListener("scroll", handleScroll, true);
+})
+plugin.app.workspace.on("window-close", (spaceWin, win) => {
+    spaceWin.doc.removeEventListener("scroll", handleScroll, true);
+})
+
+
 let toKey = (h: Heading, i: number) => "item-" + h.level + "-" + i;
 let fromKey = (key: string) => parseInt((key as string).split('-')[2]);
 
