@@ -69,7 +69,11 @@ export class QuietOutline extends Plugin {
 		
 		this.registerExt();
 		
-		this.activateView();
+		// only manually activate view when first time install
+		// @ts-ignore
+		if(__IS_DEV__ || await this.firstTimeInstall()) {
+			this.activateView();
+		}
 		
 		this.block_scroll = debounceCb(
 			() => { this.allow_scroll = false; }, 
@@ -81,6 +85,11 @@ export class QuietOutline extends Plugin {
 			300,
 			() => { this.allow_cursor_change = true; },
 		);
+	}
+	
+	async firstTimeInstall() {
+		const existSettingFile = await this.app.vault.adapter.exists(this.manifest.dir + "/data.json");
+		return !existSettingFile
 	}
 
 	initStore() {
@@ -437,7 +446,7 @@ function markdownJump(plugin: QuietOutline, key: number) {
         setTimeout(() => {
 			plugin.jumping = false;
 			// view.setEphemeralState({cursor});
-		}, 200);
+		}, 500);
     }
 }
 

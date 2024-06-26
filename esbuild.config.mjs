@@ -16,6 +16,9 @@ await esbuild.build({
 	banner: {
 		js: banner,
 	},
+	define: {
+		"__IS_DEV__": !prod,	
+	},
 	plugins: [vue({ isProd: true })],
 	entryPoints: ['main.ts'],
 	bundle: true,
