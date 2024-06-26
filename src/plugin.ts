@@ -395,7 +395,7 @@ export class QuietOutline extends Plugin {
 	}
 
 	onunload() {
-		this.app.workspace.detachLeavesOfType(VIEW_TYPE);
+		// this.app.workspace.detachLeavesOfType(VIEW_TYPE);
 	}
 
 	async loadSettings() {
