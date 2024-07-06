@@ -102,9 +102,11 @@
 .n-tree.n-tree--block-line .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
   background-color: transparent !important;
 }
+.mod-left-split .view-content:has(.quiet-outline) {
+  padding-bottom: 12px;
+}
 .quiet-outline {
   height: 100%;
-  padding-bottom: 24px;
 }
 .quiet-outline #container {
   height: 100%;

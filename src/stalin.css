@@ -159,12 +159,13 @@
     background-color: transparent !important;
   }
   
+  .mod-left-split .view-content:has(.quiet-outline) {
+	padding-bottom: 12px;
+  }
   
   /* 固定功能栏 */
   .quiet-outline {
     height: 100%;
-    /*避免被底部状态栏挡住*/
-    padding-bottom: 24px;
   }
   .quiet-outline #container {
     height: 100%;
