@@ -385,6 +385,22 @@ export class QuietOutline extends Plugin {
 				new Notice("Headings copied");
 			}
 		});
+		
+		this.addCommand({
+			id: "inc-level",
+			name: "Increase Level",
+			callback: () => {
+				dispatchEvent(new CustomEvent("quiet-outline-levelchange", {detail: {level: "inc"}}));
+			}
+		});
+		
+		this.addCommand({
+			id: "dec-level",
+			name: "Decrease Level",
+			callback: () => {
+				dispatchEvent(new CustomEvent("quiet-outline-levelchange", {detail: {level: "dec"}}));
+			}
+		});
 
 	}
 	

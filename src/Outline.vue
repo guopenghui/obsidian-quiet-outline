@@ -57,6 +57,7 @@ import { EditorView } from "@codemirror/view";
 import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
 import { store, SupportedIcon, Heading } from './store';
 import { QuietOutline, setEphemeralState } from "./plugin";
+import { useEvent } from "./utils/use"
 
 type TreeOptionX = TreeOption & {
     icon?: SupportedIcon,
@@ -619,6 +620,16 @@ function switchLevel(lev: number) {
     const newKeys = filterKeysLessThanEqual(lev);
     modifyExpandKeys(newKeys);
 }
+
+useEvent(window, "quiet-outline-levelchange", (e) => {
+	if(typeof e.detail.level === "number") {
+		switchLevel(e.detail.level);
+	}else if(e.detail.level === "inc") {
+		switchLevel(Math.clamp(level.value + 1, 0, 5));
+	}else if(e.detail.level === "dec") {
+		switchLevel(Math.clamp(level.value - 1, 0, 5));
+	}
+})
 
 function filterKeysLessThanEqual(lev: number): string[] {
     const newKeys = store.headers
