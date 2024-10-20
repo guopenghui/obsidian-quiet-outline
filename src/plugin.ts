@@ -148,6 +148,11 @@ export class QuietOutline extends Plugin {
 			const leaves = this.app.workspace.getLeavesOfType("markdown");
 			let filteredStates: Record<string, string[]> = {};
 			leaves.forEach((leaf) => {
+				// when app is just opened, if a markdown tab is not activated,
+				// there is no 'file' field in leaf.view
+				if((leaf.view as  MarkdownView).file === undefined) {
+					return
+				}
 				const path = (leaf.view as MarkdownView).file.path;
 				this.heading_states[path] && 
 					(filteredStates[path] = this.heading_states[path]);
