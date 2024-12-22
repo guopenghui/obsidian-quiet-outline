@@ -163,7 +163,8 @@ export class QuietOutline extends Plugin {
 		
 
 		const refresh = debounce(this.refresh_outline, 300, true);
-		this.registerEvent(this.app.metadataCache.on('changed', () => {
+		this.registerEvent(this.app.metadataCache.on('changed', (file, data, cache) => {
+			// console.log("metadata changed", {cache});
 			refresh("file-modify");
 		}));
 		
@@ -406,6 +407,36 @@ export class QuietOutline extends Plugin {
 				dispatchEvent(new CustomEvent("quiet-outline-levelchange", {detail: {level: "dec"}}));
 			}
 		});
+		
+		this.addCommand({
+			id: "prev-heading",
+			name: "To previous heading",
+			callback: () => {
+				if(this.current_view_type != "markdown") return;
+
+				const view = this.current_note as MarkdownView;
+				const line = view.editor.getCursor().line;
+				
+				let idx = store.headers.findLastIndex(h => h.position.start.line < line);
+				
+				idx != -1 && store.jumpBy(this, idx);
+			}
+		})
+
+		this.addCommand({
+			id: "next-heading",
+			name: "To next heading",
+			callback: () => {
+				if(this.current_view_type != "markdown") return;
+
+				const view = this.current_note as MarkdownView;
+				const line = view.editor.getCursor().line;
+				
+				let idx = store.headers.findIndex(h => h.position.start.line > line);
+				
+				idx != -1 && store.jumpBy(this, idx);
+			}
+		})
 
 	}
 	
