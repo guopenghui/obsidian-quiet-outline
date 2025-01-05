@@ -61,7 +61,7 @@ export const internal_link: Extension = {
     }
 };
 
-// remove ref (^ab123ce) format
+// remove ref (^ab123ce | ^[footnote]) format
 export const remove_ref: Extension = {
     name: "ref",
     level: "inline",
@@ -69,18 +69,20 @@ export const remove_ref: Extension = {
         return src.match(/\^/)?.index;
     },
     tokenizer(src, tokens) {
-        const rule = /^(\^[A-Za-z0-9\-]+)$/;
+        const rule = /^(\^[A-Za-z0-9\-]+)|^(\^\[.*\])/;
         const match = rule.exec(src);
         
         if (match) {
+			console.log(match)
             return {
                 type: 'ref',
                 raw: match[0],
-                ref: match[1].trim(),
+                ref: (match[1] || match[2]).trim(),
             };
         }
     },
     renderer(token) {
+		console.log({token})
         return "";
     }
 };
