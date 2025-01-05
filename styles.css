@@ -102,8 +102,11 @@
 .n-tree.n-tree--block-line .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
   background-color: transparent !important;
 }
-.mod-left-split .view-content:has(.quiet-outline) {
-  padding-bottom: 12px;
+.view-content:has(.quiet-outline) {
+  padding-bottom: 0px;
+}
+.quiet-outline .n-tree.n-tree--block-node.n-tree--block-line {
+  padding-bottom: var(--size-4-8);
 }
 .quiet-outline {
   height: 100%;

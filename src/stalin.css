@@ -159,8 +159,12 @@
     background-color: transparent !important;
   }
   
-  .mod-left-split .view-content:has(.quiet-outline) {
-	padding-bottom: 12px;
+  .view-content:has(.quiet-outline) {
+	padding-bottom: 0px;
+  }
+  
+  .quiet-outline .n-tree.n-tree--block-node.n-tree--block-line {
+	padding-bottom: var(--size-4-8);
   }
   
   /* 固定功能栏 */
