@@ -128,6 +128,9 @@
 .canvas-node .markdown-embed-content .is-flashing {
   mix-blend-mode: normal;
 }
+.quiet-outline .n-tree .n-tree-node-content :is(p, h1, h2, h3, h4, h5) {
+  unicode-bidi: plaintext;
+}
 
 /* main.css */
 .quiet-outline .n-tree .n-tree-node-indent {

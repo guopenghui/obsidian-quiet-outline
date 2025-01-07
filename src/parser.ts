@@ -73,7 +73,6 @@ export const remove_ref: Extension = {
         const match = rule.exec(src);
         
         if (match) {
-			console.log(match)
             return {
                 type: 'ref',
                 raw: match[0],
@@ -82,7 +81,6 @@ export const remove_ref: Extension = {
         }
     },
     renderer(token) {
-		console.log({token})
         return "";
     }
 };
