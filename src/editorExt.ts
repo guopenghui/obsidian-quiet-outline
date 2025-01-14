@@ -24,7 +24,6 @@ class EditorEvent implements PluginValue {
 
     update(update: ViewUpdate) {
       // ...
-        
         if(update.selectionSet) {
             document.dispatchEvent(new CustomEvent("quiet-outline-cursorchange"));
         }

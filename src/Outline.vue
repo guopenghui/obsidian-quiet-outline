@@ -286,6 +286,11 @@ function _handleScroll(evt: Event) {
 		return
 	}
 
+	if(plugin.jumping) {
+		plugin.jumping = false
+		return
+	}
+
     let target = evt.target as HTMLElement;
     if (!target.classList.contains("markdown-preview-view") && 
         !target.classList.contains("cm-scroller") &&
@@ -297,29 +302,32 @@ function _handleScroll(evt: Event) {
 	
 	let isSourcemode = (plugin.current_note as MarkdownView).getMode() === "source";
     
-    if (plugin.jumping) {
-		if (isSourcemode) {
-			onPosChange(false, isSourcemode);
-			return
-		}
-	} 
+    // if (plugin.jumping) {
+	// 	if (isSourcemode) {
+	// 		onPosChange(false, isSourcemode);
+	// 		return
+	// 	}
+	// } 
     
     // if (plugin.settings.locate_by_cursor) {
     //     return;
     // }
-
 	onPosChange(true, isSourcemode);
     
 }
 
-function onPosChange(fromScroll: boolean, isSourcemode: boolean) {
-    const current = currentLine(fromScroll, isSourcemode);
-    const index = nearestHeading(current);
-    if (index === undefined) return;
+function onPosChange(fromScroll: boolean, isSourcemode: boolean, index?: number) {
+	if(fromScroll || index === undefined) {
+		const current = currentLine(fromScroll, isSourcemode);
+		index = nearestHeading(current);
+		if (index === undefined) return;
+	}
 
     autoExpand(index);
     resetLocated(index);
 }
+
+store.onPosChange = onPosChange;
 
 onMounted(() => {
     document.addEventListener("quiet-outline-cursorchange", handleCursorChange);
@@ -330,7 +338,7 @@ onUnmounted(() => {
 });
 
 function handleCursorChange() {
-	if(!plugin.allow_cursor_change) {
+	if(!plugin.allow_cursor_change || plugin.jumping) {
 		return
 	}
     if (plugin.settings.locate_by_cursor) {
@@ -349,14 +357,15 @@ function currentLine(fromScroll: boolean, isSourcemode: boolean) {
 
 	let markdownView = view as MarkdownView;
     if (plugin.settings.locate_by_cursor && !fromScroll) {
-        return markdownView.editor.getCursor("from").line;
+		return isSourcemode
+			? markdownView.editor.getCursor("from").line
+			: Math.ceil(markdownView.previewMode.getScroll());
+        // return markdownView.editor.getCursor("from").line;
     } else {
-		if(isSourcemode) {
-			// @ts-ignore
-			return getCurrentLineFromEditor(markdownView.editor.cm);
-		} else {
-			return getCurrentLineFromPreview(markdownView);	
-		}
+		return isSourcemode
+		// @ts-ignore
+		? getCurrentLineFromEditor(markdownView.editor.cm)
+		: getCurrentLineFromPreview(markdownView);	
     }
 }
 

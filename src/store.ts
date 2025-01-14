@@ -43,6 +43,7 @@ const store = reactive({
     },
     headers: [] as Heading[],
     jumpBy: dummyJump,
+	onPosChange: (fromScroll: boolean, isSource: boolean, index?: number) => {},
     dark: true,
     cssChange: false,
     markdown: true,

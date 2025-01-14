@@ -492,13 +492,20 @@ function markdownJump(plugin: QuietOutline, key: number) {
 			line,
 			cursor,
 		}
-
+		
 		plugin.jumping = true;
-        view.setEphemeralState(state);
-        setTimeout(() => {
-			plugin.jumping = false;
-			// view.setEphemeralState({cursor});
-		}, 500);
+		store.onPosChange(false, view.getMode() == "source", key);
+
+		setTimeout(() => {
+			view.setEphemeralState(state);
+
+			// 这里假设 jump 一定会 *触发唯一一次* scroll，因此把 jumping = false 的操作交给 handelScroll 函数
+			// 以避免 jump 后的 scroll 泄露
+			// setTimeout(() => {
+			// 	plugin.jumping = false;
+			// }, 1000);
+		})
+
     }
 }
 
