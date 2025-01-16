@@ -13,6 +13,7 @@ node_modules
 main.js
 main.*.js
 *.zip
+main.css
 
 # Exclude sourcemaps
 *.map

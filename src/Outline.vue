@@ -329,6 +329,11 @@ function onPosChange(fromScroll: boolean, isSourcemode: boolean, index?: number)
 
 store.onPosChange = onPosChange;
 
+// 
+watch(() => store.headers, () => {
+	plugin.current_view_type?.contains("markdown") && onPosChange(false, true);
+});
+
 onMounted(() => {
     document.addEventListener("quiet-outline-cursorchange", handleCursorChange);
 });
@@ -337,10 +342,11 @@ onUnmounted(() => {
     document.removeEventListener("quiet-outline-cursorchange", handleCursorChange);
 });
 
-function handleCursorChange() {
-	if(!plugin.allow_cursor_change || plugin.jumping) {
+function handleCursorChange(e?: CustomEvent) {
+	if(!plugin.allow_cursor_change || plugin.jumping || e?.detail.docChanged) {
 		return
 	}
+
     if (plugin.settings.locate_by_cursor) {
 		// fix conflict with cursor-change and scroll both triggering highlight heading change
 		plugin.block_scroll()
