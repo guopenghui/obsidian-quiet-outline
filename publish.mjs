@@ -12,7 +12,7 @@ if (manifest.version !== version) {
     manifest.version = version;
     fs.writeFileSync(path.join(root, "manifest.json"), JSON.stringify(manifest, null, 4));
     // message must use " instead of ' on windows
-    child.execSync('git commit -am "update manifest"');
+    child.execSync('git commit -am "update manifest and release"');
 }
 
 child.execSync("git push");
