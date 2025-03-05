@@ -42,10 +42,10 @@ export const internal_link: Extension = {
     name: "internal",
     level: "inline",
     start(src) {
-        return src.match(/\[\[/)?.index;
+        return src.match(/!?\[\[/)?.index;
     },
     tokenizer(src, token) {
-        const rule = /^\[\[([^\[\]]+?)\]\]/;
+        const rule = /^!?\[\[([^\[\]]+?)\]\]/;
         const match = rule.exec(src);
         if (match) {
             const alias = /.*\|(.*)/.exec(match[1]);
@@ -152,10 +152,10 @@ export const nolist: Extension = {
     name: "nolist",
     level: "block",
     start(src) {
-        return src.match(/^([+\-*]|\d+[\.)]) /)?.index
+        return src.match(/^(\d+[\.)\-+*]|[+\-*]) /)?.index
     },
     tokenizer(src, tokens) {
-        const rule = /^(([+\-*])|(\d+[\.)])) (.*)/;
+        const rule = /^(([+\-*])|(\d+[\.\-)+*])) (.*)/;
         const match = rule.exec(src);
         let token = undefined;
         if (match && match[2]) {
