@@ -204,7 +204,19 @@ export class QuietOutline extends Plugin {
 
 		this.registerEvent(this.app.workspace.on('active-leaf-change', async (leaf) => {
 			let view = this.app.workspace.getActiveFileView();
-			if (!view || view !== leaf.view) {
+
+			// when there is no active file-view, eg. no note is opened or a note is just closed.
+			if (!view) {
+				this.current_note = undefined;
+				this.current_file = undefined;
+				this.current_view_type = undefined;
+				await this.refresh_outline();
+				store.refreshTree();
+				return;
+			}
+
+			// when switching to a non-file-view, like outline, tags panel, do nothing.
+			if(view && view !== leaf.view) {
 				return;
 			}
 
