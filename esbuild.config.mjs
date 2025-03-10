@@ -12,12 +12,13 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = (process.argv[2] === 'production');
 
-await esbuild.build({
+const ctx = await esbuild.context({
 	banner: {
 		js: banner,
 	},
 	define: {
-		"__IS_DEV__": !prod,	
+		"__IS_DEV__": String(!prod),	
+		// "__IS_DEV__": !prod,	
 	},
 	plugins: [vue({ isProd: true })],
 	entryPoints: ['main.ts'],
@@ -48,20 +49,32 @@ await esbuild.build({
 		'@codemirror/view',
 		...builtins],
 	format: 'cjs',
-	watch: !prod,
-	target: 'es2016',
+	// watch: !prod,
+	target: 'es2022',
 	logLevel: "info",
 	sourcemap: prod ? false : 'inline',
 	minify: prod,
 	treeShaking: true,
 	outfile: 'main.js',
-}).catch(() => process.exit(1));
+});
 
-await esbuild.build({
+const styleCtx = await esbuild.context({
 	entryPoints: ["./src/main.css"],
 	outfile: "styles.css",
-	watch: !prod,
+	// watch: !prod,
 	bundle: true,
 	allowOverwrite: true,
 	minify: false,
 });
+
+if(!prod) {
+	ctx.watch().catch((e) => {
+		console.log(e);
+		process.exit(1);
+	});
+	styleCtx.watch();
+}else {
+	await ctx.rebuild();
+	await styleCtx.rebuild();
+	process.exit(0);
+}
