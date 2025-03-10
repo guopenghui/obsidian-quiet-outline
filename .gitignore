@@ -14,6 +14,7 @@ main.js
 main.*.js
 *.zip
 main.css
+styles.css
 
 # Exclude sourcemaps
 *.map

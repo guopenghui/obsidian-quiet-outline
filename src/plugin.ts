@@ -21,7 +21,8 @@ import { AllCanvasNodeData } from "obsidian/canvas";
 
 import { OutlineView, VIEW_TYPE } from './view';
 import { store, Heading, SupportedIcon, ModifyKeys } from './store';
-import { parseMetaDataCache, calcModifies } from "./utils/diff"
+import { calcModifies } from "./utils/diff"
+import { parseMetaDataCache } from "./utils/md-process"
 import { debounceCb } from "./utils/debounce"
 
 import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";

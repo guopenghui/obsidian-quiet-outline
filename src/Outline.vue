@@ -26,7 +26,7 @@
                 :expanded-keys="expanded" :render-switcher-icon="renderSwitcherIcon"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
                 :show-irrelevant-nodes="!store.hideUnsearched" :class="{ 'ellipsis': store.ellipsis }"
-                :draggable="store.dragModify" @drop="onDrop" />
+                :draggable="store.dragModify" @drop="onDrop" :allow-drop="() => true" />
         </NConfigProvider>
     </div>
 </template>
@@ -58,6 +58,7 @@ import { formula, internal_link, highlight, tag, remove_href, renderer, remove_r
 import { store, SupportedIcon, Heading } from './store';
 import { QuietOutline, setEphemeralState } from "./plugin";
 import { useEvent } from "./utils/use"
+import {parseMarkdown, stringifySection, moveHeading, visitSection} from "./utils/md-process"
 
 type TreeOptionX = TreeOption & {
     icon?: SupportedIcon,
@@ -961,104 +962,39 @@ function reset() {
 
 // drag and drop
 async function onDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
-    // return;
     if (!plugin.current_note || plugin.current_view_type !== "markdown") {
         return;
     }
 
     const file = plugin.current_note.file;
-    let lines = (await plugin.app.vault.read(file)).split("\n");
-    let rawExpand = toRaw(expanded.value);
+	const text = await plugin.app.vault.read(file);
+	const structure = await parseMarkdown(text);
 
-    const dragStart = getNo(dragNode);
-    const dragEnd = dragStart + countTree(dragNode) - 1;
-    let moveStart = 0, moveEnd = 0;
-    switch (dropPosition) {
-        case "inside": {
-            node = node.children.last();
-        }
-        case "after": {
-            if (dragStart > getNo(node) + countTree(node)) {
-                moveStart = getNo(node) + countTree(node);
-                moveEnd = dragStart - 1;
-            } else {
-                moveStart = dragEnd + 1;
-                moveEnd = getNo(node) + countTree(node) - 1;
-            }
-            break;
-        }
-        case "before": {
-            if (dragStart > getNo(node)) {
-                moveStart = getNo(node);
-                moveEnd = dragStart - 1;
-            } else {
-                moveStart = dragStart + countTree(dragNode);
-                moveEnd = getNo(node) - 1;
-            }
-            break;
-        }
-    }
-    const levDelta = getLevel(node) - getLevel(dragNode);
-    changeExpandKey(rawExpand, dragStart, dragEnd, moveStart, moveEnd, levDelta);
-    moveSection(
-        lines,
-        getLine(dragStart)[0],
-        getLine(dragEnd)[1] || lines.length - 1,
-        getLine(moveStart)[0],
-        getLine(moveEnd)[1] || lines.length - 1,
-        levDelta
-    );
+    // let rawExpand = toRaw(expanded.value).map(getNo);
+	// visitSection(structure, (section) => {
+	// 	if(section.id < 0) return;
+		
+	// 	if(rawExpand.contains(section.id)) {
+	// 		section.headingExpaned = true;
+	// 	}
+	// });
 
-    plugin.app.vault.modify(file, lines.join("\n"));
-}
+	const fromNo = getNo(dragNode);
+	const toNo = getNo(node);
 
-function getLine(headNo: number) {
-    return [
-        store.headers[headNo].position.start.line,
-        store.headers[headNo + 1]?.position.start.line - 1
-    ];
-}
+	moveHeading(structure, fromNo, toNo, dropPosition);
+			  
+	// let i = 0;
+	// const newExpandKeys: string[] = [];
+	// visitSection(structure, (section) => {
+	// 	if(section.id < 0) return;
+	// 	if(section.headingExpaned && section.content.children.length > 0) {
+	// 		newExpandKeys.push(`item-${section.headingLevel}-${i}`)	
+	// 	}
+	// 	i++;
+	// })
 
-// dls: drag lines start  mle: move lines end
-function moveSection(lines: string[], dls: number, dle: number, mls: number, mle: number, delta: number) {
-    let newPos = 0;
-    if (dls < mls) {
-        let moved = lines.splice(mls, mle - mls + 1);
-        lines.splice(dls, 0, ...moved);
-        newPos = dls + (mle - mls) + 1;
-    } else {
-        let moved = lines.splice(dls, dle - dls + 1);
-        lines.splice(mls, 0, ...moved);
-        newPos = mls;
-    }
-    for (let i = newPos; i <= newPos + (dle - dls); ++i) {
-        if (lines[i].match(/^#+ /)) {
-            delta > 0
-                ? lines[i] = Array(delta).fill("#").join("") + lines[i]
-                : lines[i] = lines[i].slice(-delta);
-        }
-    }
-}
-
-function changeExpandKey(expanded: string[], ds: number, de: number, ms: number, me: number, delta: number) {
-    let dNewPos = 0, mNewPos = 0;
-    if (ds < ms) {
-        mNewPos = ds;
-        dNewPos = ds + (me - ms) + 1;
-    } else {
-        dNewPos = ms;
-        mNewPos = ms + (de - ds) + 1;
-    }
-    expanded.forEach((key, i) => {
-        const no = getNo(key);
-        if (ds <= no && no <= de) {
-            expanded[i] = `item-${getLevel(key) + delta}-${dNewPos + (no - ds)}`;
-        }
-        if (ms <= no && no <= me) {
-            expanded[i] = `item-${getLevel(key)}-${mNewPos + (no - ms)}`;
-        }
-    });
-    syncExpandKeys();
+    plugin.app.vault.modify(file, stringifySection(structure));
 }
 
 function getNo(node: TreeOption | string): number {
@@ -1067,25 +1003,15 @@ function getNo(node: TreeOption | string): number {
     }
     return parseInt(node.split("-")[2]);
 }
-function getLevel(node: TreeOption | string): number {
-    if (typeof node !== "string") {
-        node = node.key as string;
-    }
-    return parseInt(node.split("-")[1]);
-
-}
-function countTree(node: TreeOption): number {
-    if (!node.children) return 1;
-
-    return node.children.reduce((sum, n) => {
-        return sum + countTree(n);
-    }, 1);
-}
 
 </script>
 
 
 <style>
+.quiet-outline .n-tree {
+	padding-top: 5px;
+}
+
 /* ============ */
 /*  彩虹大纲线   */
 /* rainbow line */
