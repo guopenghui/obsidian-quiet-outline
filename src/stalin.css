@@ -43,16 +43,13 @@
   }
   
   .quiet-outline .n-tree.ellipsis .n-tree-node-content__text {
-    width: 100%;
+    overflow: hidden;
   }
   
   .quiet-outline .n-tree.ellipsis .n-tree-node-content {
-    width: 90%;
+    overflow: hidden;
+	flex: 1;
   }
-  
-  
-  
-  
   
   /* 悬浮时的背景颜色 */
   .quiet-outline .n-tree.n-tree--block-line .n-tree-node:not(.n-tree-node--disabled):hover {
