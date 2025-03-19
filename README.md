@@ -5,6 +5,18 @@ An outline plugin makes headings easier to read.
 [中文文档](https://github.com/guopenghui/obsidian-quiet-outline/blob/master/README-CN.md)
 
 ## Features
++ [No auto-expand when editing](#no-auto-expand-when-editing)
++ [Search support](#search-support)
++ [Markdown render support](#markdown-render-support)
++ [Auto expand and collapse](#auto-expand-and-collapse)
++ [Default level](#default-level)
++ [Level Switch Bar](#level-switch-bar)
++ [Drag and modify note](#drag-and-modify-note)
++ [Navigation in Canvas](#navigate-in-canvas)
++ [Navigation in Kanban](#navigate-in-kanban)
++ [Hover preview](#show-content-when-hovering-on-heading)
++ [Remember expand state](#remember-state)
++ [Some hotkeys](#hotkeys)
 
 ### No auto-expand when editing
 
@@ -44,6 +56,7 @@ use regex:
 ### Default level
 ![默认级别](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/default-level.gif)
 
+You can customize the default level per note. See release note in [0.3.33](https://github.com/guopenghui/obsidian-quiet-outline/releases/tag/0.3.33) 
 
 ### Drag and modify note
 ![拖拽](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/drag.gif)
@@ -61,14 +74,16 @@ use regex:
 ### Remember State
 Memorizing the expanded title state when switching between open notes
 
+### Hotkeys
++ Increase/Decrease level
++ Jump to prev/next heading
++ Copy all headings to clipboard(See in [0.3.32](https://github.com/guopenghui/obsidian-quiet-outline/releases/tag/0.3.32))
 
 ## Limitations
 
 + Due to the lazy-rendering strategy of built-in editor (Only text showed in the current window is rendered. If scrolling too fast, you will see some text is not ready to be rendered and  the editor stutters), sometimes you can't jump to the place you want by one click **in edit mode**，especially when the note is opened for the first time since you open obsidian app.    Outline core plugin has the same issue.  Solution: **Just click again**.
 
 + Cross-level is not supported, which means you can use `h1->h2->h3`，but not `h1->h3->h4`, while `h3` and `h4` will be treated as `h2` and `h3`. 
-
-+ Can't drag heading into a leaf heading
 
 + Some extented grammars in obsidian are not supported by default. But we can extend the markdown-parser to fix it! If you believe any grammar is frequently used and should be implemented, create an issue to discuss about it.
 
