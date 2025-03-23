@@ -183,7 +183,7 @@ declare module "obsidian" {
         data: string;
     }
 
-    export interface EmbedMarkdownView {
+    export interface EmbedMarkdownView extends View {
         data: string;
         text: string;
         file: TFile;

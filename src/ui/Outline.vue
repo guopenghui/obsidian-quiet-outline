@@ -26,7 +26,7 @@
                 :expanded-keys="expanded" :render-switcher-icon="renderSwitcherIcon"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
                 :show-irrelevant-nodes="!store.hideUnsearched" :class="{ 'ellipsis': store.ellipsis }"
-                :draggable="store.dragModify" @drop="onDrop" :allow-drop="() => true" />
+                :draggable="store.dragModify" @drop="onDrop" :allow-drop="() => plugin.navigator.canDrop" />
         </NConfigProvider>
     </div>
 </template>
@@ -42,23 +42,21 @@ import {
 	darkTheme, GlobalThemeOverrides, TreeDropInfo
 } from 'naive-ui';
 
-import { 
-    SettingsBackupRestoreRound, ArrowCircleDownRound, ArticleOutlined,
+import {
+	SettingsBackupRestoreRound, ArrowCircleDownRound, ArticleOutlined,
     AudiotrackOutlined, CategoryOutlined, ImageOutlined, PublicOutlined,
     TextFieldsOutlined, FilePresentOutlined, ArrowForwardIosRound, OndemandVideoOutlined,
-} from '@vicons/material';
+} from "./icons";
 
 import { Icon } from '@vicons/utils';
 
 import { marked } from 'marked';
-import { MarkdownView, sanitizeHTMLToDom, debounce, FileView, MarkdownPreviewSection} from 'obsidian';
-import { EditorView } from "@codemirror/view";
+import { sanitizeHTMLToDom } from 'obsidian';
 
-import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from './parser';
-import { store, SupportedIcon, Heading } from './store';
-import { QuietOutline, setEphemeralState } from "./plugin";
-import { useEvent } from "./utils/use"
-import {parseMarkdown, stringifySection, moveHeading, visitSection} from "./utils/md-process"
+import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from '../parser';
+import { store, SupportedIcon, Heading } from '@/store';
+import type { QuietOutline } from "@/plugin";
+import { useEvent } from "@/utils/use"
 
 type TreeOptionX = TreeOption & {
     icon?: SupportedIcon,
@@ -259,191 +257,18 @@ let compomentSelf = getCurrentInstance();
 let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline;
 let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
 
-// register scroll event
-onMounted(() => {
-    document.addEventListener("scroll", handleScroll, true);
-});
-
-onUnmounted(() => {
-    document.removeEventListener("scroll", handleScroll, true);
-});
-
-// support multiple windows
-plugin.app.workspace.on("window-open", (spaceWin, win) => {
-	spaceWin.doc.addEventListener("scroll", handleScroll, true);
-})
-plugin.app.workspace.on("window-close", (spaceWin, win) => {
-    spaceWin.doc.removeEventListener("scroll", handleScroll, true);
-})
-
-
 let toKey = (h: Heading, i: number) => "item-" + h.level + "-" + i;
 let fromKey = (key: string) => parseInt((key as string).split('-')[2]);
 
-let handleScroll = debounce(_handleScroll, 200, true);
-
-function _handleScroll(evt: Event) {
-	if(!plugin.allow_scroll) {
-		return
-	}
-
-	if(plugin.jumping) {
-		plugin.jumping = false
-		return
-	}
-
-    let target = evt.target as HTMLElement;
-    if (!target.classList.contains("markdown-preview-view") && 
-        !target.classList.contains("cm-scroller") &&
-        // fix conflict with outliner
-        // https://github.com/guopenghui/obsidian-quiet-outline/issues/133
-        !target.classList.contains("outliner-plugin-list-lines-scroller")) {
-        return;
-    }
-	
-	let isSourcemode = (plugin.current_note as MarkdownView).getMode() === "source";
-    
-    // if (plugin.jumping) {
-	// 	if (isSourcemode) {
-	// 		onPosChange(false, isSourcemode);
-	// 		return
-	// 	}
-	// } 
-    
-    // if (plugin.settings.locate_by_cursor) {
-    //     return;
-    // }
-	onPosChange(true, isSourcemode);
-    
-}
-
-function onPosChange(fromScroll: boolean, isSourcemode: boolean, index?: number) {
-	if(fromScroll || index === undefined) {
-		const current = currentLine(fromScroll, isSourcemode);
-		index = nearestHeading(current);
-		if (index === undefined) return;
-	}
-
+function onPosChange(index: number) {
     autoExpand(index);
     resetLocated(index);
 }
 
 store.onPosChange = onPosChange;
 
-// 
-watch(() => store.headers, () => {
-	plugin.current_view_type?.contains("markdown") && onPosChange(false, true);
-});
-
-onMounted(() => {
-    document.addEventListener("quiet-outline-cursorchange", handleCursorChange);
-});
-
-onUnmounted(() => {
-    document.removeEventListener("quiet-outline-cursorchange", handleCursorChange);
-});
-
-function handleCursorChange(e?: CustomEvent) {
-	if(!plugin.allow_cursor_change || plugin.jumping || e?.detail.docChanged) {
-		return
-	}
-
-    if (plugin.settings.locate_by_cursor) {
-		// fix conflict with cursor-change and scroll both triggering highlight heading change
-		plugin.block_scroll()
-        onPosChange(false, true);
-    }
-}
-
-function currentLine(fromScroll: boolean, isSourcemode: boolean) {
-    // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    const view = plugin.current_note;
-    if (!view || (plugin.current_view_type !== "markdown" /*&& plugin.current_view_type !== "embed-markdown-file"*/)) {
-        return;
-    }
-
-	let markdownView = view as MarkdownView;
-    if (plugin.settings.locate_by_cursor && !fromScroll) {
-		return isSourcemode
-			? markdownView.editor.getCursor("from").line
-			: Math.ceil(markdownView.previewMode.getScroll());
-        // return markdownView.editor.getCursor("from").line;
-    } else {
-		return isSourcemode
-		// @ts-ignore
-		? getCurrentLineFromEditor(markdownView.editor.cm)
-		: getCurrentLineFromPreview(markdownView);	
-    }
-}
-
-// line above and nearest to middle of the editor
-function getCurrentLineFromEditor(editorView: EditorView): number {
-	const { y, height } = editorView.dom.getBoundingClientRect()
-	const middle = y + height / 2
-	const lineBlocks = editorView.viewportLineBlocks;
-
-	let line: number;
-	lineBlocks.forEach(lb => {
-		const node = editorView.domAtPos(lb.from).node;
-		const el = (node.nodeName == "#text" ? node.parentNode : node) as HTMLElement;
-		const elRect = el.getBoundingClientRect()
-		const base = elRect.y + elRect.height / 2
-
-		if(base <= middle) {
-			line = editorView.state.doc.lineAt(lb.from).number
-		}
-	})
-	
-	return Math.max(line - 2, 0)
-}
-
-function getCurrentLineFromPreview(view: MarkdownView): number {
-	const renderer = view.previewMode.renderer;
-	const previewEl = (renderer as any).previewEl as HTMLElement;
-	const rect = previewEl.getBoundingClientRect()
-	const middle = rect.y + rect.height / 2
-
-	const elsInViewport = previewEl.querySelectorAll(".markdown-preview-sizer>div:not(.markdown-preview-pusher)")
-	
-	let line: number;
-	elsInViewport.forEach(el => {
-		const { y } = el.getBoundingClientRect()
-		if(y <= middle) {
-			line = ((renderer as any).getSectionForElement(el) as MarkdownPreviewSection).lineStart
-		}
-	})
-	
-	return line
-}
-
-function nearestHeading(line: number): undefined | number {
-    let current_heading = null;
-    let i = store.headers.length;
-    while (--i >= 0) {
-        if (store.headers[i].position.start.line <= line) {
-            current_heading = store.headers[i];
-            break;
-        }
-    }
-    if (!current_heading) {
-        return;
-    }
-
-    return i;
-}
-
 function getDefaultLevel(): number {
-	let level = undefined
-	if(plugin.current_note?.file) {
-		const cache = plugin.app.metadataCache.getFileCache(plugin.current_note.file)
-		level = cache?.frontmatter?.["qo-default-level"];
-		if(typeof level === "string") {
-			level = parseInt(level)
-		}
-	}
-	
-	return level || parseInt(plugin.settings.expand_level)
-	
+	return plugin.navigator.getDefaultLevel();
 }
 
 function autoExpand(index: number) {
@@ -556,7 +381,7 @@ function _openPopover(e: KeyboardEvent) {
             targetEl: triggerNode,
             hoverParent: {hoverPopover: null},
             linktext: "#" + triggerNode.getAttribute("raw"),
-            sourcePath: plugin.current_note.file?.path,
+            sourcePath: plugin.navigator.getPath(),
         });
     }
 }
@@ -621,9 +446,10 @@ function modifyExpandKeys(newKeys: string[], mode: "add" | "replace" = "replace"
 }
 
 function syncExpandKeys(){
-    if (!plugin.current_file) return;
+	const path = plugin.navigator.getPath();
+    if (!path) return;
 
-    plugin.heading_states[plugin.current_file] = toRaw(expanded.value);
+    plugin.heading_states[path] = toRaw(expanded.value);
 }
 
 function expand(keys: string[], option: TreeOption[]) {
@@ -734,9 +560,8 @@ watch(
 
         pattern.value = "";
         level.value = getDefaultLevel()
-		//  parseInt(plugin.settings.expand_level);
 
-        const old_state = plugin.heading_states[plugin.current_file];
+        const old_state = plugin.heading_states[plugin.navigator.getPath()];
         if (plugin.settings.remember_state && old_state) {
             modifyExpandKeys(old_state);
         } else {
@@ -744,7 +569,6 @@ watch(
         }
 
         nextTick(() => {
-            handleCursorChange();
             pattern.value = old_pattern;
         });
 
@@ -816,15 +640,7 @@ async function jump(_selected: any, nodes: TreeOption[]): Promise<number> {
 
     const key_value = (nodes[0].key as string).split("-");
     const key = parseInt(key_value[2]);
-
-    // const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
-    // let line: number = store.headers[key].position.start.line;
-    // const view = plugin.current_note;
-    // if (view) {
-    //     view.setEphemeralState({ line });
-    //     setTimeout(() => { view.setEphemeralState({ line }); }, 100);
-    // }
-    store.jumpBy(plugin, key);
+	plugin.navigator.jump(key);
 }
 
 // prepare data for tree component
@@ -925,76 +741,25 @@ function renderLabel({ option }: { option: TreeOption; }) {
 }
 // to-bottom button
 async function toBottom() {
-    // const file = plugin.app.workspace.getActiveFile();
-    // const file = plugin.current_note.file;
-    // TODO: 临时措施，各View的类型不一致
-    let text = plugin.current_note.data;
-    if (text === undefined) {
-        // @ts-ignore
-        text = plugin.current_note.text;
-    }
-    // if (!file) {
-    // }
-
-    // let lines = (await plugin.app.vault.read(file)).split("\n");
-    let lines = text.split("\n");
-    const view = plugin.current_note;
-    
-    const scroll = () => {
-        if (view instanceof FileView) {
-            // For some reason, scrolling to last 4 lines gets an error.
-            view.setEphemeralState({ line: lines.length - 5 });
-        } else {
-            setEphemeralState(view, { line: lines.length - 5 });
-        }
-    }
-
-    scroll();
-    setTimeout(scroll, 100);
+	plugin.navigator.toBottom();
 }
 // reset button
 function reset() {
     pattern.value = "";
     level.value = getDefaultLevel()
-	// parseInt(plugin.settings.expand_level);
     switchLevel(level.value);
 }
 
 // drag and drop
 async function onDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
-    if (!plugin.current_note || plugin.current_view_type !== "markdown") {
+    if (!plugin.navigator.canDrop) {
         return;
     }
 
-    const file = plugin.current_note.file;
-	const text = await plugin.app.vault.read(file);
-	const structure = await parseMarkdown(text);
-
-    // let rawExpand = toRaw(expanded.value).map(getNo);
-	// visitSection(structure, (section) => {
-	// 	if(section.id < 0) return;
-		
-	// 	if(rawExpand.contains(section.id)) {
-	// 		section.headingExpaned = true;
-	// 	}
-	// });
-
 	const fromNo = getNo(dragNode);
 	const toNo = getNo(node);
-
-	moveHeading(structure, fromNo, toNo, dropPosition);
-			  
-	// let i = 0;
-	// const newExpandKeys: string[] = [];
-	// visitSection(structure, (section) => {
-	// 	if(section.id < 0) return;
-	// 	if(section.headingExpaned && section.content.children.length > 0) {
-	// 		newExpandKeys.push(`item-${section.headingLevel}-${i}`)	
-	// 	}
-	// 	i++;
-	// })
-
-    plugin.app.vault.modify(file, stringifySection(structure));
+	
+	await plugin.navigator.handleDrop(fromNo, toNo, dropPosition);
 }
 
 function getNo(node: TreeOption | string): number {

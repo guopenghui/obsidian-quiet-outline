@@ -1,7 +1,7 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { createApp, App } from 'vue';
 import Outline from './Outline.vue';
-import { QuietOutline } from "./plugin";
+import type { QuietOutline } from "../plugin";
 
 export const VIEW_TYPE: string = 'quiet-outline';
 

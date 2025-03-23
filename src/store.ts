@@ -1,6 +1,5 @@
 import { reactive } from 'vue';
-import { HeadingCache, MarkdownView } from 'obsidian';
-import { dummyJump } from "./plugin"
+import type { HeadingCache, MarkdownView } from 'obsidian';
 
 export type SupportedIcon = 
       "AudiotrackOutlined" 
@@ -42,8 +41,7 @@ const store = reactive({
         this.refreshTree();
     },
     headers: [] as Heading[],
-    jumpBy: dummyJump,
-	onPosChange: (fromScroll: boolean, isSource: boolean, index?: number) => {},
+	onPosChange: (index: number) => {},
     dark: true,
     cssChange: false,
     markdown: true,
