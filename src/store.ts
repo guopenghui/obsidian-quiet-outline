@@ -67,7 +67,6 @@ const store = reactive({
     rainbowColor3: "",
     rainbowColor4: "",
     rainbowColor5: "",
-    currentNote: null as MarkdownView
 });
 
 export { store };

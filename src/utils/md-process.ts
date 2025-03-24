@@ -1,4 +1,5 @@
 import {App, CachedMetadata} from "obsidian";
+import {isNativeError} from "util/types";
 
 // a trick to use obsidian builtin function to parse markdown headings
 export async function parseMetaDataCache(app: App, text: string): Promise<CachedMetadata> {
@@ -23,6 +24,8 @@ type Section = {
 
 export async function parseMarkdown(text: string): Promise<Section> {
 	const res = await parseMetaDataCache(app, text);
+	const headings = res.headings || [];
+	const sections = res.sections || [];
 		
 	const content: Content = {
 		preContent: "",
@@ -36,19 +39,20 @@ export async function parseMarkdown(text: string): Promise<Section> {
 		id: -1,
 		content, type: "section"
 	}];
+
 	let start = 0, end = 0, headingIndex = 0;
-	for(let section of res.sections) {
+	for(let section of sections) {
 		if(section.type === "heading") {
 			end = Math.max(section.position.start.offset, 0);
-			stack.last().content.preContent = text.slice(start, end);
+			stack.last()!.content.preContent = text.slice(start, end);
 
-			while(res.headings[headingIndex].level <= stack.last().headingLevel) {
+			while(headings[headingIndex].level <= stack.last()!.headingLevel) {
 				stack.pop();	
 			}
 			
 			const newEntry: Section = {
-				heading: res.headings[headingIndex].heading,
-				headingLevel: res.headings[headingIndex].level,
+				heading: headings[headingIndex].heading,
+				headingLevel: headings[headingIndex].level,
 				headingExpaned: false,
 				id: headingIndex,
 				content: {
@@ -57,15 +61,15 @@ export async function parseMarkdown(text: string): Promise<Section> {
 				},
 				type: "section",
 			}
-			stack.last().content.children.push(newEntry);
+			stack.last()!.content.children.push(newEntry);
 			stack.push(newEntry);
 
-			start = res.headings[headingIndex].position.end.offset + 1;
+			start = headings[headingIndex].position.end.offset + 1;
 			headingIndex++;
 		}
 	}
 
-	stack.last().content.preContent = text.slice(start);
+	stack.last()!.content.preContent = text.slice(start);
 	return stack[0];
 }
 
@@ -98,6 +102,8 @@ export function findSection(root: Section, parent: Section, id: number): [Sectio
 		const res = findSection(child, root, id);
 		if(res) return res;
 	}
+	
+	throw new Error(`section ${id} not found`);
 }
 
 export function visitSection(root: Section, fn: (section: Section) => void) {

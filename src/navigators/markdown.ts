@@ -23,8 +23,8 @@ export class MarkDownNav extends Nav {
 	};
 	
 	async getHeaders(): Promise<HeadingCache[]> {
-		const cache = this.plugin.app.metadataCache.getFileCache(this.view.file);
-		return cache.headings;
+		const cache = this.plugin.app.metadataCache.getFileCache(this.view.file!);
+		return cache?.headings || [];
 	}
 
 	async setHeaders(): Promise<void> {
@@ -98,9 +98,8 @@ export class MarkDownNav extends Nav {
 	}
 	
 	getDefaultLevel(): number {
-		const file = this.view.file;
 		let level;
-		const cache = this.plugin.app.metadataCache.getFileCache(file)
+		const cache = this.plugin.app.metadataCache.getFileCache(this.view.file!)
 		level = cache?.frontmatter?.["qo-default-level"];
 		if(typeof level === "string") {
 			level = parseInt(level)
@@ -110,13 +109,13 @@ export class MarkDownNav extends Nav {
 	}
 	
 	getPath(): string {
-		return this.view.file.path;
+		return this.view.file!.path;
 	}
 	
 	async handleDrop(from: number, to: number, position: "before" | "after" | "inside"){
 		const structure = await parseMarkdown(this.view.data);
 		moveHeading(structure, from, to, position);
-		await plugin.app.vault.modify(this.view.file, stringifySection(structure));
+		await plugin.app.vault.modify(this.view.file!, stringifySection(structure));
 	}
 }
 
@@ -165,7 +164,7 @@ function getCurrentLineFromEditor(editorView: EditorView): number {
 	const middle = y + height / 2
 	const lineBlocks = editorView.viewportLineBlocks;
 
-	let line: number;
+	let line: number = 0;
 	lineBlocks.forEach(lb => {
 		const node = editorView.domAtPos(lb.from).node;
 		const el = (node.nodeName == "#text" ? node.parentNode : node) as HTMLElement;
@@ -188,7 +187,7 @@ function getCurrentLineFromPreview(view: MarkdownView): number {
 
 	const elsInViewport = previewEl.querySelectorAll(".markdown-preview-sizer>div:not(.markdown-preview-pusher)")
 	
-	let line: number;
+	let line: number = 0;
 	elsInViewport.forEach(el => {
 		const { y } = el.getBoundingClientRect()
 		if(y <= middle) {
@@ -214,21 +213,6 @@ function nearestHeading(line: number): undefined | number {
 
     return i;
 }
-
-// function getDefaultLevel(): number {
-// 	let level = undefined
-// 	const file = (plugin.navigator as MarkDownNav).view.file;
-// 	if(file) {
-// 		const cache = plugin.app.metadataCache.getFileCache(file);
-// 		level = cache?.frontmatter?.["qo-default-level"];
-// 		if(typeof level === "string") {
-// 			level = parseInt(level)
-// 		}
-// 	}
-	
-// 	return level || parseInt(plugin.settings.expand_level)
-	
-// }
 
 const handleScroll = debounce(_handleScroll, 200, true);
 

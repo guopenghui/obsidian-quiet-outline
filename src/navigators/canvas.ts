@@ -73,7 +73,7 @@ export class CanvasNav extends Nav {
 	async jump(key: number): Promise<void> {
 		// @ts-ignore
 		const nodes: Map<string, AllCanvasNodeData> = this.view.canvas.nodes;
-		const node = nodes.get(store.headers[key].id);
+		const node = nodes.get(store.headers[key].id!);
 		if (node !== undefined) {
 			this.view.canvas.zoomToBbox(node.bbox);	
 		}
@@ -206,14 +206,14 @@ function text(node: AllCanvasNodeData): string {
 				text = node.url;
 				request(node.url)
 					.then(res => {
-						cacheTitle[node.url] = /<title>(.*)<\/title>/.exec(res)[1];
+						cacheTitle[node.url] = /<title>(.*)<\/title>/.exec(res)?.[1] || "";
 					})
 					.catch(() => {});
 			}
 			break;
 		}
 		case 'group': {
-			text = node.label;
+			text = node.label || "Unnamed Group";
 			break;
 		}
 	}

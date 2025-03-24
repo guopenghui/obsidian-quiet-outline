@@ -9,7 +9,7 @@ export const formula: Extension = {
     name: "formula",
     level: "inline",
     start(src) {
-        return src.match(/\$/)?.index;
+        return src.match(/\$/)?.index || -1;
     },
     tokenizer(src, tokens) {
         const rule = /^\$([^\$]+)\$/;
@@ -42,7 +42,9 @@ export const internal_link: Extension = {
     name: "internal",
     level: "inline",
     start(src) {
-        return src.match(/!?\[\[/)?.index;
+		// when regex passed to src.match has 'g' flag, match.index will be undefined
+		const match = src.match(/!?\[\[/);
+		return match ? match.index! : -1;
     },
     tokenizer(src, token) {
         const rule = /^!?\[\[([^\[\]]+?)\]\]/;
@@ -66,7 +68,8 @@ export const remove_ref: Extension = {
     name: "ref",
     level: "inline",
     start(src) {
-        return src.match(/\^|\[/)?.index;
+        const match = src.match(/\^|\[/);
+		return match ? match.index! : -1;
     },
     tokenizer(src, tokens) {
         const rule = /^(\^[A-Za-z0-9\-]+)|^(\^\[[^\]]*\])|^(\[\^[^\]]*\])/;
@@ -90,7 +93,8 @@ export const highlight: Extension = {
     name: "highlight",
     level: "inline",
     start(src) {
-        return src.match(/==/)?.index;
+		const match = src.match(/==/);
+		return match ? match.index! : -1;
     },
     tokenizer(src, token) {
         const rule = /^==([^=]+)==/;
@@ -113,7 +117,8 @@ export const tag: Extension = {
     name: "tag",
     level: "inline",
     start(src) {
-        return src.match(/^#|(?<=\s)#/)?.index;
+        const match = src.match(/^#|(?<=\s)#/);
+		return match ? match.index! : -1;
     },
     tokenizer(src, token) {
         const rule = /^#([^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
@@ -152,7 +157,8 @@ export const nolist: Extension = {
     name: "nolist",
     level: "block",
     start(src) {
-        return src.match(/^(\d+[\.)\-+*]|[+\-*]) /)?.index
+        const match = src.match(/^(\d+[\.)\-+*]|[+\-*]) /);
+		return match ? match.index! : -1;
     },
     tokenizer(src, tokens) {
         const rule = /^(([+\-*])|(\d+[\.\-)+*])) (.*)/;
@@ -185,7 +191,7 @@ export const nolist: Extension = {
         return token;
     },
     renderer(token) {
-        let body = this.parser.parseInline(token.tokens, null);
+        let body = this.parser.parseInline(token.tokens!, null as any);
         
         if (token.ordered)
             return `<p>${token.start} ${body}</p>`;

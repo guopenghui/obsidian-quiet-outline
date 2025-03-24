@@ -18,7 +18,7 @@ import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";
 
 export class QuietOutline extends Plugin {
 	settings: QuietOutlineSettings;
-	navigator: Nav = new NAVGATORS["dummy"](this, null);
+	navigator: Nav = new NAVGATORS["dummy"](this, null as any);
 	jumping: boolean;
 	heading_states: Record<string, string[]> = {};
 	klasses: Record<string, Constructor<any>> = {};
@@ -110,7 +110,7 @@ export class QuietOutline extends Plugin {
 				if((leaf.view as  MarkdownView).file === undefined) {
 					return
 				}
-				const path = (leaf.view as MarkdownView).file.path;
+				const path = (leaf.view as MarkdownView).file!.path;
 				this.heading_states[path] && 
 					(filteredStates[path] = this.heading_states[path]);
 			})
@@ -129,14 +129,14 @@ export class QuietOutline extends Plugin {
 
 			// when there is no active file-view, eg. no file is opened or an empty view is focused.
 			if (!view) {
-				await this.updateNav("dummy", null);
+				await this.updateNav("dummy", null as any);
 				await this.refresh_outline();
 				store.refreshTree();
 				return;
 			}
 
 			// when switching to a non-file-view, like outline and tags panel, do nothing.
-			if(view && view !== leaf.view) {
+			if(!leaf || view && view !== leaf.view) {
 				return;
 			}
 
@@ -187,7 +187,7 @@ export class QuietOutline extends Plugin {
 
 		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0
 		) {
-			await this.app.workspace.getRightLeaf(false).setViewState({
+			await this.app.workspace.getRightLeaf(false)?.setViewState({
 				type: VIEW_TYPE,
 				active: true,
 			});

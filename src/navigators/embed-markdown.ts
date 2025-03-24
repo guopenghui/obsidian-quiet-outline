@@ -41,7 +41,7 @@ export class EmbedMarkdownFileNav extends Nav {
 	}
 	async getHeaders(): Promise<HeadingCache[]> {
 		const cache = this.plugin.app.metadataCache.getFileCache(this.view.file);
-		return cache.headings;
+		return cache?.headings || [];
 	}
 	async setHeaders(): Promise<void> {
 		const headings = await this.getHeaders();
@@ -69,7 +69,7 @@ export class EmbedMarkdownTextNav extends Nav {
 	}
 	async getHeaders(): Promise<HeadingCache[]> {
 		const { headings } = await parseMetaDataCache(this.plugin.app, this.view.text);
-		return headings;
+		return headings || [];
 	}
 	async setHeaders(): Promise<void> {
 		store.headers = await this.getHeaders();

@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { 
 	ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance,
-	onMounted, onUnmounted, HTMLAttributes, h, watchEffect, VNodeChild
+	onMounted, onUnmounted, HTMLAttributes, h, watchEffect, VNodeChild, inject,
 } from 'vue';
 
 import { 
@@ -61,8 +61,13 @@ import { useEvent } from "@/utils/use"
 type TreeOptionX = TreeOption & {
     icon?: SupportedIcon,
 }
+type MakeRequired<T, K extends keyof T> = T & {
+    [P in K]-?: T[P];
+};
 
-const lightThemeConfig = reactive<GlobalThemeOverrides>({
+type ThemeOverrides = MakeRequired<GlobalThemeOverrides, 'common' | 'Slider' | 'Tree'>;
+
+const lightThemeConfig = reactive<ThemeOverrides>({
     common: {
         primaryColor: "",
         primaryColorHover: "",
@@ -78,7 +83,7 @@ const lightThemeConfig = reactive<GlobalThemeOverrides>({
     },
 });
 
-const darkThemeConfig = reactive<GlobalThemeOverrides>({
+const darkThemeConfig = reactive<ThemeOverrides>({
     common: {
         primaryColor: "",
         primaryColorHover: "",
@@ -121,16 +126,22 @@ watchEffect(() => {
     if (store.patchColor) {
         lightThemeConfig.common.primaryColor
             = lightThemeConfig.common.primaryColorHover
+			// @ts-ignore type indication error
             = lightThemeConfig.Slider.fillColor
+			// @ts-ignore type indication error
             = lightThemeConfig.Slider.fillColorHover
             = store.primaryColorLight;
+			// @ts-ignore type indication error
         lightThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorLight}`;
 
         darkThemeConfig.common.primaryColor
             = darkThemeConfig.common.primaryColorHover
+			// @ts-ignore type indication error
             = darkThemeConfig.Slider.fillColor
+			// @ts-ignore type indication error
             = darkThemeConfig.Slider.fillColorHover
             = store.primaryColorDark;
+			// @ts-ignore type indication error
         darkThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorDark}`;
         return;
     }
@@ -139,14 +150,20 @@ watchEffect(() => {
         let color = getDefaultColor();
         lightThemeConfig.common.primaryColor
             = lightThemeConfig.common.primaryColorHover
+			// @ts-ignore type indication error
             = lightThemeConfig.Slider.fillColor
+			// @ts-ignore type indication error
             = lightThemeConfig.Slider.fillColorHover
             = darkThemeConfig.common.primaryColor
             = darkThemeConfig.common.primaryColorHover
+			// @ts-ignore type indication error
             = darkThemeConfig.Slider.fillColor
+			// @ts-ignore type indication error
             = darkThemeConfig.Slider.fillColorHover
             = color;
+			// @ts-ignore type indication error
         lightThemeConfig.Slider.dotBorderActive
+			// @ts-ignore type indication error
             = darkThemeConfig.Slider.dotBorderActive
             = `2px solid ${color}`;
         locatedColor.value = color;
@@ -253,9 +270,11 @@ onUnmounted(() => {
     removeEventListener("quiet-outline-reset", reset);
 });
 
-let compomentSelf = getCurrentInstance();
-let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline;
-let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
+// let compomentSelf = getCurrentInstance();
+const plugin = inject("plugin") as QuietOutline;
+const container = inject("container") as HTMLElement;
+// let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline;
+// let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
 
 let toKey = (h: Heading, i: number) => "item-" + h.level + "-" + i;
 let fromKey = (key: string) => parseInt((key as string).split('-')[2]);
@@ -332,7 +351,7 @@ const setAttrs = computed(() => {
     return (info: { option: TreeOption; }): HTMLAttr => {
         let lev = parseInt((info.option.key as string).split('-')[1]);
         let no = parseInt((info.option.key as string).split('-')[2]);
-        let raw = info.option.label; 
+        let raw = info.option.label || ""; 
 		
 		let locate = locateIdx.value === no ? "located" : ""
 
@@ -347,8 +366,8 @@ const setAttrs = computed(() => {
 });
 
 // on Mouseover, show popover
-let triggerNode: HTMLElement = undefined;
-let mouseEvent: MouseEvent = undefined;
+let triggerNode: HTMLElement | undefined;
+let mouseEvent: MouseEvent | undefined;
 let prevShowed = ""
 
 function onMouseEnter(event: MouseEvent) {
@@ -380,7 +399,7 @@ function _openPopover(e: KeyboardEvent) {
             source: "preview",
             targetEl: triggerNode,
             hoverParent: {hoverPopover: null},
-            linktext: "#" + triggerNode.getAttribute("raw"),
+            linktext: "#" + triggerNode?.getAttribute("raw"),
             sourcePath: plugin.navigator.getPath(),
         });
     }
@@ -396,7 +415,7 @@ function customDebounce(func: (_: any) => void, delay: number) {
 
     return function (...args: any) {
         const context = this;
-        let currentLink = triggerNode?.getAttribute("raw");
+        let currentLink = triggerNode?.getAttribute("raw") || "";
         if ( currentLink !== prevShowed || fresh) {
             func.apply(context, args);
             
@@ -599,7 +618,7 @@ let renderMethod = computed(() => {
     if (store.markdown) {
         return renderLabel;
     }
-    return null;
+    return undefined;
 });
 
 // search
@@ -612,12 +631,12 @@ function regexFilter(pattern: string, option: TreeOption): boolean {
     } catch (e) {
 
     } finally {
-        return rule.test(option.label);
+        return rule.test(option.label || "");
     }
 }
 
 function simpleFilter(pattern: string, option: TreeOption): boolean {
-    return option.label.toLowerCase().contains(pattern.toLowerCase());
+    return (option.label || "").toLowerCase().contains(pattern.toLowerCase());
 }
 
 let filter = computed(() => {
@@ -633,7 +652,7 @@ let matchCount = computed(() => {
 
 
 // click and jump
-async function jump(_selected: any, nodes: TreeOption[]): Promise<number> {
+async function jump(_selected: any, nodes: TreeOption[]): Promise<void> {
     if (nodes[0] === undefined) {
         return;
     }
@@ -666,11 +685,11 @@ function arrToTree(headers: Heading[]): TreeOption[] {
             icon: h.icon,
         };
 
-        while (h.level <= stack.last().level) {
+        while (h.level <= stack.last()!.level) {
             stack.pop();
         }
 
-        let parent = stack.last().node;
+        let parent = stack.last()!.node;
         if (parent.children === undefined) {
             parent.children = [];
         }
@@ -678,13 +697,13 @@ function arrToTree(headers: Heading[]): TreeOption[] {
         stack.push({ node, level: h.level });
     });
 
-    return root.children;
+    return root.children!;
 }
 
 // get ancestor heading indexes of a given heading
 function getPath(index: number) {
     let res: number[] = [];
-    function pushLastGreatEq(nodes: TreeOption[]) {
+    function pushLastGreatEq(nodes: TreeOption[] | undefined) {
         if (!nodes || nodes.length === 0) {
             return;
         }
@@ -721,11 +740,11 @@ marked.use({ walkTokens: remove_href });
 marked.use({ renderer });
 
 function renderLabel({ option }: { option: TreeOption; }) {
-    let result = marked.parse(option.label).trim();
+    let result = marked.parse(option.label || "").trim();
 
     // save mjx elements
     let i = 0;
-    let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g);
+    let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) || [];
     result = result.replace(/<mjx-container.*?>.*?<\/mjx-container>/g, () => {
         return `<math></math>`;
     });
