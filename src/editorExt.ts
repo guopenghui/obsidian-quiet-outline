@@ -1,16 +1,16 @@
 // import { syntaxTree } from "@codemirror/language";
 import {
-  Extension,
-  RangeSetBuilder,
-  StateField,
-  Transaction,
-  EditorState,
-  StateEffect,
+  // Extension,
+  // RangeSetBuilder,
+  // StateField,
+  // Transaction,
+  // EditorState,
+  // StateEffect,
 } from "@codemirror/state";
 import {
-  Decoration,
-  DecorationSet,
-  WidgetType,
+  // Decoration,
+  // DecorationSet,
+  // WidgetType,
   EditorView,
   PluginValue,
   ViewUpdate,

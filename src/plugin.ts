@@ -1,7 +1,6 @@
 import {
 	Constructor,
 	debounce,
-	FileView,
 	MarkdownView,
 	Notice,
 	Plugin,
@@ -103,7 +102,7 @@ export class QuietOutline extends Plugin {
 		// remove states from closed notes
 		this.registerEvent(this.app.workspace.on("layout-change", () => {
 			const leaves = this.app.workspace.getLeavesOfType("markdown");
-			let filteredStates: Record<string, string[]> = {};
+			const filteredStates: Record<string, string[]> = {};
 			leaves.forEach((leaf) => {
 				// when app is just opened, if a markdown tab is not activated,
 				// there is no 'file' field in leaf.view
@@ -218,7 +217,7 @@ export class QuietOutline extends Plugin {
 			id: "quiet-outline-focus-input",
 			name: "Focus on input",
 			callback: () => {
-				let input = document.querySelector("input.n-input__input-el") as HTMLInputElement;
+				const input = document.querySelector("input.n-input__input-el") as HTMLInputElement;
 				if (input) {
 					input.focus();
 				}
@@ -257,7 +256,7 @@ export class QuietOutline extends Plugin {
 								return num.toString()
 							}
 						}
-						let match = key.match(/num-nest\[(.*?)\]/);
+						const match = key.match(/num-nest\[(.*?)\]/);
 
 						if(match) {
 							const sep = match[1];
@@ -270,7 +269,7 @@ export class QuietOutline extends Plugin {
 					return merge(parts, fields).join("");
 				}
 
-				let nums = [0, 0, 0, 0, 0, 0];
+				const nums = [0, 0, 0, 0, 0, 0];
 				const headers: string[] = [];
 				store.headers.forEach((h) => {
 					nums.forEach((num, i) => {
@@ -311,7 +310,7 @@ export class QuietOutline extends Plugin {
 			editorCallback: (editor) => {
 				const line = editor.getCursor().line;
 				
-				let idx = store.headers.findLastIndex(h => h.position.start.line < line);
+				const idx = store.headers.findLastIndex(h => h.position.start.line < line);
 				
 				idx != -1 && this.navigator.jump(idx);
 			}
@@ -323,7 +322,7 @@ export class QuietOutline extends Plugin {
 			editorCallback: (editor) => {
 				const line = editor.getCursor().line;
 				
-				let idx = store.headers.findIndex(h => h.position.start.line > line);
+				const idx = store.headers.findIndex(h => h.position.start.line > line);
 				
 				idx != -1 && this.navigator.jump(idx);
 			}

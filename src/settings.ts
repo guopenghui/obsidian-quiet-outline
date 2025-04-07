@@ -2,7 +2,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import { QuietOutline } from "./plugin";
 import { store } from "./store";
 import { t } from "./lang/helper";
-import {text} from "stream/consumers";
+
 interface QuietOutlineSettings {
     patch_color: boolean;
     primary_color_light: string;

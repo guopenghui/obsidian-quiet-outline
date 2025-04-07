@@ -19,11 +19,11 @@ export class EmbedMarkdownFileNav extends Nav {
 		// const view = plugin.current_note as EmbedMarkdownView;
 		const line = store.headers[key].position.start.line;
 
-		const cursor = {
-			from: {line, ch: 0},
-			to: {line, ch: 0},
-		};
-		const state = { line, cursor };
+		// const cursor = {
+		// 	from: {line, ch: 0},
+		// 	to: {line, ch: 0},
+		// };
+		// const state = { line, cursor };
 		
 		this.plugin.jumping = true;
 		store.onPosChange(key);

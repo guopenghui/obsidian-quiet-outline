@@ -1,4 +1,4 @@
-import {Component, HeadingCache, View} from "obsidian";
+import {Component, HeadingCache} from "obsidian";
 import type {QuietOutline} from "@/plugin";
 import {store} from "@/store";
 
@@ -10,7 +10,7 @@ export abstract class Nav extends Component {
 	constructor(plugin: QuietOutline){
 		super()
 		this.plugin = plugin;
-	};
+	}
 	async load(): Promise<void> {
 		if(!this._loaded) {
 			this._loaded = true;
@@ -42,7 +42,7 @@ export abstract class Nav extends Component {
 	async install() {}
 	async onload(): Promise<void> {}
 	async onunload(): Promise<void> {}
-	async handleDrop(from: number, to: number, position: "before" | "after" | "inside"){};
+	async handleDrop(from: number, to: number, position: "before" | "after" | "inside"){}
 	toBottom(){}
 	abstract jump(key: number): Promise<void>;
 	abstract getHeaders(): Promise<HeadingCache[]>;
@@ -52,7 +52,7 @@ export abstract class Nav extends Component {
 
 export class DummyNav extends Nav {
 	getId() { return "dummy";}
-	async jump(_key: number){};
+	async jump(_key: number){}
 	async getHeaders(): Promise<HeadingCache[]> { return []}
 	async setHeaders(): Promise<void> {store.headers = []}
 	async updateHeaders(){}

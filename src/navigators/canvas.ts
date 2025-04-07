@@ -38,7 +38,7 @@ export class CanvasNav extends Nav {
 		plugin.registerEvent(plugin.app.workspace.on('quiet-outline:canvas-selection-change', async (selection: Set<CanvasComponent>) => {
 			// if selection change to 0 or more than 1, return to canvas view
 			if (selection.size === 0 || selection.size > 1) {
-				let view = plugin.app.workspace.getActiveFileView();
+				const view = plugin.app.workspace.getActiveFileView();
 				if (!view) return;
 				await plugin.updateNav(view.getViewType(), view);
 				await plugin.refresh_outline();
@@ -47,10 +47,10 @@ export class CanvasNav extends Nav {
 			}
 
 			// if selection is only 1 textNode or md fileNode, show md outline
-			let component = [...selection][0];
+			const component = [...selection][0];
 			if (!component.hasOwnProperty("nodeEl")) return;
 
-			let node = component as CanvasNode;
+			const node = component as CanvasNode;
 			
 			if (node.unknownData.type === "file" && (node as CanvasFileNode).file.extension === "md") {
 				const view = (node as CanvasFileNode).child as EmbedMarkdownView;
@@ -61,7 +61,7 @@ export class CanvasNav extends Nav {
 			}
 
 			if (node.unknownData.type === "text" ) {
-				let view = (node as CanvasTextNode).child;
+				const view = (node as CanvasTextNode).child;
 				await plugin.updateNav("embed-markdown-text", view);
 				await plugin.refresh_outline();
 				store.refreshTree();
@@ -129,12 +129,12 @@ function canvasNodesToHeaders(nodes: AllCanvasNodeData[]): Heading[] {
 	// const groups = nodes.filter(node => node.type === "group").sort((a, b) => - cmpArea(a, b));
 	const nodesDec = nodes.slice().sort((a, b) => - cmpArea(a, b));
 
-	let trees: TreeNode[] = [];
+	const trees: TreeNode[] = [];
 	for(let i = 0; i < nodesDec.length; i++) {
 		insert(trees, nodesDec[i]);
 	}
 
-	let heads: Heading[] = []
+	const heads: Heading[] = []
 	traverse(trees, 1, (node, level) => {
 		heads.push({
 			level,

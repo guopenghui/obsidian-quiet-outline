@@ -20,7 +20,7 @@ export class MarkDownNav extends Nav {
 	
 	getId() {
 		return "markdown";
-	};
+	}
 	
 	async getHeaders(): Promise<HeadingCache[]> {
 		const cache = this.plugin.app.metadataCache.getFileCache(this.view.file!);
@@ -39,7 +39,7 @@ export class MarkDownNav extends Nav {
 	}
 
 	async jump(key: number) {
-		let line: number = store.headers[key].position.start.line;
+		const line: number = store.headers[key].position.start.line;
 
 		const cursor = {
 			from: {line, ch: 0},
@@ -144,7 +144,7 @@ function currentLine(fromScroll: boolean, isSourcemode: boolean) {
     //     return;
     // }
 
-	let markdownView = view as MarkdownView;
+	const markdownView = view as MarkdownView;
     if (plugin.settings.locate_by_cursor && !fromScroll) {
 		return isSourcemode
 			? markdownView.editor.getCursor("from").line
@@ -226,7 +226,7 @@ function _handleScroll(evt: Event) {
 		return
 	}
 
-    let target = evt.target as HTMLElement;
+    const target = evt.target as HTMLElement;
     if (!target.classList.contains("markdown-preview-view") && 
         !target.classList.contains("cm-scroller") &&
         // fix conflict with outliner
@@ -235,7 +235,7 @@ function _handleScroll(evt: Event) {
         return;
     }
 	
-	let isSourcemode = (plugin.navigator as MarkDownNav).view.getMode() === "source";
+	const isSourcemode = (plugin.navigator as MarkDownNav).view.getMode() === "source";
     
     // if (plugin.jumping) {
 	// 	if (isSourcemode) {

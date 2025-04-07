@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import type { HeadingCache, MarkdownView } from 'obsidian';
+import type { HeadingCache } from 'obsidian';
 
 export type SupportedIcon = 
       "AudiotrackOutlined" 

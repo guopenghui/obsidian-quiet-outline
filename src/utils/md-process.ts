@@ -1,5 +1,4 @@
 import {App, CachedMetadata} from "obsidian";
-import {isNativeError} from "util/types";
 
 // a trick to use obsidian builtin function to parse markdown headings
 export async function parseMetaDataCache(app: App, text: string): Promise<CachedMetadata> {
@@ -41,7 +40,7 @@ export async function parseMarkdown(text: string): Promise<Section> {
 	}];
 
 	let start = 0, end = 0, headingIndex = 0;
-	for(let section of sections) {
+	for(const section of sections) {
 		if(section.type === "heading") {
 			end = Math.max(section.position.start.offset, 0);
 			stack.last()!.content.preContent = text.slice(start, end);
@@ -98,7 +97,7 @@ export function moveHeading(root: Section, fromNo: number, toNo: number, positio
 export function findSection(root: Section, parent: Section, id: number): [Section, Section] {
 	if(root.id === id) return [parent, root];
 
-	for(let child of root.content.children) {
+	for(const child of root.content.children) {
 		const res = findSection(child, root, id);
 		if(res) return res;
 	}
@@ -109,7 +108,7 @@ export function findSection(root: Section, parent: Section, id: number): [Sectio
 export function visitSection(root: Section, fn: (section: Section) => void) {
 	fn(root);
 
-	for(let child of root.content.children) {
+	for(const child of root.content.children) {
 		visitSection(child, fn);
 	}	
 }

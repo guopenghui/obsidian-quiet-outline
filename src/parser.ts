@@ -191,7 +191,7 @@ export const nolist: Extension = {
         return token;
     },
     renderer(token) {
-        let body = this.parser.parseInline(token.tokens!, null as any);
+        const body = this.parser.parseInline(token.tokens!, null as any);
         
         if (token.ordered)
             return `<p>${token.start} ${body}</p>`;

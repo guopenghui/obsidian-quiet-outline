@@ -19,7 +19,7 @@ type ModifyDiff = {
 const MODIFY_CHECK_STEP = 5;
 export function diff(prev: Heading[], cur: Heading[]): Diff[] {
     let i = 0, j = 0;
-    let res: Diff[] = []
+    const res: Diff[] = []
     while(i < prev.length && j < cur.length) {
         // same heading, pass
         if(prev[i].heading === cur[j].heading && prev[i].level === cur[j].level) {
@@ -100,7 +100,7 @@ function findSteps(target: Heading, arr: Heading[], from: number): number {
     return step
 }
 function findModifyStep(prev: Heading[], cur: Heading[], i: number, j: number) {
-    let step = Math.min(prev.length - i - 1, cur.length - j - 1, MODIFY_CHECK_STEP);
+    const step = Math.min(prev.length - i - 1, cur.length - j - 1, MODIFY_CHECK_STEP);
     for(let id = 1; step > 0 && id <= step; id++) {
         if(prev[i+id].heading === cur[j+id].heading
             && prev[i+id].level === cur[j+id].level

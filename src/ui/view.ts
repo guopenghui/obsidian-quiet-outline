@@ -3,7 +3,7 @@ import { createApp, App } from 'vue';
 import Outline from './Outline.vue';
 import type { QuietOutline } from "../plugin";
 
-export const VIEW_TYPE: string = 'quiet-outline';
+export const VIEW_TYPE = 'quiet-outline';
 
 export class OutlineView extends ItemView {
     vueApp: App;
