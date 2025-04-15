@@ -67,14 +67,21 @@ export async function parseMarkdown(text: string): Promise<Section> {
 			headingIndex++;
 		}
 	}
+	
+	// make sure the last section ends with a `\n`,
+	// so that it won't stick to any other sections
+	let preContent = text.slice(start);
+	if(stack.length > 1 && !preContent.endsWith("\n")){
+		preContent += "\n";
+	}
 
-	stack.last()!.content.preContent = text.slice(start);
+	stack.last()!.content.preContent = preContent;
 	return stack[0];
 }
 
 export function moveHeading(root: Section, fromNo: number, toNo: number, position: "before" | "after" | "inside") {
-	const [fromParent, from] = findSection(root, root, fromNo);
-	const [toParent, to] = findSection(root, root, toNo);
+	const [fromParent, from] = findSection(root, fromNo);
+	const [toParent, to] = findSection(root, toNo);
 	const newFrom = structuredClone(from);
 
 	switch(position) {
@@ -94,15 +101,21 @@ export function moveHeading(root: Section, fromNo: number, toNo: number, positio
 	fromParent.content.children.splice(fromParent.content.children.indexOf(from), 1);
 }
 
-export function findSection(root: Section, parent: Section, id: number): [Section, Section] {
+export function findSection(root: Section, id: number): [Section, Section] {
+	const res = findSectionIn(root, root, id);
+	if(!res) {
+		throw new Error(`section ${id} not found`);
+	}
+	return res;
+}
+
+function findSectionIn(root: Section, parent: Section, id: number): [Section, Section] | undefined {
 	if(root.id === id) return [parent, root];
 
 	for(const child of root.content.children) {
-		const res = findSection(child, root, id);
+		const res = findSectionIn(child, root, id);
 		if(res) return res;
 	}
-	
-	throw new Error(`section ${id} not found`);
 }
 
 export function visitSection(root: Section, fn: (section: Section) => void) {
