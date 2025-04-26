@@ -1,6 +1,5 @@
 {
     "root": true,
-    "parser": "@typescript-eslint/parser",
     "env": { "node": true },
     "plugins": [
       "@typescript-eslint"
@@ -10,8 +9,10 @@
       "plugin:@typescript-eslint/eslint-recommended",
       "plugin:@typescript-eslint/recommended"
     ], 
+    "parser": "vue-eslint-parser",
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "parser": "@typescript-eslint/parser"
     },
     "rules": {
       "no-unused-vars": "off",
