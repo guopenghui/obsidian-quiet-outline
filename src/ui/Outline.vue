@@ -586,10 +586,12 @@ watch(
         } else {
             switchLevel(level.value);
         }
-
-        nextTick(() => {
-            pattern.value = old_pattern;
-        });
+        
+        if(plugin.settings.keep_search_input) {
+	        nextTick(() => {
+	            pattern.value = old_pattern;
+	        });
+        }
 
     },
 );

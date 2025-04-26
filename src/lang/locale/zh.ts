@@ -35,6 +35,8 @@ export default {
     "Keep one line per heading": "保持标题只有一行,省略多余部分",
     "Remember States": "记忆展开状态",
     "Remember expanded/collapsed state of headings of opened notes": "记忆已打开笔记的标题展开状态",
+    "Keep Search Input": "保留搜索输入",
+    "Keep search input when switching between notes": "切换笔记时保留搜索输入",
     "Drag headings to modify note": "启用拖拽标题来调整文档结果",
     "❗ This will modify note content, be careful.": "❗ 拖拽操作会改变文档内容，小心使用",
 

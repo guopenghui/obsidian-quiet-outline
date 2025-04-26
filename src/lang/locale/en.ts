@@ -35,6 +35,8 @@ export default {
     "Keep one line per heading": "Keep one line per heading",
     "Remember States": "Remember States",
     "Remember expanded/collapsed state of headings of opened notes": "Remember expanded/collapsed state of headings of opened notes",
+    "Keep Search Input": "Keep Search Input",
+    "Keep search input when switching between notes": "Keep search input when switching between notes",
     "Drag headings to modify note": "Drag headings to modify note",
     "❗ This will modify note content, be careful.": "❗ This will modify note content, be careful",
 

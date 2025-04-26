@@ -28,7 +28,7 @@ interface QuietOutlineSettings {
     // show_popover: boolean;
     show_popover_key: "ctrlKey" | "altKey" | "metaKey" | "disable";
     remember_state: boolean;
-
+	keep_search_input: boolean;
     export_format: string;
 }
 
@@ -56,7 +56,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     locate_by_cursor: false,
     show_popover_key: "ctrlKey",
     remember_state: true,
-
+	keep_search_input: false,
     export_format: "{title}",
 };
 
@@ -313,6 +313,17 @@ class SettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.remember_state)
                 .onChange(async (value) => {
                     this.plugin.settings.remember_state = value;
+                    await this.plugin.saveSettings();
+                })
+            );
+        
+        new Setting(containerEl)
+            .setName(t("Keep Search Input"))
+            .setDesc(t("Keep search input when switching between notes"))
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.keep_search_input)
+                .onChange(async (value) => {
+                    this.plugin.settings.keep_search_input = value;
                     await this.plugin.saveSettings();
                 })
             );
