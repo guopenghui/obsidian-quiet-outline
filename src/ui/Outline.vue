@@ -53,7 +53,7 @@ import { Icon } from '@vicons/utils';
 import { marked } from 'marked';
 import { sanitizeHTMLToDom } from 'obsidian';
 
-import { formula, internal_link, highlight, tag, remove_href, renderer, remove_ref, nolist } from '../parser';
+import { formula, internal_link, highlight, tag, remove_href, remove_ref, tokenizer } from '../parser';
 import { store, SupportedIcon, Heading } from '@/store';
 import type { QuietOutline } from "@/plugin";
 import { useEvent } from "@/utils/use"
@@ -737,9 +737,9 @@ function getPathFromArr(index: number) {
 }
 
 // render markdown
-marked.use({ extensions: [formula, internal_link, highlight, tag, remove_ref, nolist] });
+marked.use({ extensions: [formula, internal_link, highlight, tag, remove_ref] });
 marked.use({ walkTokens: remove_href });
-marked.use({ renderer });
+marked.use({ tokenizer });
 
 function renderLabel({ option }: { option: TreeOption; }) {
     let result = marked.parse(option.label || "").trim();

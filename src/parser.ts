@@ -143,59 +143,8 @@ export const remove_href = (token: marked.Token) => {
     }
 };
 
-
-// remove <ol>
-export const renderer = {
-    listitem(text: string, task: boolean, checked: boolean) {
-        return `${text}`;
-    }
-
-};
-
-// remove list format rendering
-export const nolist: Extension = {
-    name: "nolist",
-    level: "block",
-    start(src) {
-        const match = src.match(/^(\d+[\.)\-+*]|[+\-*]) /);
-		return match ? match.index! : -1;
-    },
-    tokenizer(src, tokens) {
-        const rule = /^(([+\-*])|(\d+[\.\-)+*])) (.*)/;
-        const match = rule.exec(src);
-        let token = undefined;
-        if (match && match[2]) {
-            token = {
-                type: "nolist",
-                raw: match[0],
-                ordered: false,
-                marker: match[2],
-                start: "",
-                body: match[4],
-                tokens: [],
-            };
-        } else if (match && match[3]) {
-            token = {
-                type: "nolist",
-                raw: match[0],
-                ordered: true,
-                marker: "",
-                start: match[3],
-                body: match[4],
-                tokens: [],
-            };
-        }
-        
-        token && this.lexer.inline(token.body, token.tokens);
-        
-        return token;
-    },
-    renderer(token) {
-        const body = this.parser.parseInline(token.tokens!, null as any);
-        
-        if (token.ordered)
-            return `<p>${token.start} ${body}</p>`;
-        else
-            return `<p>${token.marker} ${body}</p>`;
-    }
+// remove list
+export const tokenizer: marked.Tokenizer = {
+	// @ts-ignore
+	list(src) {}
 }
