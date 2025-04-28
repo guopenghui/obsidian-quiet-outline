@@ -46,9 +46,9 @@ export class QuietOutline extends Plugin {
 		this.addSettingTab(new SettingTab(this.app, this));
 		
 		// only manually activate view when first time install
-		// @ts-ignore
-		if(__IS_DEV__ || await this.firstTimeInstall()) {
+		if(await this.firstTimeInstall()) {
 			this.activateView();
+			await this.saveSettings()
 		}
 		
 		this.block_scroll = debounceCb(

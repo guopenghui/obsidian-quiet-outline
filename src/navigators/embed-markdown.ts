@@ -6,10 +6,9 @@ import {calcModifies} from "@/utils/diff";
 import {parseMetaDataCache} from "@/utils/md-process";
 
 export class EmbedMarkdownFileNav extends Nav {
-	view: EmbedMarkdownView;
+	declare view: EmbedMarkdownView;
 	constructor(plugin: QuietOutline, view: EmbedMarkdownView) {
-		super(plugin);
-		this.view = view;
+		super(plugin, view);
 	}
 	getId(): string {
 		return "embed-markdown-file";
@@ -55,10 +54,9 @@ export class EmbedMarkdownFileNav extends Nav {
 }
 
 export class EmbedMarkdownTextNav extends Nav {
-	view: EmbedMarkdownView;
+	declare view: EmbedMarkdownView;
 	constructor(plugin: QuietOutline, view: EmbedMarkdownView) {
-		super(plugin);
-		this.view = view;
+		super(plugin, view);
 	}
 	getId(): string {
 		return "embed-markdown-text";

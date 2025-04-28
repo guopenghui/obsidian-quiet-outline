@@ -6,23 +6,26 @@ export abstract class Nav extends Component {
 	private _loaded: boolean = false;
 	canDrop: boolean = false;
 	plugin: QuietOutline;
+	view: Component | null;
 
-	constructor(plugin: QuietOutline){
+	constructor(plugin: QuietOutline, view: Component | null){
 		super()
 		this.plugin = plugin;
+		this.view = view;
 	}
 	async load(): Promise<void> {
-		if(!this._loaded) {
-			this._loaded = true;
-			// @ts-ignore
-			if(!this.constructor._installed) {
-				await this.install();
-				// @ts-ignore
-				this.constructor._installed = true;
-			}
-			await this.onload();
-		}
+		if (this._loaded) return; 
 		
+		this._loaded = true;
+		// @ts-ignore
+		if(!this.constructor._installed) {
+			await this.install();
+			// @ts-ignore
+			this.constructor._installed = true;
+		}
+		await this.onload();
+		
+		this.view?.addChild(this);
 	}
 	async unload(): Promise<void> {
 		if(!this._loaded) return;
@@ -31,6 +34,10 @@ export abstract class Nav extends Component {
 		for(;this._events.length > 0;) this._events.pop()();
 
 		await this.onunload();
+		
+		this.view?.removeChild(this)
+		// for navigator safe: avoid invalid navigator
+		this.plugin.navigator = new DummyNav(this.plugin, null);
 	}
 	getDefaultLevel() {
 		return parseInt(this.plugin.settings.expand_level);

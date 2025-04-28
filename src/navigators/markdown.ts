@@ -10,12 +10,11 @@ import {parseMarkdown, stringifySection, moveHeading} from "@/utils/md-process";
 let plugin: QuietOutline;
 
 export class MarkDownNav extends Nav {
-	view: MarkdownView;
+	declare view: MarkdownView;
 	canDrop: boolean = true;
 	constructor(_plugin: QuietOutline, view: MarkdownView) {
-		super(_plugin);
+		super(_plugin, view);
 		plugin = _plugin;
-		this.view = view;
 	}
 	
 	getId() {

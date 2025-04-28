@@ -15,10 +15,9 @@ import { store, Heading, SupportedIcon } from '@/store';
 import {Nav} from "./base";
 
 export class CanvasNav extends Nav {
-	view: CanvasView;
+	declare view: CanvasView;
 	constructor(plugin: QuietOutline, view: CanvasView){
-		super(plugin);
-		this.view = view;
+		super(plugin, view);
 	}
 	async onload(): Promise<void> {
 	}
