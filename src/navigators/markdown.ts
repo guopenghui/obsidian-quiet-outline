@@ -184,7 +184,7 @@ function getCurrentLineFromPreview(view: MarkdownView): number {
 	const rect = previewEl.getBoundingClientRect()
 	const middle = rect.y + rect.height / 2
 
-	const elsInViewport = previewEl.querySelectorAll(".markdown-preview-sizer>div:not(.markdown-preview-pusher)")
+	const elsInViewport = previewEl.querySelectorAll(".markdown-preview-sizer>div[class|=el]")
 	
 	let line: number = 0;
 	elsInViewport.forEach(el => {
