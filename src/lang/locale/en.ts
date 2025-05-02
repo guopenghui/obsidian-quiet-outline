@@ -39,6 +39,8 @@ export default {
     "Keep search input when switching between notes": "Keep search input when switching between notes",
     "Drag headings to modify note": "Drag headings to modify note",
     "❗ This will modify note content, be careful.": "❗ This will modify note content, be careful",
+    "Text Direction": "Text Direction",
+    "is decided by": "is decided by",
 
 	"Export Format": "Export Format",
 };

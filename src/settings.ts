@@ -30,6 +30,7 @@ interface QuietOutlineSettings {
     remember_state: boolean;
 	keep_search_input: boolean;
     export_format: string;
+	lang_direction_decide_by: "system" | "text";
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -58,6 +59,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     remember_state: true,
 	keep_search_input: false,
     export_format: "{title}",
+    lang_direction_decide_by: "system",
 };
 
 class SettingTab extends PluginSettingTab {
@@ -337,6 +339,21 @@ class SettingTab extends PluginSettingTab {
                     this.plugin.settings.drag_modify = value;
                     store.dragModify = value;
                     await this.plugin.saveSettings();
+                })
+            );
+        
+        new Setting(containerEl)
+            .setName(t("Text Direction"))
+            .setDesc(t("is decided by"))
+            .addDropdown(what => what
+                .addOption("system", "Obsidian Language")
+                .addOption("text", "Specific text of heading")
+                .setValue(this.plugin.settings.lang_direction_decide_by)
+                .onChange(async (value: "system" | "text") => {
+                    this.plugin.settings.lang_direction_decide_by = value;
+                    store.textDirectionDecideBy = value;
+                    await this.plugin.saveSettings();
+                    store.refreshTree();
                 })
             );
 			

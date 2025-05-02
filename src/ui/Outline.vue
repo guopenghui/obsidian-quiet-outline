@@ -201,6 +201,11 @@ watchEffect(() => {
     }
 });
 
+let biDi = ref("");
+watchEffect(() => {
+    biDi.value = store.textDirectionDecideBy === "text" ? "plaintext" : "isolate"
+});
+
 // switch icon
 function renderSwitcherIcon() {
     return h(
@@ -836,6 +841,11 @@ function getNo(node: TreeOption | string): number {
     content: "";
     height: unset;
     align-self: stretch;
+}
+
+/* RTL language support */
+.quiet-outline .n-tree .n-tree-node-content :is(p, h1, h2, h3, h4, h5) {
+	unicode-bidi: v-bind(biDi);
 }
 
 .quiet-outline .level-2 .n-tree-node-indent,

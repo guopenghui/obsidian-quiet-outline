@@ -55,6 +55,7 @@ const store = reactive({
     // autoExpand: true,
     modifyKeys: {} as ModifyKeys,
     dragModify: false,
+    textDirectionDecideBy: "system" as "system" | "text",
     refreshTree() {
         this.leafChange = !this.leafChange;
     },

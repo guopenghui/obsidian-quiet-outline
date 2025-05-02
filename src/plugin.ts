@@ -81,6 +81,7 @@ export class QuietOutline extends Plugin {
 		store.regexSearch = this.settings.regex_search;
 		// store.autoExpand = this.settings.auto_expand;
 		store.dragModify = this.settings.drag_modify;
+		store.textDirectionDecideBy = this.settings.lang_direction_decide_by;
 		store.patchColor = this.settings.patch_color;
 		store.primaryColorLight = this.settings.primary_color_light;
 		store.primaryColorDark = this.settings.primary_color_dark;

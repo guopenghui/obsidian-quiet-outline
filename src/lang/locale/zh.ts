@@ -39,6 +39,8 @@ export default {
     "Keep search input when switching between notes": "切换笔记时保留搜索输入",
     "Drag headings to modify note": "启用拖拽标题来调整文档结果",
     "❗ This will modify note content, be careful.": "❗ 拖拽操作会改变文档内容，小心使用",
+    "Text Direction": "文本方向",
+    "is decided by": "由什么决定",
 
 	"Export Format": "标题输出格式",
 };

@@ -193,11 +193,5 @@
     mix-blend-mode: normal;
   }
   
-  /* RTL language support */
-  .quiet-outline .n-tree .n-tree-node-content :is(p, h1, h2, h3, h4, h5) {
-	unicode-bidi: plaintext;
-  }
-  
-  
   /* experimental */
   
