@@ -224,51 +224,55 @@ export class QuietOutline extends Plugin {
 				}
 			}
 		});
+		function merge(arr1: string[], arr2: string[]) {
+			return Array(arr1.length + arr2.length).fill("")
+				.map((_, i) => i % 2 === 0 ? arr1[i / 2] : arr2[(i - 1) / 2])	
+		}
+		function transform(
+			h: typeof store.headers[number],
+			nums: number[],
+			parts: string[],
+			keys: string[]
+		) {
+			const num = nums[h.level - 1];
+			const fields = keys.map(key => {
+				switch (key) {
+					case "title": {
+						return h.heading	
+					}
+					case "path" : {
+						return "#" + h.heading.replace(/ /g, "%20")
+					}
+					case "bullet": {
+						return "-"
+					}
+					case "num": {
+						return num.toString()
+					}
+					case "num-nest": {
+						return num.toString()
+					}
+				}
+				const match = key.match(/num-nest\[(.*?)\]/);
+
+				if(match) {
+					const sep = match[1];
+					return nums.slice(0, h.level).join(sep);	
+				}
+				
+				return ""
+			});
+			
+			return merge(parts, fields).join("");
+		}
+
 
 		this.addCommand({
 			id: "quiet-outline-copy-as-text",
 			name: "Copy Current Headings As Text",
 			callback: async () => {
-				function merge(arr1: string[], arr2: string[]) {
-					return Array(arr1.length + arr2.length).fill("")
-						.map((_, i) => i % 2 === 0 ? arr1[i / 2] : arr2[(i - 1) / 2])	
-				}
-
 				const parts = this.settings.export_format.split(/\{.*?\}/);
 				const keys = this.settings.export_format.match(/(?<={)(.*?)(?=})/g) || [];
-
-				function transform(h: typeof store.headers[number]) {
-					const num = nums[h.level - 1];
-					const fields = keys.map(key => {
-						switch (key) {
-							case "title": {
-								return h.heading	
-							}
-							case "path" : {
-								return "#" + h.heading.replace(/ /g, "%20")
-							}
-							case "bullet": {
-								return "-"
-							}
-							case "num": {
-								return num.toString()
-							}
-							case "num-nest": {
-								return num.toString()
-							}
-						}
-						const match = key.match(/num-nest\[(.*?)\]/);
-
-						if(match) {
-							const sep = match[1];
-							return nums.slice(0, h.level).join(sep);	
-						}
-						
-						return ""
-					});
-					
-					return merge(parts, fields).join("");
-				}
 
 				const nums = [0, 0, 0, 0, 0, 0];
 				const headers: string[] = [];
@@ -280,10 +284,40 @@ export class QuietOutline extends Plugin {
 					})
 					nums[h.level - 1]++;
 
-					const text = "\t".repeat(h.level - 1) + transform(h);
+					const text = "\t".repeat(h.level - 1) + transform(h, nums, parts, keys);
 					headers.push(text);
 				});
 
+				await navigator.clipboard.writeText(headers.join("\n"));
+				new Notice("Headings copied");
+			}
+		});
+
+		this.addCommand({
+			id: "quiet-outline-copy-same-level",
+			name: "Copy Current Headings At Same Level",
+			editorCallback: async (editor) => {
+				const line = editor.getCursor().line;
+				const idx = store.headers.findIndex(
+				(h) => h.position.start.line === line
+				);
+				if(idx === -1) {
+					new Notice("No heading at this line");
+					return;
+				}
+				const currentLevel = store.headers[idx].level
+				const parts = this.settings.export_format.split(/\{.*?\}/);
+  				const keys  = this.settings.export_format.match(/(?<={)(.*?)(?=})/g) || [];
+				// const nums = [0, 0, 0, 0, 0, 0];
+				const sameLevelHeaders = store.headers.filter(h => h.level === currentLevel);
+				
+				const headers = sameLevelHeaders.map((h, i) => {
+					const nums = Array(currentLevel).fill(0);
+					nums[currentLevel - 1] = i + 1; 
+					return "\t".repeat(currentLevel - 1)
+						+ transform(h, nums, parts, keys);
+				});
+				
 				await navigator.clipboard.writeText(headers.join("\n"));
 				new Notice("Headings copied");
 			}
