@@ -348,7 +348,7 @@ function resetLocated(idx: number) {
 
 // add html attributes to nodes
 interface HTMLAttr extends HTMLAttributes {
-    "aria-label-position": "top" | "bottom" | "left" | "right";
+    "data-tooltip-position": "top" | "bottom" | "left" | "right";
     "raw": string;
 }
 
@@ -364,7 +364,7 @@ const setAttrs = computed(() => {
             class: `level-${lev} ${locate}`,
             id: `no-${no}`,
             "aria-label": store.ellipsis ? info.option.label : "",
-            "aria-label-position": store.labelDirection,
+            "data-tooltip-position": store.labelDirection,
             raw,
         };
     };
