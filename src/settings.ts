@@ -379,6 +379,11 @@ class SettingTab extends PluginSettingTab {
 				})
 				.inputEl.setAttribute("style", "width: 100%;")
 			)
+			.addExtraButton(button => button
+				.setIcon("help")
+				.setTooltip("release doc 0.3.32")
+				.onClick(() => window.open("https://github.com/guopenghui/obsidian-quiet-outline/releases/tag/0.3.32"))
+			)
 
         // new Setting(containerEl)
         //     .setName("Sync With Markdown")
