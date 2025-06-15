@@ -21,6 +21,8 @@ export default {
     "Search headings using regular expression": '支持使用正则表达式来搜索',
     "Auto Expand": '自动展开',
     "Auto expand and collapse headings when scrolling and cursor position change":  "当滚动页面时，自动跟踪当前所在标题并展开",
+    "Auto Scroll Into View": '自动滚动到定位的标题',
+    "Auto scroll located heading into view": '当滚动或者光标位置变化时，大纲自动滚动到相应标题',
     "Only Expand": '仅展开当前标题',
     "Expand and Collapse Rest": '展开同时折叠剩余标题',
     "Expand and Collapse Rest to Default": '展开同时折叠剩余标题至默认层级',

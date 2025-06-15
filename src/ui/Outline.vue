@@ -340,6 +340,7 @@ function resetLocated(idx: number) {
 	locateIdx.value = index
 
 	setTimeout(() => {
+		if(!plugin.settings.auto_scroll_into_view) return;
 		let curLocation = container.querySelector(`#no-${index}`);
 		if (curLocation) {
 			curLocation.scrollIntoView({ block: "center", behavior: "smooth" });

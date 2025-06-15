@@ -31,6 +31,7 @@ interface QuietOutlineSettings {
 	keep_search_input: boolean;
     export_format: string;
 	lang_direction_decide_by: "system" | "text";
+	auto_scroll_into_view: boolean;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -60,6 +61,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
 	keep_search_input: false,
     export_format: "{title}",
     lang_direction_decide_by: "system",
+    auto_scroll_into_view: true,
 };
 
 class SettingTab extends PluginSettingTab {
@@ -281,6 +283,16 @@ class SettingTab extends PluginSettingTab {
                 })
             );
         
+        new Setting(containerEl)
+            .setName(t("Auto Scroll Into View"))
+            .setDesc(t("Auto scroll located heading into view"))
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.auto_scroll_into_view)
+                .onChange(async (value) => {
+                    this.plugin.settings.auto_scroll_into_view = value;
+                    await this.plugin.saveSettings();
+                })
+            );
             
         new Setting(containerEl)
             .setName(t("Locate By Cursor"))
