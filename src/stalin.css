@@ -153,7 +153,11 @@
   }
   
   .n-tree.n-tree--block-line .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
-    background-color: transparent !important;
+	background-color: transparent !important;
+  }
+  
+  .n-tree.n-tree--block-line:focus .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
+    box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
   }
   
   .view-content:has(.quiet-outline) {
@@ -178,6 +182,7 @@
   }
   .quiet-outline .n-tree {
     overflow: auto;
+    padding-inline: 2px;
   }
   
   

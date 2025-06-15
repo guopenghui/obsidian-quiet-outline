@@ -1,4 +1,4 @@
-import {MarkdownView, MarkdownPreviewSection, HeadingCache, debounce} from "obsidian";
+import {MarkdownView, MarkdownPreviewSection, HeadingCache, debounce, Menu, Notice} from "obsidian";
 import { EditorView } from "@codemirror/view";
 import { editorEvent } from "@/editorExt"
 import type {QuietOutline} from "@/plugin";
@@ -6,6 +6,9 @@ import {store} from "@/store";
 import {Nav} from "./base";
 import {calcModifies} from "@/utils/diff";
 import {parseMarkdown, stringifySection, moveHeading} from "@/utils/md-process";
+import { TreeProps } from "naive-ui";
+import { setupMenu, normal, parent, separator } from "@/utils/menu";
+import { t } from "@/lang/helper";
 
 let plugin: QuietOutline;
 
@@ -116,8 +119,57 @@ export class MarkDownNav extends Nav {
 		moveHeading(structure, from, to, position);
 		await plugin.app.vault.modify(this.view.file!, stringifySection(structure));
 	}
+	
+	onRightClick(
+		event: MouseEvent,
+		nodeInfo: { node: TreeProps; no: number; level: number; raw: string; },
+		onClose?: () => void
+	): void {
+		const menu = new Menu().setNoIcon();
+		setupMenu(menu, [
+			parent(t("Copy"), [
+				normal(t("Heading"), async () => {
+					await navigator.clipboard.writeText(nodeInfo.raw);
+				}),
+				normal(t("Heading and children headings"), async () => {
+					const { no, level } = nodeInfo;
+					
+					let headers = this.plugin.stringifyHeaders();
+					headers = headers.map((s, i) => s.slice(store.headers[no].level - 1))
+					
+					let slice: string[] = [headers[no]];
+					for (let i = no + 1; i < store.headers.length; i++) {
+						if(store.headers[i].level <= level) {
+							break;
+						}
+						slice.push(headers[i]);
+					}
+					
+					await navigator.clipboard.writeText(slice.join("\n"));
+				}),
+				normal(t("Heading and Content"), async () => {
+					store.headers[0].position.start.line
+					const { no, level } = nodeInfo;
+					let i = no + 1
+					for (; i < store.headers.length; i++) {
+						if(store.headers[i].level <= level) {
+							break;
+						}
+					}
+					
+					const text = this.view.data.slice(
+						store.headers[no].position.start.offset,
+						store.headers[i]?.position.start.offset || this.view.data.length
+					);
+					await navigator.clipboard.writeText(text);
+				}),
+			]),
+		]);
+		
+		menu.onHide(onClose || (() => { }));
+		menu.showAtMouseEvent(event);
+	}
 }
-
 
 function handleCursorChange(e?: CustomEvent) {
 	if(!plugin.allow_cursor_change || plugin.jumping || e?.detail.docChanged) {

@@ -43,4 +43,10 @@ export default {
     "is decided by": "is decided by",
 
 	"Export Format": "Export Format",
+	
+	// menu
+	"Copy": "Copy",
+	"Heading": "Heading",
+	"Heading and children headings": "Heading and children headings",
+	"Heading and Content": "Heading and Content"
 };

@@ -1,6 +1,7 @@
 import {Component, HeadingCache} from "obsidian";
 import type {QuietOutline} from "@/plugin";
 import {store} from "@/store";
+import { TreeProps } from "naive-ui";
 
 export abstract class Nav extends Component {
 	private _loaded: boolean = false;
@@ -50,6 +51,11 @@ export abstract class Nav extends Component {
 	async onload(): Promise<void> {}
 	async onunload(): Promise<void> {}
 	async handleDrop(from: number, to: number, position: "before" | "after" | "inside"){}
+	onRightClick(
+		event: MouseEvent,
+		nodeInfo: {node: TreeProps, no: number, level: number, raw: string},
+		onClose?: () => void
+	){}
 	toBottom(){}
 	abstract jump(key: number): Promise<void>;
 	abstract getHeaders(): Promise<HeadingCache[]>;

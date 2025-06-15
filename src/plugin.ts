@@ -171,6 +171,65 @@ export class QuietOutline extends Plugin {
 		this.navigator = new NavType(this, view);
 		await this.navigator.load();
 	}
+	
+	stringifyHeaders() {
+		function merge(arr1: string[], arr2: string[]) {
+			return Array(arr1.length + arr2.length).fill("")
+				.map((_, i) => i % 2 === 0 ? arr1[i / 2] : arr2[(i - 1) / 2])	
+		}
+
+		const parts = this.settings.export_format.split(/\{.*?\}/);
+		const keys = this.settings.export_format.match(/(?<={)(.*?)(?=})/g) || [];
+
+		function transform(h: typeof store.headers[number]) {
+			const num = nums[h.level - 1];
+			const fields = keys.map(key => {
+				switch (key) {
+					case "title": {
+						return h.heading	
+					}
+					case "path" : {
+						return "#" + h.heading.replace(/ /g, "%20")
+					}
+					case "bullet": {
+						return "-"
+					}
+					case "num": {
+						return num.toString()
+					}
+					case "num-nest": {
+						return num.toString()
+					}
+				}
+				const match = key.match(/num-nest\[(.*?)\]/);
+
+				if(match) {
+					const sep = match[1];
+					return nums.slice(0, h.level).join(sep);	
+				}
+				
+				return ""
+			});
+			
+			return merge(parts, fields).join("");
+		}
+
+		const nums = [0, 0, 0, 0, 0, 0];
+		const headers: string[] = [];
+		store.headers.forEach((h) => {
+			nums.forEach((num, i) => {
+				if(i > h.level - 1) {
+					nums[i] = 0
+				}
+			})
+			nums[h.level - 1]++;
+
+			const text = "\t".repeat(h.level - 1) + transform(h);
+			headers.push(text);
+		});
+		
+		return headers;
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
@@ -229,61 +288,7 @@ export class QuietOutline extends Plugin {
 			id: "quiet-outline-copy-as-text",
 			name: "Copy Current Headings As Text",
 			callback: async () => {
-				function merge(arr1: string[], arr2: string[]) {
-					return Array(arr1.length + arr2.length).fill("")
-						.map((_, i) => i % 2 === 0 ? arr1[i / 2] : arr2[(i - 1) / 2])	
-				}
-
-				const parts = this.settings.export_format.split(/\{.*?\}/);
-				const keys = this.settings.export_format.match(/(?<={)(.*?)(?=})/g) || [];
-
-				function transform(h: typeof store.headers[number]) {
-					const num = nums[h.level - 1];
-					const fields = keys.map(key => {
-						switch (key) {
-							case "title": {
-								return h.heading	
-							}
-							case "path" : {
-								return "#" + h.heading.replace(/ /g, "%20")
-							}
-							case "bullet": {
-								return "-"
-							}
-							case "num": {
-								return num.toString()
-							}
-							case "num-nest": {
-								return num.toString()
-							}
-						}
-						const match = key.match(/num-nest\[(.*?)\]/);
-
-						if(match) {
-							const sep = match[1];
-							return nums.slice(0, h.level).join(sep);	
-						}
-						
-						return ""
-					});
-					
-					return merge(parts, fields).join("");
-				}
-
-				const nums = [0, 0, 0, 0, 0, 0];
-				const headers: string[] = [];
-				store.headers.forEach((h) => {
-					nums.forEach((num, i) => {
-						if(i > h.level - 1) {
-							nums[i] = 0
-						}
-					})
-					nums[h.level - 1]++;
-
-					const text = "\t".repeat(h.level - 1) + transform(h);
-					headers.push(text);
-				});
-
+				const headers = this.stringifyHeaders();
 				await navigator.clipboard.writeText(headers.join("\n"));
 				new Notice("Headings copied");
 			}

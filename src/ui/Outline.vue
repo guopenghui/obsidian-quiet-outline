@@ -21,12 +21,13 @@
             <NSlider v-if="store.levelSwitch" :value="level" :on-update:value="switchLevel" :marks="marks" step="mark" :min="0" :max="5"
                 style="margin:4px 0;" :format-tooltip="formatTooltip" />
             <code v-if="pattern">{{ matchCount }} result(s): </code>
-            <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
-                :render-label="renderMethod" :render-prefix="renderPrefix" :node-props="setAttrs"
+            <NTree block-line :pattern="pattern" :data="data2" :selected-keys="selectedKeys"
+                :render-label="renderMethod" :render-prefix="renderPrefix" :node-props="nodeProps"
                 :expanded-keys="expanded" :render-switcher-icon="renderSwitcherIcon"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
                 :show-irrelevant-nodes="!store.hideUnsearched" :class="{ 'ellipsis': store.ellipsis }"
-                :draggable="store.dragModify" @drop="onDrop" :allow-drop="() => plugin.navigator.canDrop" />
+                :draggable="store.dragModify" @drop="onDrop" :allow-drop="() => plugin.navigator.canDrop"
+                />
         </NConfigProvider>
     </div>
 </template>
@@ -346,26 +347,43 @@ function resetLocated(idx: number) {
 	}, 100);
 }
 
+let selectedKeys = ref<string[]>([]);
+
 // add html attributes to nodes
 interface HTMLAttr extends HTMLAttributes {
     "data-tooltip-position": "top" | "bottom" | "left" | "right";
     "raw": string;
 }
 
-const setAttrs = computed(() => {
+const nodeProps = computed(() => {
     return (info: { option: TreeOption; }): HTMLAttr => {
         let lev = parseInt((info.option.key as string).split('-')[1]);
         let no = parseInt((info.option.key as string).split('-')[2]);
         let raw = info.option.label || ""; 
 		
 		let locate = locateIdx.value === no ? "located" : ""
-
         return {
             class: `level-${lev} ${locate}`,
             id: `no-${no}`,
             "aria-label": store.ellipsis ? info.option.label : "",
             "data-tooltip-position": store.labelDirection,
             raw,
+            onClick: () => jump(info.option),
+            onContextmenu(event: MouseEvent) {
+				selectedKeys.value = [info.option.key as string];
+            	plugin.navigator.onRightClick(
+		            event,
+					{
+						node: info.option,
+						no,
+						level: lev,
+						raw,
+					},
+					() => {
+						selectedKeys.value = [];
+					}
+	            )
+            }
         };
     };
 });
@@ -659,12 +677,12 @@ let matchCount = computed(() => {
 
 
 // click and jump
-async function jump(_selected: any, nodes: TreeOption[]): Promise<void> {
-    if (nodes[0] === undefined) {
-        return;
-    }
+async function jump(node: TreeOption): Promise<void> {
+    // if (nodes[0] === undefined) {
+    //     return;
+    // }
 
-    const key_value = (nodes[0].key as string).split("-");
+    const key_value = (node.key as string).split("-");
     const key = parseInt(key_value[2]);
 	plugin.navigator.jump(key);
 }

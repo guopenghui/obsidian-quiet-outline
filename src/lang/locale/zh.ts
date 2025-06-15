@@ -1,6 +1,7 @@
 // 简体中文
 
 export default {
+	
     'Settings for Quiet Outline.': 'Quiet Outline 的设置页面',
     "Set Primary Color": '设置主颜色 明/暗',
     "Patch default color": '用设置覆盖默认主颜色',
@@ -43,4 +44,10 @@ export default {
     "is decided by": "由什么决定",
 
 	"Export Format": "标题输出格式",
+	
+	// menu
+	"Copy": "复制",
+	"Heading": "标题",
+	"Heading and children headings": "标题和子标题",
+	"Heading and Content": "该段内容"
 };
