@@ -306,10 +306,29 @@ export class QuietOutline extends Plugin {
 					return;
 				}
 				const currentLevel = store.headers[idx].level
+				let parentIdx = -1;
+				for (let i = idx - 1; i > -1; i--) {
+					if (store.headers[i].level < currentLevel) {
+						parentIdx = i;
+						break;
+					}
+				}
+				const parentLevel = parentIdx === -1 ? 0 : store.headers[parentIdx].level;
+
+				let endIdx = store.headers.length;
+				for (let i = parentIdx + 1; i < store.headers.length; i++) {
+					if (store.headers[i].level <= parentLevel) {
+						endIdx = i;
+						break;
+					}
+				}
+				const sameLevelHeaders = store.headers
+					.slice(parentIdx + 1, endIdx)
+					.filter(h => h.level === currentLevel);
+			
 				const parts = this.settings.export_format.split(/\{.*?\}/);
   				const keys  = this.settings.export_format.match(/(?<={)(.*?)(?=})/g) || [];
 				// const nums = [0, 0, 0, 0, 0, 0];
-				const sameLevelHeaders = store.headers.filter(h => h.level === currentLevel);
 				
 				const headers = sameLevelHeaders.map((h, i) => {
 					const nums = Array(currentLevel).fill(0);
