@@ -2,7 +2,7 @@ import {MarkdownView, MarkdownPreviewSection, HeadingCache, debounce, Menu, Noti
 import { EditorView } from "@codemirror/view";
 import { editorEvent } from "@/editorExt"
 import type {QuietOutline} from "@/plugin";
-import {store} from "@/store";
+import {store, getSiblings} from "@/store";
 import {Nav} from "./base";
 import {calcModifies} from "@/utils/diff";
 import {parseMarkdown, stringifySection, moveHeading} from "@/utils/md-process";
@@ -130,6 +130,16 @@ export class MarkDownNav extends Nav {
 			parent(t("Copy"), [
 				normal(t("Heading"), async () => {
 					await navigator.clipboard.writeText(nodeInfo.raw);
+				}),
+				normal(t("Heading and siblings headings"), async () => {
+					const { no } = nodeInfo;
+					const headers = this.plugin.stringifyHeaders()
+						.map((s) => s.slice(store.headers[no].level - 1))
+					const siblingSet = getSiblings(no, store.headers);
+					const siblings = headers.filter((_, i) => siblingSet.has(i))
+					
+					await navigator.clipboard.writeText(siblings.join("\n"));
+					
 				}),
 				normal(t("Heading and children headings"), async () => {
 					const { no, level } = nodeInfo;

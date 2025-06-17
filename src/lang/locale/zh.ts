@@ -51,5 +51,6 @@ export default {
 	"Copy": "复制",
 	"Heading": "标题",
 	"Heading and children headings": "标题和子标题",
-	"Heading and Content": "该段内容"
+	"Heading and Content": "该段内容",
+	"Heading and siblings headings": "标题和兄弟标题",
 };

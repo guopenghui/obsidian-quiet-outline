@@ -16,6 +16,33 @@ export type Heading = HeadingCache & {
     icon?: SupportedIcon,
 }
 
+export function getParent(headId: number, headings:Heading[]): number {
+	for (let i = headId; i >= 0; i--) {
+		if (headings[i].level < headings[headId].level) return i;
+	}
+	return -1;
+}
+
+// -1 表示根
+export function getChildren(headId: number, headings:Heading[]): Set<number> {
+	if (headId === -1) return new Set(headings.map((_, i) => i));
+	const children = [];
+	for (let i = headId + 1; i < headings.length; i++) {
+		if (headings[i].level <= headings[headId].level) break;
+		
+		children.push(i);
+	}
+	return new Set(children);
+}
+
+export function getSiblings(headId: number, headings:Heading[]): Set<number> {
+	const parent = getParent(headId, headings);
+	const children = getChildren(parent, headings);
+	
+	const siblings = [...children].filter(h => headings[h].level === headings[headId].level)
+	return new Set(siblings);
+}
+
 export type ModifyKeys = {
     offsetModifies: {
         begin: number,

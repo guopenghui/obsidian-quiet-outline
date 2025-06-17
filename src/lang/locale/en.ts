@@ -50,5 +50,6 @@ export default {
 	"Copy": "Copy",
 	"Heading": "Heading",
 	"Heading and children headings": "Heading and children headings",
-	"Heading and Content": "Heading and Content"
+	"Heading and Content": "Heading and Content",
+	"Heading and siblings headings": "Heading and siblings headings"
 };
