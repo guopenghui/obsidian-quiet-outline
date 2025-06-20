@@ -369,7 +369,12 @@ const nodeProps = computed(() => {
             "aria-label": store.ellipsis ? info.option.label : "",
             "data-tooltip-position": store.labelDirection,
             raw,
-            onClick: () => jump(info.option),
+			onClick: (event) => {
+				if(!(event.target as HTMLElement).matchParent(".n-tree-node-content")) {
+					return;
+				}
+				jump(info.option)
+			},
             onContextmenu(event: MouseEvent) {
 				selectedKeys.value = [info.option.key as string];
             	plugin.navigator.onRightClick(
