@@ -7,10 +7,15 @@ const version = process.argv[2];
 const root = process.cwd();
 
 // write version
-let manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));
+let manifest = JSON.parse(
+    fs.readFileSync(path.join(root, "manifest.json"), "utf8"),
+);
 if (manifest.version !== version) {
     manifest.version = version;
-    fs.writeFileSync(path.join(root, "manifest.json"), JSON.stringify(manifest, null, 4));
+    fs.writeFileSync(
+        path.join(root, "manifest.json"),
+        JSON.stringify(manifest, null, 4),
+    );
     // message must use " instead of ' on windows
     child.execSync('git commit -am "update manifest and release"');
 }

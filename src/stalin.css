@@ -1,202 +1,193 @@
 .quiet-outline .n-tree {
     font-size: var(--nav-item-size);
-  }
-  
-   .quiet-outline .n-tree-node-indent {
+}
+
+.quiet-outline .n-tree-node-indent {
     flex: 0 0 13px !important;
-  }
-  
-  
-  .quiet-outline .n-tree-node-wrapper {
+}
+
+.quiet-outline .n-tree-node-wrapper {
     padding: 0px;
-  }
-  
-  .quiet-outline .n-tree-node.n-tree-node--selectable {
+}
+
+.quiet-outline .n-tree-node.n-tree-node--selectable {
     align-items: center;
-  }
-  
-  
-  /* heading的间距，通过行高来设置 */
-  /*  heading line spacing */
-  .quiet-outline .n-tree-node .n-tree-node-content{
+}
+
+/* heading的间距，通过行高来设置 */
+/*  heading line spacing */
+.quiet-outline .n-tree-node .n-tree-node-content {
     line-height: 1.6em;
     min-height: 10px;
-  }
-  
-  .quiet-outline .n-tree-node-content__text p {
+}
+
+.quiet-outline .n-tree-node-content__text p {
     margin: 0;
-  }
-  
-  
-  
-  
-  
-  /* ellipsis */
-  .quiet-outline .n-tree.ellipsis {
+}
+
+/* ellipsis */
+.quiet-outline .n-tree.ellipsis {
     overflow-x: hidden;
-  }
-  
-  .quiet-outline .n-tree.ellipsis .n-tree-node .n-tree-node-content p{
+}
+
+.quiet-outline .n-tree.ellipsis .n-tree-node .n-tree-node-content p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  
-  .quiet-outline .n-tree.ellipsis .n-tree-node-content__text {
+}
+
+.quiet-outline .n-tree.ellipsis .n-tree-node-content__text {
     overflow: hidden;
-  }
-  
-  .quiet-outline .n-tree.ellipsis .n-tree-node-content {
+}
+
+.quiet-outline .n-tree.ellipsis .n-tree-node-content {
     overflow: hidden;
-	flex: 1;
-  }
-  
-  /* 悬浮时的背景颜色 */
-  .quiet-outline .n-tree.n-tree--block-line .n-tree-node:not(.n-tree-node--disabled):hover {
-      color: var(--nav-item-color-active);
-      background-color: var(--nav-item-background-active);
-      font-weight: var(--nav-item-weight-active);
-  }
-  
-  /* 功能栏 */
-  .quiet-outline .function-bar {
+    flex: 1;
+}
+
+/* 悬浮时的背景颜色 */
+.quiet-outline
+    .n-tree.n-tree--block-line
+    .n-tree-node:not(.n-tree-node--disabled):hover {
+    color: var(--nav-item-color-active);
+    background-color: var(--nav-item-background-active);
+    font-weight: var(--nav-item-weight-active);
+}
+
+/* 功能栏 */
+.quiet-outline .function-bar {
     display: flex;
     align-items: center;
     padding: 0px;
     margin-bottom: 5px;
-  }
-  
-  .quiet-outline .function-bar .n-button {
+}
+
+.quiet-outline .function-bar .n-button {
     margin-right: 5px;
     text-align: center;
-  }
-  
-  .quiet-outline .function-bar .n-input {
+}
+
+.quiet-outline .function-bar .n-input {
     flex: 1;
     min-width: 10px;
-  }
-  
-  
-  /*mobile behaves weird*/
-  .is-mobile .quiet-outline .function-bar .n-button {
+}
+
+/*mobile behaves weird*/
+.is-mobile .quiet-outline .function-bar .n-button {
     margin-right: 5px;
     text-align: center;
     flex: 1;
-  }
-  .is-mobile .quiet-outline .function-bar .n-input {
+}
+.is-mobile .quiet-outline .function-bar .n-input {
     min-width: 10px;
     flex: none;
-  }
-  
-  
-  /* 图标大小 */
-  .quiet-outline .n-button__icon {
+}
+
+/* 图标大小 */
+.quiet-outline .n-button__icon {
     --n-icon-size: 22px;
     font-size: 22px;
-  }
-  
-  .quiet-outline code {
+}
+
+.quiet-outline code {
     /* color:var(--text-color-code, var(--code-normal)); */
     font-weight: bold;
     /* font-size: var(--font-size-code, var(--code-size)); */
     font-family: var(--font-monospace);
     background-color: var(--code-background);
-    border-radius:var(--radius-s);
-  }
- 
-  .quiet-outline a.tag {
+    border-radius: var(--radius-s);
+}
+
+.quiet-outline a.tag {
     white-space: nowrap;
     padding: 0.2em 0.6em;
-  }
-  .quiet-outline a:not(.tag) {
+}
+.quiet-outline a:not(.tag) {
     color: var(--link-external-color);
-  }
-  .quiet-outline span.internal-link {
+}
+.quiet-outline span.internal-link {
     color: var(--link-color);
-  }
-  
-  .quiet-outline mark {
+}
+
+.quiet-outline mark {
     background-color: var(--text-highlight-bg);
     color: var(--text-normal);
-  }
-  
-  /* ===================== */
-  /* 对不同级别标题进行设置 */
-  /* ===================== */
-  .n-tree .n-tree-node-switcher {
+}
+
+/* ===================== */
+/* 对不同级别标题进行设置 */
+/* ===================== */
+.n-tree .n-tree-node-switcher {
     height: 0px;
-  }
-  
-  /* 设置除一级标题之外的所有标题 */
-  /* setting h2-h6 */
-  .quiet-outline [class*="level-"]:not(.level-1) .n-tree-node-content{
+}
+
+/* 设置除一级标题之外的所有标题 */
+/* setting h2-h6 */
+.quiet-outline [class*="level-"]:not(.level-1) .n-tree-node-content {
     /*
     color: red;
     font-weight:bold;
     */
     font-size: 1em;
-  }
+}
 
-  
-  /* location */
-  .n-tree-node.located {
+/* location */
+.n-tree-node.located {
     font-weight: bold !important;
-  }
-  /* .n-tree-node code {
+}
+/* .n-tree-node code {
     font-weight: 500 !important;
   } */
-  .n-tree-node.located code {
+.n-tree-node.located code {
     font-weight: 1000 !important;
-  }
-  .n-tree-node.located mjx-math {
+}
+.n-tree-node.located mjx-math {
     font-weight: bold !important;
-  }
-  
-  .n-tree.n-tree--block-line .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
-	background-color: transparent !important;
-  }
-  
-  .n-tree.n-tree--block-line:focus .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
+}
+
+.n-tree.n-tree--block-line
+    .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
+    background-color: transparent !important;
+}
+
+.n-tree.n-tree--block-line:focus
+    .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
     box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
-  }
-  
-  .view-content:has(.quiet-outline) {
-	padding-bottom: 0px;
-  }
-  
-  .quiet-outline .n-tree.n-tree--block-node.n-tree--block-line {
-	padding-bottom: var(--size-4-8);
-  }
-  
-  /* 固定功能栏 */
-  .quiet-outline {
+}
+
+.view-content:has(.quiet-outline) {
+    padding-bottom: 0px;
+}
+
+.quiet-outline .n-tree.n-tree--block-node.n-tree--block-line {
+    padding-bottom: var(--size-4-8);
+}
+
+/* 固定功能栏 */
+.quiet-outline {
     height: 100%;
-  }
-  .quiet-outline #container {
+}
+.quiet-outline #container {
     height: 100%;
-  }
-  .quiet-outline .n-config-provider {
-    display:flex;
-    flex-direction:column;
+}
+.quiet-outline .n-config-provider {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-  }
-  .quiet-outline .n-tree {
+}
+.quiet-outline .n-tree {
     overflow: auto;
     padding-inline: 2px;
-  }
-  
-  
-  
-  /*remove 'no data'*/
-  .n-tree__empty {
+}
+
+/*remove 'no data'*/
+.n-tree__empty {
     display: none;
-  }
-  
-  
-  /*fix content blur in canvas embed markdown*/
-  .canvas-node .markdown-embed-content .is-flashing {
+}
+
+/*fix content blur in canvas embed markdown*/
+.canvas-node .markdown-embed-content .is-flashing {
     mix-blend-mode: normal;
-  }
-  
-  /* experimental */
-  
+}
+
+/* experimental */

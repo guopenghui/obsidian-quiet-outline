@@ -11,7 +11,7 @@ import ArrowForwardIosRound from "./ArrowForwardIosRound.vue";
 import OndemandVideoOutlined from "./OndemandVideoOutlined.vue";
 
 export {
-	ArrowCircleDownRound, SettingsBackupRestoreRound, ArticleOutlined,
+    ArrowCircleDownRound, SettingsBackupRestoreRound, ArticleOutlined,
     AudiotrackOutlined, CategoryOutlined, ImageOutlined, PublicOutlined,
     TextFieldsOutlined, FilePresentOutlined, ArrowForwardIosRound, OndemandVideoOutlined,
 };

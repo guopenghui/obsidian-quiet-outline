@@ -1,9 +1,9 @@
-import { ItemView, WorkspaceLeaf } from 'obsidian';
-import { createApp, App } from 'vue';
-import Outline from './Outline.vue';
+import { ItemView, WorkspaceLeaf } from "obsidian";
+import { createApp, App } from "vue";
+import Outline from "./Outline.vue";
 import type { QuietOutline } from "../plugin";
 
-export const VIEW_TYPE = 'quiet-outline';
+export const VIEW_TYPE = "quiet-outline";
 
 export class OutlineView extends ItemView {
     vueApp: App;
@@ -29,21 +29,19 @@ export class OutlineView extends ItemView {
         const container = this.containerEl.children[1];
         container.empty();
         const mountPoint = container.createEl("div", {
-            cls: "quiet-outline"
+            cls: "quiet-outline",
         });
         this.vueApp = createApp(Outline);
-		this.vueApp.provide("plugin", this.plugin);
-		this.vueApp.provide("container", mountPoint);
+        this.vueApp.provide("plugin", this.plugin);
+        this.vueApp.provide("container", mountPoint);
         // this.vueApp.config.globalProperties.plugin = this.plugin;
         // this.vueApp.config.globalProperties.container = mountPoint;
         this.vueApp.mount(mountPoint);
         // setTimeout(()=> { createApp(Outline).mount(mountPoint) }, 0)
     }
 
-    async onClose() {
-    }
+    async onClose() {}
     onunload(): void {
         this.vueApp.unmount();
     }
-
 }

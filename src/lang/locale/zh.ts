@@ -45,12 +45,12 @@ export default {
     "Text Direction": "文本方向",
     "is decided by": "由什么决定",
 
-	"Export Format": "标题输出格式",
+    "Export Format": "标题输出格式",
 	
-	// menu
-	"Copy": "复制",
-	"Heading": "标题",
-	"Heading and children headings": "标题和子标题",
-	"Heading and Content": "该段内容",
-	"Heading and siblings headings": "标题和兄弟标题",
+    // menu
+    "Copy": "复制",
+    "Heading": "标题",
+    "Heading and children headings": "标题和子标题",
+    "Heading and Content": "该段内容",
+    "Heading and siblings headings": "标题和兄弟标题",
 };

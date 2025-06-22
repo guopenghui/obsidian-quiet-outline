@@ -1,4 +1,10 @@
-import {AllCanvasNodeData, CanvasColor, CanvasEdgeData, EdgeEnd, NodeSide} from "obsidian/canvas";
+import {
+    AllCanvasNodeData,
+    CanvasColor,
+    CanvasEdgeData,
+    EdgeEnd,
+    NodeSide,
+} from "obsidian/canvas";
 
 declare module "obsidian" {
     interface Workspace {
@@ -16,23 +22,25 @@ declare module "obsidian" {
 
     interface MarkdownPreviewRenderer {
         sections: MarkdownPreviewSection[];
-        
+
         viewportHeight: number;
 
-        applyScroll(scroll: number, config: { highlight: boolean, center: boolean }): boolean;
+        applyScroll(
+            scroll: number,
+            config: { highlight: boolean; center: boolean },
+        ): boolean;
 
         highlightEl(el: HTMLElement): void;
-        
+
         /**
          * calculate top position of a section by sum height of all previous section
          */
         getSectionTop(section: MarkdownPreviewSection): number;
     }
 
-    interface MarkdownPreviewView{
+    interface MarkdownPreviewView {
         renderer: MarkdownPreviewRenderer;
     }
-
 
     export interface CanvasView extends FileView {
         app: App;
@@ -41,13 +49,13 @@ declare module "obsidian" {
         file: TFile;
 
         /**
-         * execute when the canvas is modified 
+         * execute when the canvas is modified
          */
         requestSave(): void;
     }
-    
-    type CanvasComponent = CanvasNode|CanvasEdge;
-    
+
+    type CanvasComponent = CanvasNode | CanvasEdge;
+
     export interface Canvas {
         nodes: Map<string, CanvasNode>;
         data: {
@@ -55,33 +63,33 @@ declare module "obsidian" {
             edges: CanvasEdgeData[];
         };
         /** edges set from node */
-        edgeFrom: { data: Map<CanvasNode, Set<CanvasEdge>> }
+        edgeFrom: { data: Map<CanvasNode, Set<CanvasEdge>> };
         /** edges set to node */
-        edgeTo: { data: Map<CanvasNode, Set<CanvasEdge>> }
+        edgeTo: { data: Map<CanvasNode, Set<CanvasEdge>> };
 
         selection: Set<CanvasComponent>;
 
         /**
-         * execute when the canvas is modified 
+         * execute when the canvas is modified
          */
         requestSave(isPushHistory: boolean): void;
-        
+
         select(component: CanvasComponent): void;
         deselect(component: CanvasComponent): void;
 
         /**
          * clear selection and add all components provided to selection
-         * 
+         *
          * if no component provided, add all nodes to selection (no edges)
          */
         selectAll(components?: CanvasComponent[]): void;
         deselectAll(): void;
-        selectOnly(component: CanvasNode|CanvasEdge): void;
+        selectOnly(component: CanvasNode | CanvasEdge): void;
 
         zoomToBbox(bbox: BBox): void;
         zoomToFit(): void;
         zoomToSelection(): void;
-        
+
         updateSelection(update: () => void): void;
     }
 
@@ -100,19 +108,18 @@ declare module "obsidian" {
         y: number;
         renderedZIndex: number;
 
-        
         select(): void;
         deselect(): void;
         getData(): AllCanvasNodeData;
     }
-    
+
     interface CanvasGroupNode extends CanvasNodeInstance {
         label: string;
         unknownData: {
             type: "group";
-        }
+        };
 
-        setLabel(label: string): void
+        setLabel(label: string): void;
     }
 
     type NodeFileType = EmbedMarkdownView | any;
@@ -120,34 +127,35 @@ declare module "obsidian" {
     interface CanvasFileNode extends CanvasNodeInstance {
         file: TFile;
         filePath: string;
-        child: NodeFileType
+        child: NodeFileType;
         unknownData: {
             file: string;
             type: "file";
-        }
-        
+        };
     }
 
     interface CanvasTextNode extends CanvasNodeInstance {
         unknownData: {
             text: string;
             type: "text";
-        }
+        };
         child: EmbedMarkdownView;
-        
     }
 
     interface CanvasLinkNode extends CanvasNodeInstance {
         unknownData: {
             url: string;
             type: "link";
-        }
+        };
 
-        setUrl(url: string): void
-        
+        setUrl(url: string): void;
     }
-    
-    export type CanvasNode = CanvasGroupNode | CanvasFileNode | CanvasTextNode | CanvasLinkNode 
+
+    export type CanvasNode =
+        | CanvasGroupNode
+        | CanvasFileNode
+        | CanvasTextNode
+        | CanvasLinkNode;
 
     export interface BBox {
         minX: number;
@@ -165,20 +173,20 @@ declare module "obsidian" {
             node: CanvasNode;
             side: NodeSide;
             end: EdgeEnd;
-        }
+        };
         to: {
             node: CanvasNode;
             side: NodeSide;
             end: EdgeEnd;
-        }
+        };
 
         select(): void;
         deselect(): void;
         getData(): CanvasEdgeData;
     }
 
-    export type CanvasEdge = CanvasEdgeExt
-    
+    export type CanvasEdge = CanvasEdgeExt;
+
     interface FileView {
         data: string;
     }
@@ -191,28 +199,31 @@ declare module "obsidian" {
             editor: Editor;
         };
         previewMode: {
-            renderer: MarkdownPreviewRenderer
+            renderer: MarkdownPreviewRenderer;
         };
 
         getMode(): "preview" | "source";
         toggleMode(): void;
     }
-    
+
     interface Editor {
         /**
-         * @param ranges 
+         * @param ranges
          * @param highlightClass set to "is-flashing"
          * @param flag1 function unknown, set to true
          * @param flag2 function unknown, set to true
          */
-        addHighlights(ranges: EditorRange[], highlightClass: string, flag1: boolean, flag2: boolean): void;
-        
+        addHighlights(
+            ranges: EditorRange[],
+            highlightClass: string,
+            flag1: boolean,
+            flag2: boolean,
+        ): void;
     }
-    
+
     interface MenuItem {
-		setSubmenu(): Menu;
+        setSubmenu(): Menu;
     }
-    
 }
 
-export {}
+export {};

@@ -1,6 +1,6 @@
-import { marked } from 'marked';
-import { renderMath, finishRenderMath, loadMathJax } from 'obsidian';
-import { store } from './store';
+import { marked } from "marked";
+import { renderMath, finishRenderMath, loadMathJax } from "obsidian";
+import { store } from "./store";
 
 type Extension = marked.TokenizerExtension & marked.RendererExtension;
 
@@ -16,7 +16,7 @@ export const formula: Extension = {
         const match = rule.exec(src);
         if (match) {
             return {
-                type: 'formula',
+                type: "formula",
                 raw: match[0],
                 formula: match[1].trim(),
             };
@@ -34,7 +34,7 @@ export const formula: Extension = {
             });
             return false;
         }
-    }
+    },
 };
 
 // parse [[xxx]] format
@@ -42,9 +42,9 @@ export const internal_link: Extension = {
     name: "internal",
     level: "inline",
     start(src) {
-		// when regex passed to src.match has 'g' flag, match.index will be undefined
-		const match = src.match(/!?\[\[/);
-		return match ? match.index! : -1;
+        // when regex passed to src.match has 'g' flag, match.index will be undefined
+        const match = src.match(/!?\[\[/);
+        return match ? match.index! : -1;
     },
     tokenizer(src, token) {
         const rule = /^!?\[\[([^\[\]]+?)\]\]/;
@@ -60,7 +60,7 @@ export const internal_link: Extension = {
     },
     renderer(token) {
         return `<span class="internal-link">${token.internal}</span>`;
-    }
+    },
 };
 
 // remove ref (^ab123ce | ^[footnote] | [^footnote]) format
@@ -69,15 +69,15 @@ export const remove_ref: Extension = {
     level: "inline",
     start(src) {
         const match = src.match(/\^|\[/);
-		return match ? match.index! : -1;
+        return match ? match.index! : -1;
     },
     tokenizer(src, tokens) {
         const rule = /^(\^[A-Za-z0-9\-]+)|^(\^\[[^\]]*\])|^(\[\^[^\]]*\])/;
         const match = rule.exec(src);
-        
+
         if (match) {
             return {
-                type: 'ref',
+                type: "ref",
                 raw: match[0],
                 ref: (match[1] || match[2] || match[3]).trim(),
             };
@@ -85,7 +85,7 @@ export const remove_ref: Extension = {
     },
     renderer(token) {
         return "";
-    }
+    },
 };
 
 // parse ==xxx== format
@@ -93,8 +93,8 @@ export const highlight: Extension = {
     name: "highlight",
     level: "inline",
     start(src) {
-		const match = src.match(/==/);
-		return match ? match.index! : -1;
+        const match = src.match(/==/);
+        return match ? match.index! : -1;
     },
     tokenizer(src, token) {
         const rule = /^==([^=]+)==/;
@@ -109,7 +109,7 @@ export const highlight: Extension = {
     },
     renderer(token) {
         return `<mark>${token.internal}</mark>`;
-    }
+    },
 };
 
 // parse tags eg. #tag
@@ -118,10 +118,11 @@ export const tag: Extension = {
     level: "inline",
     start(src) {
         const match = src.match(/^#|(?<=\s)#/);
-		return match ? match.index! : -1;
+        return match ? match.index! : -1;
     },
     tokenizer(src, token) {
-        const rule = /^#([^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
+        const rule =
+            /^#([^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
         const match = rule.exec(src);
         if (match) {
             return {
@@ -133,7 +134,7 @@ export const tag: Extension = {
     },
     renderer(token) {
         return `<a href="" class="tag" target="_blank" rel="noopener">#${token.internal}</a>`;
-    }
+    },
 };
 
 // remove url inside <a>
@@ -145,6 +146,6 @@ export const remove_href = (token: marked.Token) => {
 
 // remove list
 export const tokenizer: marked.Tokenizer = {
-	// @ts-ignore
-	list(src) {}
-}
+    // @ts-ignore
+    list(src) {},
+};
