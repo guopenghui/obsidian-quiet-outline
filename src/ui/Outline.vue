@@ -972,59 +972,59 @@ function getNo(node: TreeOption | string): number {
   align-self: stretch;
 }
 .quiet-outline .n-tree .n-tree-node-content :is(p, h1, h2, h3, h4, h5) {
-  unicode-bidi: var(--61117f8c-biDi);
+  unicode-bidi: v-bind(biDi);
 }
 .quiet-outline .level-2 .n-tree-node-indent,
 .quiet-outline .level-3 .n-tree-node-indent:first-child,
 .quiet-outline .level-4 .n-tree-node-indent:first-child,
 .quiet-outline .level-5 .n-tree-node-indent:first-child,
 .quiet-outline .level-6 .n-tree-node-indent:first-child {
-  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor1);
+  border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor1);
 }
 .quiet-outline .level-3 .n-tree-node-indent,
 .quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
 .quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(2) {
-  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor2);
+  border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor2);
 }
 .quiet-outline .level-4 .n-tree-node-indent,
 .quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(3) {
-  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor3);
+  border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor3);
 }
 .quiet-outline .level-5 .n-tree-node-indent,
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(4) {
-  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor4);
+  border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor4);
 }
 .quiet-outline .level-6 .n-tree-node-indent {
-  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor5);
+  border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor5);
 }
 
 .n-tree-node.located p {
-  color: var(--61117f8c-locatedColor);
+  color: v-bind(locatedColor);
   border: 1px solid;
   border-radius: 4px;
   padding: 2px 4px;
-  background-color: rgba(var(--text-accent-rgb), 0.07) !important;
+  background-color: rgba(v-bind(text-accent-rgb), 0.07) !important;
   border-radius: 6px;
   transition: border-color 0.4s ease-in-out, background-color 0.2s ease-in-out;
 }
 
 /* Spezifische Rahmenfarben je nach Gliederungsebene */
 .n-tree-node.level-2.located p {
-  border-color: var(--61117f8c-rainbowColor1);
+  border-color: v-bind(rainbowColor1);
 }
 .n-tree-node.level-3.located p {
-  border-color: var(--61117f8c-rainbowColor2);
+  border-color: v-bind(rainbowColor2);
 }
 .n-tree-node.level-4.located p {
-  border-color: var(--61117f8c-rainbowColor3);
+  border-color: v-bind(rainbowColor3);
 }
 .n-tree-node.level-5.located p {
-  border-color: var(--61117f8c-rainbowColor4);
+  border-color: v-bind(rainbowColor4);
 }
 .n-tree-node.level-6.located p {
-  border-color: var(--61117f8c-rainbowColor5);
+  border-color: v-bind(rainbowColor5);
 }
 
 .quiet-outline .n-tree .n-tree-node .n-tree-node-content .n-tree-node-content__prefix {
