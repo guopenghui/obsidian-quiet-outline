@@ -964,87 +964,78 @@ function getNo(node: TreeOption | string): number {
 
 <style>
 .quiet-outline .n-tree {
-    padding-top: 5px;
+  padding-top: 5px;
 }
-
-/* ============ */
-/*  彩虹大纲线   */
-/* rainbow line */
-/* ============ */
 .quiet-outline .n-tree .n-tree-node-indent {
-    content: "";
-    height: unset;
-    align-self: stretch;
+  content: "";
+  height: unset;
+  align-self: stretch;
 }
-
-/* RTL language support */
 .quiet-outline .n-tree .n-tree-node-content :is(p, h1, h2, h3, h4, h5) {
-    unicode-bidi: v-bind(biDi);
+  unicode-bidi: var(--61117f8c-biDi);
 }
-
 .quiet-outline .level-2 .n-tree-node-indent,
 .quiet-outline .level-3 .n-tree-node-indent:first-child,
 .quiet-outline .level-4 .n-tree-node-indent:first-child,
 .quiet-outline .level-5 .n-tree-node-indent:first-child,
 .quiet-outline .level-6 .n-tree-node-indent:first-child {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor1);
-    /* border-right: 2px solid rgb(253, 139, 31, 0.6); */
+  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor1);
 }
-
 .quiet-outline .level-3 .n-tree-node-indent,
 .quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
 .quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(2) {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor2);
-    /* border-right: 2px solid rgb(255, 223, 0, 0.6); */
+  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor2);
 }
-
 .quiet-outline .level-4 .n-tree-node-indent,
 .quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(3) {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor3);
-    /* border-right: 2px solid rgb(7, 235, 35, 0.6); */
+  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor3);
 }
-
 .quiet-outline .level-5 .n-tree-node-indent,
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(4) {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor4);
-    /* border-right: 2px solid rgb(45, 143, 240, 0.6); */
+  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor4);
 }
-
 .quiet-outline .level-6 .n-tree-node-indent {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor5);
-    /* border-right: 2px solid rgb(188, 1, 226, 0.6); */
+  border-right: var(--nav-indentation-guide-width) solid var(--61117f8c-rainbowColor5);
 }
 
-/* located heading*/
 .n-tree-node.located p {
-    color: v-bind("locatedColor");
+  color: var(--61117f8c-locatedColor);
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 2px 4px;
+  background-color: rgba(var(--text-accent-rgb), 0.07) !important;
+  border-radius: 6px;
+  transition: border-color 0.4s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-/* adjust indent */
-
-/* .quiet-outline .n-tree .n-tree-node .n-tree-node-content {
-    padding-left: 0;
-} */
-.quiet-outline
-    .n-tree
-    .n-tree-node
-    .n-tree-node-content
-    .n-tree-node-content__prefix {
-    margin-right: 0;
+/* Spezifische Rahmenfarben je nach Gliederungsebene */
+.n-tree-node.level-2.located p {
+  border-color: var(--61117f8c-rainbowColor1);
 }
-.quiet-outline
-    .n-tree
-    .n-tree-node
-    .n-tree-node-content
-    .n-tree-node-content__prefix
-    > *:last-child {
-    margin-right: 8px;
+.n-tree-node.level-3.located p {
+  border-color: var(--61117f8c-rainbowColor2);
+}
+.n-tree-node.level-4.located p {
+  border-color: var(--61117f8c-rainbowColor3);
+}
+.n-tree-node.level-5.located p {
+  border-color: var(--61117f8c-rainbowColor4);
+}
+.n-tree-node.level-6.located p {
+  border-color: var(--61117f8c-rainbowColor5);
+}
+
+.quiet-outline .n-tree .n-tree-node .n-tree-node-content .n-tree-node-content__prefix {
+  margin-right: 0;
+}
+.quiet-outline .n-tree .n-tree-node .n-tree-node-content .n-tree-node-content__prefix > *:last-child {
+  margin-right: 8px;
 }
 .n-tree-node-switcher__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
