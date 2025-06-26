@@ -154,6 +154,12 @@ export class QuietOutline extends Plugin {
 
                 // block cursor change event to trigger auto-expand when switching between notes
                 this.block_cursor_change();
+                
+                // if navigator's view not change
+                // like switching from quiet-outline panel to other view, do nothing
+                if(this.navigator.view && this.navigator.view === view) {
+                    return;
+                }
 
                 await this.updateNav(view.getViewType(), view);
                 await this.refresh_outline();
