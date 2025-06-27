@@ -9,6 +9,8 @@ import {
 declare module "obsidian" {
     interface Workspace {
         getActiveFileView: () => FileView;
+        on(name: "quiet-outline:canvas-change", callback: () => void): EventRef;
+        on(name: "quiet-outline:canvas-selection-change", callback: (selection: Set<CanvasComponent>) => Promise<void>): EventRef;
     }
 
     interface MarkdownPreviewSection {
