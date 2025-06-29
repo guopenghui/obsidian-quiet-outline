@@ -4,6 +4,7 @@ import {
     MarkdownView,
     Notice,
     Plugin,
+    TFile,
     View,
 } from "obsidian";
 // import { around } from "monkey-around"
@@ -26,6 +27,7 @@ export class QuietOutline extends Plugin {
     block_scroll: () => void;
     allow_cursor_change = true;
     block_cursor_change: () => void;
+    prevActiveFile: TFile | null = null;
 
     async onload() {
         await this.loadSettings();
@@ -137,10 +139,10 @@ export class QuietOutline extends Plugin {
 
         this.registerEvent(
             this.app.workspace.on("active-leaf-change", async (leaf) => {
-                const view = this.app.workspace.getActiveFileView();
+                const activeFileView = this.app.workspace.getActiveFileView();
 
                 // when there is no active file-view, eg. no file is opened or an empty view is focused.
-                if (!view) {
+                if (!activeFileView) {
                     await this.updateNav("dummy", null as any);
                     await this.refresh_outline();
                     store.refreshTree();
@@ -148,7 +150,7 @@ export class QuietOutline extends Plugin {
                 }
 
                 // when switching to a non-file-view, like outline and tags panel, do nothing.
-                if (!leaf || (view && view !== leaf.view)) {
+                if (!leaf || (activeFileView && activeFileView !== leaf.view)) {
                     return;
                 }
 
@@ -157,11 +159,16 @@ export class QuietOutline extends Plugin {
                 
                 // if navigator's view not change
                 // like switching from quiet-outline panel to other view, do nothing
-                if(this.navigator.view && this.navigator.view === view) {
-                    return;
+                if(this.navigator.view && this.navigator.view === activeFileView) {
+                    // obsidian will reuse markdown view between leaf-change
+                    // so we have to use a plugin field `prevActiveFile` to identify actual view change
+                    if(this.prevActiveFile === activeFileView.file) {
+                        return;
+                    }
                 }
-
-                await this.updateNav(view.getViewType(), view);
+                
+                this.prevActiveFile = activeFileView.file;
+                await this.updateNav(activeFileView.getViewType(), activeFileView);
                 await this.refresh_outline();
                 store.refreshTree();
             }),
