@@ -14,6 +14,7 @@
 + [在 Kanban 中导航](#在-kanban-中导航)
 + [鼠标悬浮显示预览窗口](#鼠标悬浮显示预览窗口)
 + [记忆展开状态](#记忆展开状态)
++ [Vim-Like 键盘操作](#vim-like-键盘操作)
 + [一些快捷键](#一些快捷键)
 
 
@@ -72,6 +73,23 @@ Quiet Outline:
 
 ### 记忆展开状态
 在切换已打开的笔记时，展开状态会被记录和恢复
+
+### Vim-Like 键盘操作
+![Vim Like](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/vim_like.mp4)
+
++ Focus heading tree:
+    + `J` `K` (and ArrowUP ArrowDown) to move down/up
+    + `H` `L` (and ArrowLeft ArrowRight) to collapse/expand 
+    + `/` to focus search input area
+    + `Z Z` to center the heading
+    + `G G` to go to top
+    + `Shift G` to go to bottom
+    + `Space` to jump in note without to focus into it
+    + `Enter` to jump and focus into note, clear search input 
+    + `Escape` to focus back to note
++ Focus search area:
+    + `Escape` to clear search input
+    + `Enter` to focus heading tree
 
 ### 一些快捷键
 + 提高/降低展开层级

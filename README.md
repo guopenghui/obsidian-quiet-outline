@@ -16,6 +16,7 @@ An outline plugin makes headings easier to read.
 + [Navigation in Kanban](#navigate-in-kanban)
 + [Hover preview](#show-content-when-hovering-on-heading)
 + [Remember expand state](#remember-state)
++ [Vim-Like keymap](#vim-like-keymap)
 + [Some hotkeys](#hotkeys)
 
 ### No auto-expand when editing
@@ -73,6 +74,23 @@ You can customize the default level per note. See release note in [0.3.33](https
 
 ### Remember State
 Memorizing the expanded title state when switching between open notes
+
+### Vim-Like keymap
+![Vim Like](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/vim_like.mp4)
+
++ Focus heading tree:
+    + `J` `K` (and ArrowUP ArrowDown) to move down/up
+    + `H` `L` (and ArrowLeft ArrowRight) to collapse/expand 
+    + `/` to focus search input area
+    + `Z Z` to center the heading
+    + `G G` to go to top
+    + `Shift G` to go to bottom
+    + `Space` to jump in note without to focus into it
+    + `Enter` to jump and focus into note, clear search input 
+    + `Escape` to focus back to note
++ Focus search area:
+    + `Escape` to clear search input
+    + `Enter` to focus heading tree
 
 ### Hotkeys
 + Increase/Decrease level
