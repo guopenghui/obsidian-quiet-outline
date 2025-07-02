@@ -75,6 +75,25 @@ export class MarkDownNav extends Nav {
             // }, 1000);
         });
     }
+    
+    async jumpWithoutFocus(key: number) {
+        const line: number = store.headers[key].position.start.line;
+
+        const state = { line };
+
+        this.plugin.jumping = true;
+        store.onPosChange(key);
+
+        setTimeout(() => {
+            this.view.setEphemeralState(state);
+
+            // 这里假设 jump 一定会 *触发唯一一次* scroll，因此把 jumping = false 的操作交给 handelScroll 函数
+            // 以避免 jump 后的 scroll 泄露
+            // setTimeout(() => {
+            // 	plugin.jumping = false;
+            // }, 1000);
+        });
+    }
 
     async install() {
         this.plugin.registerEditorExtension([editorEvent]);
@@ -138,7 +157,7 @@ export class MarkDownNav extends Nav {
         to: number,
         position: "before" | "after" | "inside",
     ) {
-        const structure = await parseMarkdown(this.view.data);
+        const structure = await parseMarkdown(this.view.data, this.view.app);
         moveHeading(structure, from, to, position);
         await plugin.app.vault.modify(
             this.view.file!,

@@ -26,7 +26,7 @@ type Section = {
     type: "section";
 };
 
-export async function parseMarkdown(text: string): Promise<Section> {
+export async function parseMarkdown(text: string, app: App): Promise<Section> {
     const res = await parseMetaDataCache(app, text);
     const headings = res.headings || [];
     const sections = res.sections || [];

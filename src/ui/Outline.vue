@@ -132,7 +132,10 @@ import type { QuietOutline } from "@/plugin";
 import { useEvent } from "@/utils/use";
 
 type TreeOptionX = TreeOption & {
+    no?: number;
     icon?: SupportedIcon;
+    parent?: TreeOptionX;
+    children?: TreeOptionX[];
 };
 type MakeRequired<T, K extends keyof T> = T & {
     [P in K]-?: T[P];
@@ -579,10 +582,12 @@ switchLevel(level.value);
 
 function modifyExpandKeys(
     newKeys: string[],
-    mode: "add" | "replace" = "replace",
+    mode: "add" | "remove" | "replace" = "replace",
 ) {
     if (mode === "replace") {
         expanded.value = newKeys;
+    } else if(mode === "remove") {
+        expanded.value = expanded.value.filter(key => !newKeys.includes(key));
     } else {
         const mergeSet = new Set([...expanded.value, ...newKeys]);
         expanded.value = [...mergeSet];
@@ -810,13 +815,13 @@ let data2 = computed(() => {
     return makeTree(store.headers);
 });
 
-function makeTree(headers: Heading[]): TreeOption[] {
-    let tree: TreeOption[] = arrToTree(headers);
+function makeTree(headers: Heading[]): TreeOptionX[] {
+    let tree: TreeOptionX[] = arrToTree(headers);
     return tree;
 }
 
-function arrToTree(headers: Heading[]): TreeOption[] {
-    const root: TreeOption = { children: [] };
+function arrToTree(headers: Heading[]): TreeOptionX[] {
+    const root: TreeOptionX = { children: [] };
     const stack = [{ node: root, level: -1 }];
 
     headers.forEach((h, i) => {
@@ -825,6 +830,7 @@ function arrToTree(headers: Heading[]): TreeOption[] {
             key: "item-" + h.level + "-" + i,
             line: h.position.start.line,
             icon: h.icon,
+            no: i
         };
 
         while (h.level <= stack.last()!.level) {
@@ -835,10 +841,12 @@ function arrToTree(headers: Heading[]): TreeOption[] {
         if (parent.children === undefined) {
             parent.children = [];
         }
+        node.parent = parent;
         parent.children.push(node);
         stack.push({ node, level: h.level });
     });
 
+    root.children?.forEach(c => c.parent = undefined);
     return root.children!;
 }
 
@@ -960,6 +968,113 @@ function getNo(node: TreeOption | string): number {
     }
     return parseInt(node.split("-")[2]);
 }
+
+function idxToKey(idx: number) {
+    return toKey(store.headers[idx], idx)
+}
+
+function isLeaf(idx: number) {
+    return idx === store.headers.length - 1
+        || store.headers[idx + 1].level <= store.headers[idx].level;
+}
+
+function selectVisible() {
+    const path = getPath(locateIdx.value);
+    const firstCollapse = path.findIndex(item => !expanded.value.contains(idxToKey(item)));
+    const visibleOne = firstCollapse === -1 ? locateIdx.value : path[firstCollapse];
+    
+    selectedKeys.value = [idxToKey(visibleOne)];
+}
+
+function setExpand(open: boolean) {
+    const selectedKey = selectedKeys.value[0];
+    if (!selectedKey || isLeaf(getNo(selectedKey))) return;
+    
+    
+    if(open) {
+        modifyExpandKeys([selectedKey], "add");
+    }else {
+        modifyExpandKeys([selectedKey], "remove");
+    }
+}
+
+function center() {
+    const selectedKey = selectedKeys.value[0];
+    if (!selectedKey) return;
+    
+    const no = getNo(selectedKey);
+    const currentNode = container.querySelector(`.n-tree .n-tree-node-wrapper:has(#no-${no})`)
+    currentNode?.scrollIntoView({behavior: "smooth", block: "center"});
+    
+}
+
+function move(direction: "up" | "down" | "bottom" | "top") {
+    const selectedKey = selectedKeys.value[0];
+    if (!selectedKey) return;
+    
+    const no = getNo(selectedKey);
+    const currentNode = container.querySelector(`.n-tree .n-tree-node-wrapper:has(#no-${no})`)
+    if(!currentNode) {
+        const nextNode = container.querySelector(`.n-tree .n-tree-node-wrapper`)?.firstElementChild;
+        if (!nextNode) return;
+        
+        moveToHeadingEl(nextNode as HTMLElement);
+        return;
+    }
+    
+    if(direction === "up") {
+        const prevNode = currentNode.previousSibling?.firstChild as HTMLElement;
+        if(prevNode) {
+            moveToHeadingEl(prevNode);
+        }
+    }else if(direction === "down") {
+        const nextNode = currentNode.nextSibling?.firstChild as HTMLElement;
+        if(nextNode) {
+            moveToHeadingEl(nextNode);
+        }
+    } else if(direction === "bottom") {
+        const bottomNode = currentNode.parentElement?.lastElementChild?.firstElementChild as HTMLElement;
+        if(bottomNode) {
+            moveToHeadingEl(bottomNode);
+        }
+    } else if(direction === "top") {
+        const topNode = currentNode.parentElement?.firstElementChild?.firstElementChild as HTMLElement;
+        if(topNode) {
+            moveToHeadingEl(topNode);
+        }
+    }
+}
+
+function moveToHeadingEl(el: HTMLElement) {
+    // when expanding a heading, there is an intermediate state
+    const match = el.id.match(/no-(\d+)/);
+    if (!match) return;
+    
+    const no = parseInt(match[1]);
+    selectedKeys.value = [idxToKey(no)];
+    el.scrollIntoView({behavior: "smooth", block: "nearest"});
+}
+
+function resetPattern() {
+    pattern.value = "";
+}
+
+function currentSelected() {
+    const selectedKey = selectedKeys.value[0];
+    if (!selectedKey) return;
+    
+    return getNo(selectedKey);
+}
+
+defineExpose({
+   setExpand,
+   center,
+   move,
+   selectVisible,
+   resetPattern,
+   currentSelected,
+})
+
 </script>
 
 <style>

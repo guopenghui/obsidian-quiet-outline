@@ -68,6 +68,22 @@ export class QuietOutline extends Plugin {
                 this.allow_cursor_change = true;
             },
         );
+        
+        this.setupVimMode();
+    }
+    
+    async setupVimMode() {
+        this.addCommand({
+            id: "focus-heading-tree",
+            name: "Focus Heading Tree",
+            callback: () => {
+                const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
+                if (!leaf) return;
+                const view = leaf.view as OutlineView;
+                
+                view.focusOn("tree")
+            }
+        })
     }
 
     async firstTimeInstall() {
@@ -308,12 +324,10 @@ export class QuietOutline extends Plugin {
             id: "quiet-outline-focus-input",
             name: "Focus on input",
             callback: () => {
-                const input = document.querySelector(
-                    "input.n-input__input-el",
-                ) as HTMLInputElement;
-                if (input) {
-                    input.focus();
-                }
+                const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
+                if (!leaf) return;
+                const view = leaf.view as OutlineView;
+                view.focusOn("search")
             },
         });
 
