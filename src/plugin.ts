@@ -76,11 +76,12 @@ export class QuietOutline extends Plugin {
         this.addCommand({
             id: "focus-heading-tree",
             name: "Focus Heading Tree",
-            callback: () => {
+            callback: async () => {
                 const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
                 if (!leaf) return;
                 const view = leaf.view as OutlineView;
                 
+                await this.app.workspace.revealLeaf(leaf);
                 view.focusOn("tree")
             }
         })
@@ -323,10 +324,11 @@ export class QuietOutline extends Plugin {
         this.addCommand({
             id: "quiet-outline-focus-input",
             name: "Focus on input",
-            callback: () => {
+            callback: async () => {
                 const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
                 if (!leaf) return;
                 const view = leaf.view as OutlineView;
+                await this.app.workspace.revealLeaf(leaf);
                 view.focusOn("search")
             },
         });
