@@ -75,21 +75,21 @@ Quiet Outline:
 在切换已打开的笔记时，展开状态会被记录和恢复
 
 ### Vim-Like 键盘操作
-![Vim Like](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/vim_like.mp4)
+https://github.com/user-attachments/assets/a321c9a8-af27-495f-8822-5824ee453af2
 
-+ Focus heading tree:
-    + `J` `K` (and ArrowUP ArrowDown) to move down/up
-    + `H` `L` (and ArrowLeft ArrowRight) to collapse/expand 
-    + `/` to focus search input area
-    + `Z Z` to center the heading
-    + `G G` to go to top
-    + `Shift G` to go to bottom
-    + `Space` to jump in note without to focus into it
-    + `Enter` to jump and focus into note, clear search input 
-    + `Escape` to focus back to note
-+ Focus search area:
-    + `Escape` to clear search input
-    + `Enter` to focus heading tree
++ 当聚焦于标题树时:
+    + `J` `K` (以及下方向键、上方向键) 来上下移动
+    + `H` `L` (以及左方向键、右方向键) 来折叠、展开标题 
+    + `/` 来聚焦到搜索框
+    + `Z Z` 使得当前选中标题居中
+    + `G G` 跳转到最上面的标题
+    + `Shift G` 跳转到最底部的标题
+    + `Space` 控制笔记跳转，但不进入笔记 （因此可以连续进行跳转预览）
+    + `Enter` 控制笔记跳转，并进入笔记，同时清空搜索框内容
+    + `Escape` 退出面板，返回原先笔记
++ 当聚焦于搜索框时:
+    + `Escape` 清除搜索框内容
+    + `Enter` 聚焦到标题树
 
 ### 一些快捷键
 + 提高/降低展开层级

@@ -76,7 +76,7 @@ You can customize the default level per note. See release note in [0.3.33](https
 Memorizing the expanded title state when switching between open notes
 
 ### Vim-Like keymap
-![Vim Like](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/vim_like.mp4)
+https://github.com/user-attachments/assets/a321c9a8-af27-495f-8822-5824ee453af2
 
 + Focus heading tree:
     + `J` `K` (and ArrowUP ArrowDown) to move down/up
