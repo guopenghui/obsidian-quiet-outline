@@ -1,6 +1,7 @@
 import {
     Constructor,
     debounce,
+    FileView,
     MarkdownView,
     Notice,
     Plugin,
@@ -28,6 +29,8 @@ export class QuietOutline extends Plugin {
     allow_cursor_change = true;
     block_cursor_change: () => void;
     prevActiveFile: TFile | null = null;
+    prevActiveFileView: FileView | null = null;
+    prevView: View | null = null;
 
     async onload() {
         await this.loadSettings();
@@ -156,36 +159,50 @@ export class QuietOutline extends Plugin {
 
         this.registerEvent(
             this.app.workspace.on("active-leaf-change", async (leaf) => {
+                const prevView = this.prevView;
+                this.prevView = leaf?.view || null;
+                if (!leaf) return;
+                
                 const activeFileView = this.app.workspace.getActiveFileView();
-
-                // when there is no active file-view, eg. no file is opened or an empty view is focused.
                 if (!activeFileView) {
+                    this.prevActiveFileView = null;
+                    this.prevActiveFile = null;
+                    this.app.workspace.trigger("quiet-outline:active-fileview-change", null);
+                    return;
+                }
+                
+                if(leaf.view instanceof FileView && leaf.view.file) {
+                    // when opening a canvas, it triggers active-leaf-change twice
+                    // and at the first time it's not ready
+                    const isCanvasTwice = leaf.view.getViewType() === "canvas"
+                        && this.prevActiveFileView === leaf.view
+                        && leaf.view === prevView;
+                    
+                    if(leaf.view !== this.prevActiveFileView
+                        || leaf.view.file !== this.prevActiveFile
+                        || isCanvasTwice
+                    ) {
+                        this.prevActiveFileView = leaf.view;
+                        this.prevActiveFile = leaf.view.file;
+                        this.app.workspace.trigger("quiet-outline:active-fileview-change", leaf.view);
+                    }
+                }
+            })
+        )
+
+        this.registerEvent(
+            this.app.workspace.on("quiet-outline:active-fileview-change", async (view) => {
+                if (!view) {
                     await this.updateNav("dummy", null as any);
                     await this.refresh_outline();
                     store.refreshTree();
                     return;
                 }
 
-                // when switching to a non-file-view, like outline and tags panel, do nothing.
-                if (!leaf || (activeFileView && activeFileView !== leaf.view)) {
-                    return;
-                }
-
                 // block cursor change event to trigger auto-expand when switching between notes
                 this.block_cursor_change();
                 
-                // if navigator's view not change
-                // like switching from quiet-outline panel to other view, do nothing
-                if(this.navigator.view && this.navigator.view === activeFileView) {
-                    // obsidian will reuse markdown view between leaf-change
-                    // so we have to use a plugin field `prevActiveFile` to identify actual view change
-                    if(this.prevActiveFile === activeFileView.file) {
-                        return;
-                    }
-                }
-                
-                this.prevActiveFile = activeFileView.file;
-                await this.updateNav(activeFileView.getViewType(), activeFileView);
+                await this.updateNav(view.getViewType(), view);
                 await this.refresh_outline();
                 store.refreshTree();
             }),
