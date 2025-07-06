@@ -167,29 +167,29 @@ function canvasNodesToHeaders(nodes: AllCanvasNodeData[]): Heading[] {
 
 function chooseIcon(node: AllCanvasNodeData): SupportedIcon {
     if (node.type === "group") {
-        return "CategoryOutlined";
+        return "create-group";
     }
     if (node.type === "text") {
-        return "TextFieldsOutlined";
+        return "lucide-sticky-note";
     }
     if (node.type === "link") {
-        return "PublicOutlined";
+        return "lucide-globe-2";
     }
     if (node.type === "file") {
         if (node.file.endsWith(".md")) {
-            return "ArticleOutlined";
+            return "lucide-file-text";
         }
         if (node.file.endsWith(".mp3")) {
-            return "AudiotrackOutlined";
+            return "lucide-music-2";
         }
         if (node.file.endsWith(".mp4")) {
-            return "OndemandVideoOutlined";
+            return "lucide-youtube";
         }
         if (node.file.endsWith(".png") || node.file.endsWith(".jpg")) {
-            return "ImageOutlined";
+            return "lucide-file-image";
         }
     }
-    return "FilePresentOutlined";
+    return "lucide-link";
 }
 
 const area = (node: AllCanvasNodeData) => node.height * node.width;

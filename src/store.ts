@@ -1,15 +1,7 @@
 import { reactive } from "vue";
 import type { HeadingCache } from "obsidian";
 
-export type SupportedIcon =
-    | "AudiotrackOutlined"
-    | "OndemandVideoOutlined"
-    | "ArticleOutlined"
-    | "ImageOutlined"
-    | "TextFieldsOutlined"
-    | "CategoryOutlined"
-    | "PublicOutlined"
-    | "FilePresentOutlined";
+export type SupportedIcon = string;
 
 export type Heading = HeadingCache & {
     id?: string;

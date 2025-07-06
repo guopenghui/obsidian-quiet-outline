@@ -102,15 +102,8 @@ import {
 import {
     SettingsBackupRestoreRound,
     ArrowCircleDownRound,
-    ArticleOutlined,
-    AudiotrackOutlined,
-    CategoryOutlined,
-    ImageOutlined,
-    PublicOutlined,
-    TextFieldsOutlined,
-    FilePresentOutlined,
     ArrowForwardIosRound,
-    OndemandVideoOutlined,
+    LocalIcon,
 } from "./icons";
 
 import { Icon } from "@vicons/utils";
@@ -306,43 +299,12 @@ function renderSwitcherIcon() {
 
 // Prefix Icon
 function renderPrefix({ option }: { option: TreeOptionX }): VNodeChild {
+    if (!option.icon) return null;
+    
     let iConChild: VNodeChild = null;
-
     switch (option.icon) {
-        case "ArticleOutlined": {
-            iConChild = h(ArticleOutlined);
-            break;
-        }
-        case "AudiotrackOutlined": {
-            iConChild = h(AudiotrackOutlined);
-            break;
-        }
-        case "OndemandVideoOutlined": {
-            iConChild = h(OndemandVideoOutlined);
-            break;
-        }
-        case "CategoryOutlined": {
-            iConChild = h(CategoryOutlined);
-            break;
-        }
-        case "FilePresentOutlined": {
-            iConChild = h(FilePresentOutlined);
-            break;
-        }
-        case "ImageOutlined": {
-            iConChild = h(ImageOutlined);
-            break;
-        }
-        case "PublicOutlined": {
-            iConChild = h(PublicOutlined);
-            break;
-        }
-        case "TextFieldsOutlined": {
-            iConChild = h(TextFieldsOutlined);
-            break;
-        }
         default: {
-            return null;
+            iConChild = h(LocalIcon, { id: option.icon });
         }
     }
     return h(
