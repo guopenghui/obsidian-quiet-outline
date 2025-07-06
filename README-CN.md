@@ -92,6 +92,7 @@ https://github.com/user-attachments/assets/a321c9a8-af27-495f-8822-5824ee453af2
     + `Enter` 聚焦到标题树
     
 同时也支持操作 Canvas
+
 https://github.com/user-attachments/assets/babf3d56-9d66-4cbd-9bb8-8a41269fc332
 
 + `J` `K` `H` `L` 来移动到下一个节点

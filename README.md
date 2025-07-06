@@ -93,6 +93,7 @@ https://github.com/user-attachments/assets/a321c9a8-af27-495f-8822-5824ee453af2
     + `Enter` to focus heading tree
 
 Also support to operate canvas:
+
 https://github.com/user-attachments/assets/babf3d56-9d66-4cbd-9bb8-8a41269fc332
 
 + `J` `K` `H` `L` to move to next node
