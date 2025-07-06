@@ -62,6 +62,7 @@ export abstract class Nav extends Component {
     ) {}
     toBottom() {}
     abstract jump(key: number): Promise<void>;
+    async jumpWithoutFocus(key: number) { this.jump(key); }
     abstract getHeaders(): Promise<HeadingCache[]>;
     abstract setHeaders(): Promise<void>;
     abstract updateHeaders(): Promise<void>;

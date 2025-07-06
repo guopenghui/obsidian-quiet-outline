@@ -92,6 +92,15 @@ https://github.com/user-attachments/assets/a321c9a8-af27-495f-8822-5824ee453af2
     + `Escape` to clear search input
     + `Enter` to focus heading tree
 
+Also support to operate canvas:
+https://github.com/user-attachments/assets/babf3d56-9d66-4cbd-9bb8-8a41269fc332
+
++ `J` `K` `H` `L` to move to next node
++ `I` to edit a file/text node
++ `Z Z` to zoom in a node
++ `Z A` to zoom out
+
+
 ### Hotkeys
 + Increase/Decrease level
 + Jump to prev/next heading

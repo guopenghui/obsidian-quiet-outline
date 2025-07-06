@@ -85,11 +85,7 @@ export class OutlineView extends ItemView {
             evt.preventDefault();
             const idx = this.vueInstance.currentSelected();
             if (idx === undefined) return;
-            if(this.plugin.navigator.getId() === "markdown") {
-                (this.plugin.navigator as MarkDownNav).jumpWithoutFocus(idx);
-                return;
-            }
-            this.plugin.navigator.jump(idx);
+            this.plugin.navigator.jumpWithoutFocus(idx);
         });
         tree.register([], "Enter", () => {
             const idx = this.vueInstance.currentSelected();

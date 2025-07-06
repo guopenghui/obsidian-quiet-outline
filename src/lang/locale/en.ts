@@ -51,5 +51,7 @@ export default {
     "Heading": "Heading",
     "Heading and children headings": "Heading and children headings",
     "Heading and Content": "Heading and Content",
-    "Heading and siblings headings": "Heading and siblings headings"
+    "Heading and siblings headings": "Heading and siblings headings",
+    "Vimlize Canvas": "Vimlize Canvas",
+    "Add vim-like keymap for canvas": "Add vim-like keymap for canvas",
 };

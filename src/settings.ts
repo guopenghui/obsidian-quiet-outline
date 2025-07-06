@@ -36,6 +36,7 @@ interface QuietOutlineSettings {
     export_format: string;
     lang_direction_decide_by: "system" | "text";
     auto_scroll_into_view: boolean;
+    vimlize_canvas: boolean;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -66,6 +67,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     export_format: "{title}",
     lang_direction_decide_by: "system",
     auto_scroll_into_view: true,
+    vimlize_canvas: true,
 };
 
 class SettingTab extends PluginSettingTab {
@@ -400,6 +402,18 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.keep_search_input)
                     .onChange(async (value) => {
                         this.plugin.settings.keep_search_input = value;
+                        await this.plugin.saveSettings();
+                    }),
+            );
+        
+        new Setting(containerEl)
+            .setName(t("Vimlize Canvas"))
+            .setDesc(t("Add vim-like keymap for canvas"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.vimlize_canvas)
+                    .onChange(async (value) => {
+                        this.plugin.settings.vimlize_canvas = value;
                         await this.plugin.saveSettings();
                     }),
             );

@@ -34,7 +34,7 @@ export class EmbedMarkdownFileNav extends Nav {
 
         setTimeout(() => {
             // this.view.setEphemeralState(state);
-            setEphemeralState(this.view, { line });
+            setEphemeralState(this.view, { line, focus: true });
 
             // 这里假设 jump 一定会 *触发唯一一次* scroll，因此把 jumping = false 的操作交给 handelScroll 函数
             // 以避免 jump 后的 scroll 泄露
@@ -43,6 +43,32 @@ export class EmbedMarkdownFileNav extends Nav {
             // }, 1000);
         });
     }
+    
+    async jumpWithoutFocus(key: number): Promise<void> {
+        const line = store.headers[key].position.start.line;
+
+        // const cursor = {
+        // 	from: {line, ch: 0},
+        // 	to: {line, ch: 0},
+        // };
+        // const state = { line, cursor };
+
+        this.plugin.jumping = true;
+        store.onPosChange(key);
+
+        setTimeout(() => {
+            // this.view.setEphemeralState(state);
+            setEphemeralState(this.view, { line });
+
+            // 这里假设 jump 一定会 *触发唯一一次* scroll，因此把 jumping = false 的操作交给 handelScroll 函数
+            // 以避免 jump 后的 scroll 泄露
+            // setTimeout(() => {
+            // 	plugin.jumping = false;
+            // }, 1000);
+        });
+        
+    }
+    
     async getHeaders(): Promise<HeadingCache[]> {
         const cache = this.plugin.app.metadataCache.getFileCache(
             this.view.file,
@@ -70,6 +96,10 @@ export class EmbedMarkdownTextNav extends Nav {
     }
     async jump(key: number): Promise<void> {
         const line = store.headers[key].position.start.line;
+        setEphemeralState(this.view, { line, focus: true });
+    }
+    async jumpWithoutFocus(key: number): Promise<void> {
+        const line = store.headers[key].position.start.line;
         setEphemeralState(this.view, { line });
     }
     async getHeaders(): Promise<HeadingCache[]> {
@@ -89,11 +119,14 @@ export class EmbedMarkdownTextNav extends Nav {
     }
 }
 
-function setEphemeralState(view: EmbedMarkdownView, option: { line: number }) {
+function setEphemeralState(view: EmbedMarkdownView, option: { line: number, focus?: boolean }) {
     if (view.getMode() === "source") {
         editorScroll(view.editMode.editor, option.line);
+        option.focus && view.editMode.editor.focus();
     } else {
         previewScroll(view.previewMode.renderer, option.line);
+        view.previewMode.containerEl.tabIndex = -1;
+        option.focus && view.previewMode.containerEl.focus();
     }
 }
 

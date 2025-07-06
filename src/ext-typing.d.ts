@@ -25,7 +25,6 @@ declare module "obsidian" {
 
     interface MarkdownPreviewRenderer {
         sections: MarkdownPreviewSection[];
-
         viewportHeight: number;
 
         applyScroll(
@@ -61,6 +60,7 @@ declare module "obsidian" {
 
     export interface Canvas {
         nodes: Map<string, CanvasNode>;
+        edges: Map<string, CanvasEdge>;
         data: {
             nodes: AllCanvasNodeData[];
             edges: CanvasEdgeData[];
@@ -93,7 +93,10 @@ declare module "obsidian" {
         zoomToFit(): void;
         zoomToSelection(): void;
 
+        panIntoView(bbox: BBox): void;
         updateSelection(update: () => void): void;
+        getContainingNodes(bbox: BBox): CanvasNode[];
+        getViewportBBox(): BBox;
     }
 
     export interface CanvasNodeInstance {
@@ -114,6 +117,7 @@ declare module "obsidian" {
         select(): void;
         deselect(): void;
         getData(): AllCanvasNodeData;
+        startEditing(): void;
     }
 
     interface CanvasGroupNode extends CanvasNodeInstance {
@@ -202,6 +206,7 @@ declare module "obsidian" {
             editor: Editor;
         };
         previewMode: {
+            containerEl: HTMLElement;
             renderer: MarkdownPreviewRenderer;
         };
 

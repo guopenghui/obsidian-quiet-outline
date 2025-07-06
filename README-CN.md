@@ -90,6 +90,14 @@ https://github.com/user-attachments/assets/a321c9a8-af27-495f-8822-5824ee453af2
 + 当聚焦于搜索框时:
     + `Escape` 清除搜索框内容
     + `Enter` 聚焦到标题树
+    
+同时也支持操作 Canvas
+https://github.com/user-attachments/assets/babf3d56-9d66-4cbd-9bb8-8a41269fc332
+
++ `J` `K` `H` `L` 来移动到下一个节点
++ `I` 来编辑一个 file/text 节点
++ `Z Z` 来放大一个节点
++ `Z A` 来缩小
 
 ### 一些快捷键
 + 提高/降低展开层级

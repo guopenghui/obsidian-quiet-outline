@@ -53,4 +53,7 @@ export default {
     "Heading and children headings": "标题和子标题",
     "Heading and Content": "该段内容",
     "Heading and siblings headings": "标题和兄弟标题",
+    
+    "Vimlize Canvas": "Vim Canvas",
+    "Add vim-like keymap for canvas": "给 Canvas 添加 Vim 风格的快捷键",
 };
