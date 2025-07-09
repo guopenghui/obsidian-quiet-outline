@@ -45,6 +45,12 @@
     flex: 1;
 }
 
+.quiet-outline
+    .n-tree.n-tree--block-line
+    .n-tree-node:not(.n-tree-node--disabled).n-tree-node--pending {
+    background-color: unset;
+}
+
 /* 悬浮时的背景颜色 */
 .quiet-outline
     .n-tree.n-tree--block-line

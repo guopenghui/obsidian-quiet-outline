@@ -53,6 +53,7 @@
                 :render-label="renderMethod"
                 :render-prefix="renderPrefix"
                 :node-props="nodeProps"
+                :keyboard="false"
                 :expanded-keys="expanded"
                 :render-switcher-icon="renderSwitcherIcon"
                 :on-update:expanded-keys="expand"
@@ -316,11 +317,17 @@ function renderPrefix({ option }: { option: TreeOptionX }): VNodeChild {
     );
 }
 
+const resetSelected = () => {
+    selectedKeys.value = [];
+};
+
 onMounted(() => {
     addEventListener("quiet-outline-reset", reset);
+    addEventListener("click", resetSelected);
 });
 onUnmounted(() => {
     removeEventListener("quiet-outline-reset", reset);
+    removeEventListener("click", resetSelected);
 });
 
 // let compomentSelf = getCurrentInstance();
