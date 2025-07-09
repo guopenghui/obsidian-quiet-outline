@@ -63,10 +63,8 @@ export class CanvasNav extends Nav {
 
                     const node = component as CanvasNode;
 
-                    if (
-                        node.unknownData.type === "file" &&
-                        (node as CanvasFileNode).file.extension === "md"
-                    ) {
+                    // @ts-ignore
+                    if (node.filePath?.endsWith(".md")) {
                         const view = (node as CanvasFileNode)
                             .child as EmbedMarkdownView;
                         await plugin.updateNav("embed-markdown-file", view);
@@ -75,7 +73,8 @@ export class CanvasNav extends Nav {
                         return;
                     }
 
-                    if (node.unknownData.type === "text") {
+                    // @ts-ignore
+                    if (node.unknownData.type === "text" || node.text) {
                         const view = (node as CanvasTextNode).child;
                         await plugin.updateNav("embed-markdown-text", view);
                         await plugin.refresh_outline();
