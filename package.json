@@ -30,7 +30,7 @@
 		"builtin-modules": "^3.2.0",
 		"esbuild": "^0.17.4",
 		"hash-sum": "^2.0.0",
-		"naive-ui": "^2.28.1",
+		"naive-ui": "2.28.2",
 		"obsidian": "^1.5.7-1",
 		"tslib": "2.3.1",
 		"typescript": "5.5.4"
