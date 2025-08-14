@@ -17,6 +17,8 @@ import { debounceCb } from "./utils/debounce";
 
 import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";
 
+const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
+
 export class QuietOutline extends Plugin {
     settings: QuietOutlineSettings;
     navigator: Nav = new NAVGATORS["dummy"](this, null as any);
@@ -171,7 +173,7 @@ export class QuietOutline extends Plugin {
                     return;
                 }
                 
-                if(leaf.view instanceof FileView && leaf.view.file) {
+                if(leaf.view instanceof FileView && SUPPORTED_VIEW_TYPES.contains(leaf.view.getViewType()) && leaf.view.file) {
                     // when opening a canvas, it triggers active-leaf-change twice
                     // and at the first time it's not ready
                     const isCanvasTwice = leaf.view.getViewType() === "canvas"
