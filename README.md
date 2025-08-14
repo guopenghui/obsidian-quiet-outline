@@ -41,7 +41,7 @@ use regex:
 ![正则搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/regex_search.gif)
 
 support searching content by piercing through Markdown/HTML syntax:
-![穿越语法](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/cross_syntax.gif)
+![穿越语法](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/cross_syntax.png)
 
 
 ### Markdown render support
