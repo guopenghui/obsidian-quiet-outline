@@ -13,12 +13,14 @@
 	"author": "",
 	"license": "MIT",
 	"dependencies": {
+		"html-to-text": "^9.0.5",
 		"marked": "^4.0.12",
 		"monkey-around": "^3.0.0",
 		"vue": "^3.2.31"
 	},
 	"devDependencies": {
 		"@the_tree/esbuild-plugin-vue3": "^0.3.1",
+		"@types/html-to-text": "^9.0.4",
 		"@types/markdown-it": "^12.2.3",
 		"@types/marked": "^4.0.2",
 		"@types/node": "^16.11.6",

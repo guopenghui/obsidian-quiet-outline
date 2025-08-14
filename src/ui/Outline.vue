@@ -124,7 +124,7 @@ import {
 import { store, SupportedIcon, Heading } from "@/store";
 import type { QuietOutline } from "@/plugin";
 import { useEvent } from "@/utils/use";
-import { escapeHtml } from "@/utils/html"
+import { escapeHtml, getOrigin, htmlToText } from "@/utils/html"
 
 type TreeOptionX = TreeOption & {
     no?: number;
@@ -862,30 +862,43 @@ marked.use({
 marked.use({ walkTokens: remove_href });
 marked.use({ tokenizer });
 
-function mdToHtmlTextContent(text: string | undefined) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(
-        mdToHtml(text, true),
-        "text/html"
-    );
-    
-    return doc.body.textContent || "";
-}
-
-function mdToHtml(label: string | undefined, keepRawFormula: boolean = false) {
-    let result = marked.parse(label || "").trim();
+/** 
+ * Convert markdown to HTML text content.
+ * 
+ * (**NO SANITIZED!!!** for performance)
+ * @param text - The markdown text to convert.
+ * @param keepRawFormula - Whether to keep raw formula in the output.
+ * @returns The textContent (**no sanitized!!!**)
+ */
+function mdToHtmlTextContent(text: string | undefined, keepRawFormula: boolean = false) {
+    let result = marked.parse(text || "").trim();
 
     // save mjx elements
     let i = 0;
     let mjxes: string[] = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) || [];
     
-    if(keepRawFormula) {
-        const parser = new DOMParser();
-        mjxes = mjxes.map(mjx => {
-            const originFormula = parser.parseFromString(mjx, "text/html").body.firstElementChild?.getAttribute("origin") || "";
-            return escapeHtml(originFormula);
-        })
-    }
+    // map to original formula text
+    mjxes = mjxes.map(mjx => escapeHtml(getOrigin(mjx)));
+    
+    result = result.replace(/<mjx-container.*?>.*?<\/mjx-container>/g, () => {
+        return `<math></math>`;
+    });
+
+    // restore mjx elements
+    result = result.replace(/<math.*?>.*?<\/math>/g, () => {
+        return mjxes[i++];
+    });
+    
+    return htmlToText(result)
+}
+
+/** **SANITIZED** html string */
+function mdToHtml(label: string | undefined) {
+    let result = marked.parse(label || "").trim();
+
+    // save mjx elements
+    let i = 0;
+    let mjxes: string[] = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) || [];
     
     result = result.replace(/<mjx-container.*?>.*?<\/mjx-container>/g, () => {
         return `<math></math>`;
