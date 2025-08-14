@@ -39,6 +39,8 @@ Quiet Outline:
 使用正则表达式来过滤:
 ![正则搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/regex_search.gif)
 
+支持穿透Markdown/HTML语法来搜索内容：
+![支持搜索](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/cross_syntax.gif)
 
 ### 支持渲染丰富的markdown元素
 

@@ -124,6 +124,7 @@ import {
 import { store, SupportedIcon, Heading } from "@/store";
 import type { QuietOutline } from "@/plugin";
 import { useEvent } from "@/utils/use";
+import { escapeHtml } from "@/utils/html"
 
 type TreeOptionX = TreeOption & {
     no?: number;
@@ -749,12 +750,13 @@ function regexFilter(pattern: string, option: TreeOption): boolean {
         rule = RegExp(pattern, "i");
     } catch (e) {
     } finally {
-        return rule.test(option.label || "");
+        return rule.test(mdToHtmlTextContent(option.label));
     }
 }
 
 function simpleFilter(pattern: string, option: TreeOption): boolean {
-    return (option.label || "").toLowerCase().contains(pattern.toLowerCase());
+    return mdToHtmlTextContent(option.label).toLowerCase()
+        .contains(pattern.toLowerCase());
 }
 
 let filter = computed(() => {
@@ -860,12 +862,31 @@ marked.use({
 marked.use({ walkTokens: remove_href });
 marked.use({ tokenizer });
 
-function renderLabel({ option }: { option: TreeOption }) {
-    let result = marked.parse(option.label || "").trim();
+function mdToHtmlTextContent(text: string | undefined) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(
+        mdToHtml(text, true),
+        "text/html"
+    );
+    
+    return doc.body.textContent || "";
+}
+
+function mdToHtml(label: string | undefined, keepRawFormula: boolean = false) {
+    let result = marked.parse(label || "").trim();
 
     // save mjx elements
     let i = 0;
-    let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) || [];
+    let mjxes: string[] = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) || [];
+    
+    if(keepRawFormula) {
+        const parser = new DOMParser();
+        mjxes = mjxes.map(mjx => {
+            const originFormula = parser.parseFromString(mjx, "text/html").body.firstElementChild?.getAttribute("origin") || "";
+            return escapeHtml(originFormula);
+        })
+    }
+    
     result = result.replace(/<mjx-container.*?>.*?<\/mjx-container>/g, () => {
         return `<math></math>`;
     });
@@ -876,7 +897,12 @@ function renderLabel({ option }: { option: TreeOption }) {
     result = result.replace(/<math.*?>.*?<\/math>/g, () => {
         return mjxes[i++];
     });
+    
+    return result;
+}
 
+function renderLabel({ option }: { option: TreeOption }) {
+    const result = mdToHtml(option.label);
     return h("div", { innerHTML: result });
 }
 // to-bottom button

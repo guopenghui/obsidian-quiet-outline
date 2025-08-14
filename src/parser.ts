@@ -24,9 +24,10 @@ export const formula: Extension = {
     },
     renderer(token) {
         try {
-            const formula = renderMath(token.formula, false).outerHTML;
+            const formula = renderMath(token.formula, false);
+            formula.setAttr("origin", token.formula);
             finishRenderMath();
-            return formula;
+            return formula.outerHTML;
         } catch {
             loadMathJax().then(() => {
                 //store.activeView()
