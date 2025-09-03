@@ -306,11 +306,9 @@ function getCurrentLineFromPreview(view: MarkdownView): number {
     elsInViewport.forEach((el) => {
         const { y } = el.getBoundingClientRect();
         if (y <= middle) {
-            line = (
-                (renderer as any).getSectionForElement(
-                    el,
-                ) as MarkdownPreviewSection
-            ).lineStart;
+            const section = (renderer as any).getSectionForElement(el,) as MarkdownPreviewSection;
+            line = section.lineStart  // this property has been removed since Obsidian v1.9.0
+                || section.start.line;
         }
     });
 

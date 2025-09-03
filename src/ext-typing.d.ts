@@ -18,9 +18,13 @@ declare module "obsidian" {
         el: HTMLElement;
         height: number;
         html: string;
+        /** @deprecated has been removed from 1.9.0 */
         lineStart: number;
+        /** @deprecated has been removed from 1.9.0 */
         lineEnd: number;
         lines: number;
+        start: {line: number, col: number, offset: number};
+        end: {line: number, col: number, offset: number};
     }
 
     interface MarkdownPreviewRenderer {
