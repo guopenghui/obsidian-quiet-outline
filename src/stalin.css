@@ -22,7 +22,9 @@
 }
 
 .quiet-outline .n-tree-node-content__text p {
-    margin: 0;
+  line-height: 1.2em; /* 调整原始段落行距 */
+  margin-top: 2.6px;  /* 微调段落上方的间距使与改line-height前一致 */
+  margin-bottom: 2.6px;  /* 微调段落下方的间距使与改line-height前一致 */
 }
 
 /* ellipsis */
