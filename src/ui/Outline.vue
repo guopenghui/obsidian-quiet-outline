@@ -778,7 +778,7 @@ async function jump(node: TreeOption): Promise<void> {
 
     const key_value = (node.key as string).split("-");
     const key = parseInt(key_value[2]);
-    plugin.navigator.jumpWithoutFocus(key);
+    plugin.navigator.jumpWhenClick(key);
 }
 
 // prepare data for tree component

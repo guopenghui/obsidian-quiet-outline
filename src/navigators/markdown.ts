@@ -76,6 +76,12 @@ export class MarkDownNav extends Nav {
         });
     }
     
+    // make clicking behavior consistent with core outline plugin
+    // i.e. focus editor
+    async jumpWhenClick(key: number): Promise<void> {
+        this.jump(key);
+    }
+    
     async jumpWithoutFocus(key: number) {
         const line: number = store.headers[key].position.start.line;
 
