@@ -1,5 +1,54 @@
+/* Tab Styles */
+/* Custom Style Variables */
+.quiet-outline {
+    --custom-font-size: var(--nav-item-size);
+    --custom-font-family: inherit;
+    --custom-font-weight: inherit;
+    --custom-line-height: 1.6em;
+    --custom-line-gap: 0px;
+    --h1-color: inherit;
+    --h2-color: inherit;
+    --h3-color: inherit;
+    --h4-color: inherit;
+    --h5-color: inherit;
+    --h6-color: inherit;
+}
+.quiet-outline-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 16px;
+}
+
+.quiet-outline-tabs button {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    font-size: var(--font-ui-medium);
+}
+
+.quiet-outline-tabs button:hover {
+    color: var(--text-normal);
+    background-color: var(--background-modifier-hover);
+}
+
+.quiet-outline-tabs button.active {
+    color: var(--text-accent);
+    border-bottom-color: var(--text-accent);
+    font-weight: var(--font-semibold);
+}
+
+.quiet-outline-tab-content {
+    min-height: 400px;
+}
+
 .quiet-outline .n-tree {
-    font-size: var(--nav-item-size);
+    font-size: var(--custom-font-size);
+    font-family: var(--custom-font-family);
+    font-weight: var(--custom-font-weight);
 }
 
 .quiet-outline .n-tree-node-indent {
@@ -17,8 +66,9 @@
 /* heading的间距，通过行高来设置 */
 /*  heading line spacing */
 .quiet-outline .n-tree-node .n-tree-node-content {
-    line-height: 1.6em;
+    line-height: var(--custom-line-height);
     min-height: 10px;
+    margin-bottom: var(--custom-line-gap);
 }
 
 .quiet-outline .n-tree-node-content__text p {
@@ -135,6 +185,31 @@
     font-weight:bold;
     */
     font-size: 1em;
+}
+
+/* Custom font colors for different heading levels */
+.quiet-outline .level-1 .n-tree-node-content {
+    color: var(--h1-color);
+}
+
+.quiet-outline .level-2 .n-tree-node-content {
+    color: var(--h2-color);
+}
+
+.quiet-outline .level-3 .n-tree-node-content {
+    color: var(--h3-color);
+}
+
+.quiet-outline .level-4 .n-tree-node-content {
+    color: var(--h4-color);
+}
+
+.quiet-outline .level-5 .n-tree-node-content {
+    color: var(--h5-color);
+}
+
+.quiet-outline .level-6 .n-tree-node-content {
+    color: var(--h6-color);
 }
 
 /* location */

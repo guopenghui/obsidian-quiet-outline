@@ -56,4 +56,28 @@ export default {
     
     "Vimlize Canvas": "Vim Canvas",
     "Add vim-like keymap for canvas": "给 Canvas 添加 Vim 风格的快捷键",
+    
+    // New settings
+    "General": "常规设置",
+    "Styles": "样式设置",
+    "Font Size": "字体大小",
+    "Custom font size for outline text (e.g., 14px, 1rem)": "大纲文本的自定义字体大小（例如：14px, 1rem）",
+    "Font Family": "字体家族",
+    "Custom font family for outline text": "大纲文本的自定义字体家族",
+    "Font Weight": "字体粗细",
+    "Custom font weight for outline text (e.g., normal, bold, 400, 700)": "大纲文本的自定义字体粗细（例如：normal, bold, 400, 700）",
+    "Line Height": "行高",
+    "Custom line height for outline text (e.g., 1.5, 2)": "大纲文本的自定义行高（例如：1.5, 2）",
+    "Line Gap": "行间距",
+    "Custom gap between lines (e.g., 4px, 0.5rem)": "行之间的自定义间距（例如：4px, 0.5rem）",
+    
+    // Font color settings
+    "Custom Font Color": "自定义字体颜色",
+    "Enable custom font colors for different heading levels": "为不同级别的标题启用自定义字体颜色",
+    "H1 Color": "H1 颜色",
+    "H2 Color": "H2 颜色", 
+    "H3 Color": "H3 颜色",
+    "H4 Color": "H4 颜色",
+    "H5 Color": "H5 颜色",
+    "H6 Color": "H6 颜色",
 };

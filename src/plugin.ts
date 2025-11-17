@@ -122,6 +122,18 @@ export class QuietOutline extends Plugin {
         store.rainbowColor3 = this.settings.rainbow_color_3;
         store.rainbowColor4 = this.settings.rainbow_color_4;
         store.rainbowColor5 = this.settings.rainbow_color_5;
+        store.fontSize = this.settings.font_size;
+        store.fontFamily = this.settings.font_family;
+        store.fontWeight = this.settings.font_weight;
+        store.lineHeight = this.settings.line_height;
+        store.lineGap = this.settings.line_gap;
+        store.customFontColor = this.settings.custom_font_color;
+        store.h1Color = this.settings.h1_color;
+        store.h2Color = this.settings.h2_color;
+        store.h3Color = this.settings.h3_color;
+        store.h4Color = this.settings.h4_color;
+        store.h5Color = this.settings.h5_color;
+        store.h6Color = this.settings.h6_color;
     }
 
     registerListener() {

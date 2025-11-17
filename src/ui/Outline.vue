@@ -1,5 +1,5 @@
 <template>
-    <div id="container">
+    <div id="container" :style="containerStyle">
         <NConfigProvider
             :theme="theme"
             :theme-overrides="
@@ -285,6 +285,51 @@ let biDi = ref("");
 watchEffect(() => {
     biDi.value =
         store.textDirectionDecideBy === "text" ? "plaintext" : "isolate";
+});
+
+// New style settings
+let containerStyle = computed(() => {
+    const style: Record<string, string> = {};
+    
+    if (store.fontSize) {
+        style['--custom-font-size'] = store.fontSize;
+    }
+    if (store.fontFamily) {
+        style['--custom-font-family'] = store.fontFamily;
+    }
+    if (store.fontWeight) {
+        style['--custom-font-weight'] = store.fontWeight;
+    }
+    if (store.lineHeight) {
+        style['--custom-line-height'] = store.lineHeight;
+    }
+    if (store.lineGap) {
+        style['--custom-line-gap'] = store.lineGap;
+    }
+    
+    // Font color settings
+    if (store.customFontColor) {
+        if (store.h1Color) {
+            style['--h1-color'] = store.h1Color;
+        }
+        if (store.h2Color) {
+            style['--h2-color'] = store.h2Color;
+        }
+        if (store.h3Color) {
+            style['--h3-color'] = store.h3Color;
+        }
+        if (store.h4Color) {
+            style['--h4-color'] = store.h4Color;
+        }
+        if (store.h5Color) {
+            style['--h5-color'] = store.h5Color;
+        }
+        if (store.h6Color) {
+            style['--h6-color'] = store.h6Color;
+        }
+    }
+    
+    return style;
 });
 
 // switch icon

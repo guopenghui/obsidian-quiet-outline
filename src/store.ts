@@ -89,6 +89,18 @@ const store = reactive({
     rainbowColor3: "",
     rainbowColor4: "",
     rainbowColor5: "",
+    fontSize: "",
+    fontFamily: "",
+    fontWeight: "",
+    lineHeight: "",
+    lineGap: "",
+    customFontColor: false,
+    h1Color: "",
+    h2Color: "",
+    h3Color: "",
+    h4Color: "",
+    h5Color: "",
+    h6Color: "",
 });
 
 export { store };
