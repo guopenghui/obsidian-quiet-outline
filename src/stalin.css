@@ -228,6 +228,9 @@
 /* location */
 .n-tree-node.located {
     font-weight: bold !important;
+    :is(a) {
+        font-weight: bold !important;
+    }
 }
 /* .n-tree-node code {
     font-weight: 500 !important;
