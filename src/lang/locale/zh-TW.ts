@@ -28,7 +28,7 @@ export default {
     "Expand and Collapse Rest to Setting Level (Level Switch)": '展開同時摺疊剩餘標題至設定層級（層級切換器）',
     "Disabled": '關閉自動展開',
     "Locate By Cursor": "定位到游標處",
-    "Highlight and Auto expand postion will be determined by cursor position": "高亮和自動展開位置將由游標位置決定", 
+    "Highlight and Auto expand postion will be determined by cursor position": "高亮和自動展開位置將由游標位置決定",
     "Show Popover on hover": '滑鼠懸停在標題時顯示筆記內容',
     "Press functional key and move cursor to heading": '按住功能鍵，移動游標到標題處',
     "Disable": '關閉',
@@ -45,17 +45,18 @@ export default {
     "is decided by": "由什麼決定",
 
     "Export Format": "標題輸出格式",
-	
+
     // menu
     "Copy": "複製",
     "Heading": "標題",
     "Heading and children headings": "標題和子標題",
     "Heading and Content": "該段內容",
     "Heading and siblings headings": "標題和兄弟標題",
-    
+    "Rename heading": "重命名標題",
+
     "Vimlize Canvas": "Vim Canvas",
     "Add vim-like keymap for canvas": "給 Canvas 新增 Vim 風格的快捷鍵",
-    
+
     // New settings
     "General": "一般設定",
     "Styles": "樣式設定",
@@ -69,7 +70,7 @@ export default {
     "Custom line height for outline text (e.g., 1.5, 2)": "大綱文字的自訂行高（例如：1.5, 2）",
     "Line Gap": "行間距",
     "Custom gap between lines (e.g., 4px, 0.5rem)": "行之間的自訂間距（例如：4px, 0.5rem）",
-    
+
     // Font color settings
     "Custom Font Color": "自訂字型顏色",
     "Enable custom font colors for different heading levels": "為不同級別的標題啟用自訂字型顏色",

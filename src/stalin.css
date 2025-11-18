@@ -145,6 +145,19 @@
     font-size: 22px;
 }
 
+.quiet-outline .n-tree-node-content .n-input {
+    .n-input-wrapper {
+        padding: 0px;
+        /*padding-left: 4px;
+        padding-right: 4px;*/
+    }
+    .n-input__input-el {
+        line-height: var(--custom-line-height);
+        font-size: var(--custom-font-size);
+        height: var(--custom-line-height);
+    }
+}
+
 .quiet-outline code {
     /* color:var(--text-color-code, var(--code-normal)); */
     font-weight: bold;

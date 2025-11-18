@@ -1,7 +1,7 @@
 // 简体中文
 
 export default {
-	
+
     'Settings for Quiet Outline.': 'Quiet Outline 的设置页面',
     "Set Primary Color": '设置主颜色 明/暗',
     "Patch default color": '用设置覆盖默认主颜色',
@@ -29,7 +29,7 @@ export default {
     "Expand and Collapse Rest to Setting Level (Level Switch)": '展开同时折叠剩余标题至设置层级(层级切换器)',
     "Disabled": '关闭自动展开',
     "Locate By Cursor": "定位到光标处",
-    "Highlight and Auto expand postion will be determined by cursor position": "高亮和自动展开位置将由光标位置决定", 
+    "Highlight and Auto expand postion will be determined by cursor position": "高亮和自动展开位置将由光标位置决定",
     "Show Popover on hover": '鼠标悬停在标题时显示笔记内容',
     "Press functional key and move cursor to heading": '按住功能键，移动光标到标题处',
     "Disable": '关闭',
@@ -46,17 +46,18 @@ export default {
     "is decided by": "由什么决定",
 
     "Export Format": "标题输出格式",
-	
+
     // menu
     "Copy": "复制",
     "Heading": "标题",
     "Heading and children headings": "标题和子标题",
     "Heading and Content": "该段内容",
     "Heading and siblings headings": "标题和兄弟标题",
-    
+    "Rename heading": "重命名标题",
+
     "Vimlize Canvas": "Vim Canvas",
     "Add vim-like keymap for canvas": "给 Canvas 添加 Vim 风格的快捷键",
-    
+
     // New settings
     "General": "常规设置",
     "Styles": "样式设置",
@@ -70,12 +71,12 @@ export default {
     "Custom line height for outline text (e.g., 1.5, 2)": "大纲文本的自定义行高（例如：1.5, 2）",
     "Line Gap": "行间距",
     "Custom gap between lines (e.g., 4px, 0.5rem)": "行之间的自定义间距（例如：4px, 0.5rem）",
-    
+
     // Font color settings
     "Custom Font Color": "自定义字体颜色",
     "Enable custom font colors for different heading levels": "为不同级别的标题启用自定义字体颜色",
     "H1 Color": "H1 颜色",
-    "H2 Color": "H2 颜色", 
+    "H2 Color": "H2 颜色",
     "H3 Color": "H3 颜色",
     "H4 Color": "H4 颜色",
     "H5 Color": "H5 颜色",

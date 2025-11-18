@@ -73,6 +73,7 @@ const store = reactive({
     levelSwitch: true,
     hideUnsearched: true,
     regexSearch: false,
+    currentEditingKey: "",
     // autoExpand: true,
     modifyKeys: {} as ModifyKeys,
     dragModify: false,

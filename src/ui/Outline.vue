@@ -61,7 +61,7 @@
                 :filter="filter"
                 :show-irrelevant-nodes="!store.hideUnsearched"
                 :class="{ ellipsis: store.ellipsis }"
-                :draggable="store.dragModify"
+                :draggable="store.dragModify && !editingHeadingText"
                 @drop="onDrop"
                 :allow-drop="() => plugin.navigator.canDrop"
             />
@@ -778,12 +778,44 @@ function formatTooltip(value: number): string {
     return "No expand";
 }
 
-// load settings
-let renderMethod = computed(() => {
-    if (store.markdown) {
-        return renderLabel;
-    }
-    return undefined;
+type RenderMethodType = ({option}: {option: TreeOptionX}) => ReturnType<typeof h>;
+let editingHeadingText = ref<string|undefined>();
+let renderMethod = computed<RenderMethodType>(() => {
+    let renderer: RenderMethodType = store.markdown
+        ? renderLabel
+        : ({option}) => h("div", option.label);
+    
+    const method: RenderMethodType = ({option}) => {
+        if (option.key !== store.currentEditingKey) {
+            return renderer({option});
+        }
+        
+        if (editingHeadingText.value === undefined) {
+            editingHeadingText.value = option.label!;
+        }
+        
+        return h(NInput, {
+            value: editingHeadingText.value,
+            onUpdateValue: (value) => {
+                editingHeadingText.value = value;
+            },
+            onClick(e) {
+                e.stopPropagation();
+            },
+            onKeydown(e) {
+                if (e.key === "Enter") {
+                    plugin.navigator.changeContent(option.no!, editingHeadingText.value || "");
+                    // store.headers[option.no!].heading = newContent.value || "";
+                    store.currentEditingKey = "";
+                    editingHeadingText.value = undefined;
+                } else if(e.key === "Escape") {
+                    store.currentEditingKey = "";
+                    editingHeadingText.value = undefined;
+                }
+            },
+        });
+    };
+    return method;
 });
 
 // search

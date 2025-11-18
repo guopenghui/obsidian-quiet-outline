@@ -45,16 +45,17 @@ export default {
     "is decided by": "is decided by",
 
     "Export Format": "Export Format",
-	
+
     // menu
     "Copy": "Copy",
     "Heading": "Heading",
     "Heading and children headings": "Heading and children headings",
     "Heading and Content": "Heading and Content",
     "Heading and siblings headings": "Heading and siblings headings",
+    "Rename heading": "Rename",
     "Vimlize Canvas": "Vimlize Canvas",
     "Add vim-like keymap for canvas": "Add vim-like keymap for canvas",
-    
+
     // New settings
     "General": "General",
     "Styles": "Styles",
@@ -68,7 +69,7 @@ export default {
     "Custom line height for outline text (e.g., 1.5, 2)": "Custom line height for outline text (e.g., 1.5, 2)",
     "Line Gap": "Line Gap",
     "Custom gap between lines (e.g., 4px, 0.5rem)": "Custom gap between lines (e.g., 4px, 0.5rem)",
-    
+
     // Font color settings
     "Custom Font Color": "Custom Font Color",
     "Enable custom font colors for different heading levels": "Enable custom font colors for different heading levels",

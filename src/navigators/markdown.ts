@@ -17,7 +17,7 @@ import {
     stringifySection,
     moveHeading,
 } from "@/utils/md-process";
-import { TreeProps } from "naive-ui";
+import { TreeOption } from "naive-ui";
 import { setupMenu, normal, parent, separator } from "@/utils/menu";
 import { t } from "@/lang/helper";
 
@@ -75,13 +75,13 @@ export class MarkDownNav extends Nav {
             // }, 1000);
         });
     }
-    
+
     // make clicking behavior consistent with core outline plugin
     // i.e. focus editor
     async jumpWhenClick(key: number): Promise<void> {
         this.jump(key);
     }
-    
+
     async jumpWithoutFocus(key: number) {
         const line: number = store.headers[key].position.start.line;
 
@@ -158,6 +158,12 @@ export class MarkDownNav extends Nav {
         return this.view.file!.path;
     }
 
+    changeContent(no: number, content: string) {
+        const line = store.headers[no].position.start.line;
+        const prefix = "#".repeat(store.headers[no].level);
+        this.view.editor.setLine(line, `${prefix} ${content}`);
+    }
+
     async handleDrop(
         from: number,
         to: number,
@@ -173,7 +179,7 @@ export class MarkDownNav extends Nav {
 
     onRightClick(
         event: MouseEvent,
-        nodeInfo: { node: TreeProps; no: number; level: number; raw: string },
+        nodeInfo: { node: TreeOption; no: number; level: number; raw: string },
         onClose?: () => void,
     ): void {
         const menu = new Menu().setNoIcon();
@@ -230,6 +236,9 @@ export class MarkDownNav extends Nav {
                     await navigator.clipboard.writeText(text);
                 }),
             ]),
+            normal(t("Rename heading"), async () => {
+                store.currentEditingKey = nodeInfo.node.key as string;
+            }),
         ]);
 
         menu.onHide(onClose || (() => {}));
