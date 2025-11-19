@@ -6,12 +6,23 @@ import {
     NodeSide,
 } from "obsidian/canvas";
 
+declare global {
+    const i18next: {
+        t: (key: string, options?: any) => string;
+    };
+}
+
 declare module "obsidian" {
     interface Workspace {
         getActiveFileView: () => FileView;
         on(name: "quiet-outline:canvas-change", callback: () => void): EventRef;
         on(name: "quiet-outline:active-fileview-change", callback: (view: FileView | null) => void): EventRef;
         on(name: "quiet-outline:canvas-selection-change", callback: (selection: Set<CanvasComponent>) => Promise<void>): EventRef;
+    }
+
+    interface FileManager {
+        updateInternalLinks: (changes: any) => Promise<void>;
+        iterateAllRefs(callback: (filePath: string, reference: any) => void): void;
     }
 
     interface MarkdownPreviewSection {
@@ -23,8 +34,8 @@ declare module "obsidian" {
         /** @deprecated has been removed from 1.9.0 */
         lineEnd: number;
         lines: number;
-        start: {line: number, col: number, offset: number};
-        end: {line: number, col: number, offset: number};
+        start: { line: number, col: number, offset: number; };
+        end: { line: number, col: number, offset: number; };
     }
 
     interface MarkdownPreviewRenderer {
@@ -33,7 +44,7 @@ declare module "obsidian" {
 
         applyScroll(
             scroll: number,
-            config: { highlight: boolean; center: boolean },
+            config: { highlight: boolean; center: boolean; },
         ): boolean;
 
         highlightEl(el: HTMLElement): void;
@@ -70,9 +81,9 @@ declare module "obsidian" {
             edges: CanvasEdgeData[];
         };
         /** edges set from node */
-        edgeFrom: { data: Map<CanvasNode, Set<CanvasEdge>> };
+        edgeFrom: { data: Map<CanvasNode, Set<CanvasEdge>>; };
         /** edges set to node */
-        edgeTo: { data: Map<CanvasNode, Set<CanvasEdge>> };
+        edgeTo: { data: Map<CanvasNode, Set<CanvasEdge>>; };
 
         selection: Set<CanvasComponent>;
 
@@ -238,4 +249,4 @@ declare module "obsidian" {
     }
 }
 
-export {};
+export { };

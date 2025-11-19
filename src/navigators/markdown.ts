@@ -20,6 +20,7 @@ import {
 import { TreeOption } from "naive-ui";
 import { setupMenu, normal, parent, separator } from "@/utils/menu";
 import { t } from "@/lang/helper";
+import { HeadingUpdater } from "@/utils/update-heading-links";
 
 let plugin: QuietOutline;
 
@@ -128,7 +129,7 @@ export class MarkDownNav extends Nav {
         );
     }
 
-    async onunload() {}
+    async onunload() { }
 
     toBottom(): void {
         const lines = this.view.data.split("\n");
@@ -159,9 +160,19 @@ export class MarkDownNav extends Nav {
     }
 
     changeContent(no: number, content: string) {
-        const line = store.headers[no].position.start.line;
-        const prefix = "#".repeat(store.headers[no].level);
-        this.view.editor.setLine(line, `${prefix} ${content}`);
+        if (!content) return;
+
+        const updater = new HeadingUpdater(
+            this.view.app,
+            this.view.file!,
+            this.view.editor,
+            {
+                start: store.headers[no].position.start.offset,
+                end: store.headers[no].position.end.offset,
+            },
+            store.headers[no].heading,
+        );
+        updater.updateHeadingLinks(content);
     }
 
     async handleDrop(
@@ -179,7 +190,7 @@ export class MarkDownNav extends Nav {
 
     onRightClick(
         event: MouseEvent,
-        nodeInfo: { node: TreeOption; no: number; level: number; raw: string },
+        nodeInfo: { node: TreeOption; no: number; level: number; raw: string; },
         onClose?: () => void,
     ): void {
         const menu = new Menu().setNoIcon();
@@ -231,7 +242,7 @@ export class MarkDownNav extends Nav {
                     const text = this.view.data.slice(
                         store.headers[no].position.start.offset,
                         store.headers[i]?.position.start.offset ||
-                            this.view.data.length,
+                        this.view.data.length,
                     );
                     await navigator.clipboard.writeText(text);
                 }),
@@ -241,7 +252,7 @@ export class MarkDownNav extends Nav {
             }),
         ]);
 
-        menu.onHide(onClose || (() => {}));
+        menu.onHide(onClose || (() => { }));
         menu.showAtMouseEvent(event);
     }
 }
@@ -279,7 +290,7 @@ function currentLine(fromScroll: boolean, isSourcemode: boolean) {
     } else {
         return isSourcemode
             ? // @ts-ignore
-              getCurrentLineFromEditor(markdownView.editor.cm)
+            getCurrentLineFromEditor(markdownView.editor.cm)
             : getCurrentLineFromPreview(markdownView);
     }
 }
