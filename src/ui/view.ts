@@ -2,7 +2,6 @@ import { ItemView, Scope, WorkspaceLeaf } from "obsidian";
 import { createApp, App } from "vue";
 import Outline from "./Outline.vue";
 import type { QuietOutline } from "../plugin";
-import { MarkDownNav } from "@/navigators/markdown";
 
 export const VIEW_TYPE = "quiet-outline";
 

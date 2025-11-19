@@ -73,10 +73,10 @@ export class QuietOutline extends Plugin {
                 this.allow_cursor_change = true;
             },
         );
-        
+
         this.setupVimMode();
     }
-    
+
     async setupVimMode() {
         this.addCommand({
             id: "focus-heading-tree",
@@ -85,11 +85,11 @@ export class QuietOutline extends Plugin {
                 const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
                 if (!leaf) return;
                 const view = leaf.view as OutlineView;
-                
+
                 await this.app.workspace.revealLeaf(leaf);
-                view.focusOn("tree")
+                view.focusOn("tree");
             }
-        })
+        });
     }
 
     async firstTimeInstall() {
@@ -176,7 +176,7 @@ export class QuietOutline extends Plugin {
                 const prevView = this.prevView;
                 this.prevView = leaf?.view || null;
                 if (!leaf) return;
-                
+
                 const activeFileView = this.app.workspace.getActiveFileView();
                 if (!activeFileView) {
                     this.prevActiveFileView = null;
@@ -184,15 +184,15 @@ export class QuietOutline extends Plugin {
                     this.app.workspace.trigger("quiet-outline:active-fileview-change", null);
                     return;
                 }
-                
-                if(leaf.view instanceof FileView && SUPPORTED_VIEW_TYPES.contains(leaf.view.getViewType()) && leaf.view.file) {
+
+                if (leaf.view instanceof FileView && SUPPORTED_VIEW_TYPES.contains(leaf.view.getViewType()) && leaf.view.file) {
                     // when opening a canvas, it triggers active-leaf-change twice
                     // and at the first time it's not ready
                     const isCanvasTwice = leaf.view.getViewType() === "canvas"
                         && this.prevActiveFileView === leaf.view
                         && leaf.view === prevView;
-                    
-                    if(leaf.view !== this.prevActiveFileView
+
+                    if (leaf.view !== this.prevActiveFileView
                         || leaf.view.file !== this.prevActiveFile
                         || isCanvasTwice
                     ) {
@@ -202,10 +202,14 @@ export class QuietOutline extends Plugin {
                     }
                 }
             })
-        )
+        );
 
         this.registerEvent(
             this.app.workspace.on("quiet-outline:active-fileview-change", async (view) => {
+                const outlineView = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
+                // @ts-ignore
+                if (outlineView?.group) { return;}
+                
                 if (!view) {
                     await this.updateNav("dummy", null as any);
                     await this.refresh_outline();
@@ -215,7 +219,7 @@ export class QuietOutline extends Plugin {
 
                 // block cursor change event to trigger auto-expand when switching between notes
                 this.block_cursor_change();
-                
+
                 await this.updateNav(view.getViewType(), view);
                 await this.refresh_outline();
                 store.refreshTree();
@@ -360,7 +364,7 @@ export class QuietOutline extends Plugin {
                 if (!leaf) return;
                 const view = leaf.view as OutlineView;
                 await this.app.workspace.revealLeaf(leaf);
-                view.focusOn("search")
+                view.focusOn("search");
             },
         });
 
