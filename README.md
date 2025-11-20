@@ -76,7 +76,10 @@ You can customize the default level per note. See release note in [0.3.33](https
 
 
 ### Remember State
-Memorizing the expanded title state when switching between open notes
+
+When enabled, the plugin will remember the scroll position, cursor position of markdown note,
+and heading expansion state of the outline view.
+This allows you to switch between different views without losing your place.
 
 ### Vim-Like keymap
 https://github.com/user-attachments/assets/a321c9a8-af27-495f-8822-5824ee453af2

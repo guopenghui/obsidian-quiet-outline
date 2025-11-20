@@ -74,7 +74,9 @@ Quiet Outline:
 
 
 ### 记忆展开状态
-在切换已打开的笔记时，展开状态会被记录和恢复
+
+启用此功能后，插件会记住Markdown视图的滚动位置、光标位置和标题展开状态。
+这样您就可以在不同视图之间切换而不会丢失当前位置。
 
 ### Vim-Like 键盘操作
 https://github.com/user-attachments/assets/a321c9a8-af27-495f-8822-5824ee453af2
