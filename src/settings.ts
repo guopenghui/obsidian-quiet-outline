@@ -21,13 +21,13 @@ interface QuietOutlineSettings {
     drag_modify: boolean;
     locate_by_cursor: boolean;
     show_popover_key: "ctrlKey" | "altKey" | "metaKey" | "disable";
-    remember_state: boolean;
+    persist_md_states: boolean;
     keep_search_input: boolean;
     export_format: string;
     lang_direction_decide_by: "system" | "text";
     auto_scroll_into_view: boolean;
     vimlize_canvas: boolean;
-    
+
     // Style settings
     patch_color: boolean;
     primary_color_light: string;
@@ -38,14 +38,14 @@ interface QuietOutlineSettings {
     rainbow_color_3: string;
     rainbow_color_4: string;
     rainbow_color_5: string;
-    
+
     // New style settings
     font_size: string;
     font_family: string;
     font_weight: string;
     line_height: string;
     line_gap: string;
-    
+
     // Font color settings
     custom_font_color: boolean;
     h1_color: string;
@@ -70,13 +70,13 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     drag_modify: false,
     locate_by_cursor: false,
     show_popover_key: "ctrlKey",
-    remember_state: true,
+    persist_md_states: true,
     keep_search_input: false,
     export_format: "{title}",
     lang_direction_decide_by: "system",
     auto_scroll_into_view: true,
     vimlize_canvas: true,
-    
+
     // Style settings
     patch_color: true,
     primary_color_light: "#18a058",
@@ -87,14 +87,14 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     rainbow_color_3: "#07EB23",
     rainbow_color_4: "#2D8FF0",
     rainbow_color_5: "#BC01E2",
-    
+
     // New style settings
     font_size: "",
     font_family: "",
     font_weight: "",
     line_height: "",
     line_gap: "",
-    
+
     // Font color settings
     custom_font_color: false,
     h1_color: "#000000",
@@ -122,11 +122,11 @@ class SettingTab extends PluginSettingTab {
 
         // Create tab navigation
         const tabContainer = containerEl.createDiv({ cls: "quiet-outline-tabs" });
-        const generalTab = tabContainer.createEl("button", { 
+        const generalTab = tabContainer.createEl("button", {
             text: t("General"),
             cls: this.activeTab === "general" ? "active" : ""
         });
-        const stylesTab = tabContainer.createEl("button", { 
+        const stylesTab = tabContainer.createEl("button", {
             text: t("Styles"),
             cls: this.activeTab === "styles" ? "active" : ""
         });
@@ -323,17 +323,17 @@ class SettingTab extends PluginSettingTab {
             );
 
         new Setting(container)
-            .setName(t("Remember States"))
+            .setName(t("Persist Markdown States"))
             .setDesc(
                 t(
-                    "Remember expanded/collapsed state of headings of opened notes",
+                    "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings",
                 ),
             )
             .addToggle((toggle) =>
                 toggle
-                    .setValue(this.plugin.settings.remember_state)
+                    .setValue(this.plugin.settings.persist_md_states)
                     .onChange(async (value) => {
-                        this.plugin.settings.remember_state = value;
+                        this.plugin.settings.persist_md_states = value;
                         await this.plugin.saveSettings();
                     }),
             );
@@ -349,7 +349,7 @@ class SettingTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     }),
             );
-        
+
         new Setting(container)
             .setName(t("Vimlize Canvas"))
             .setDesc(t("Add vim-like keymap for canvas"))

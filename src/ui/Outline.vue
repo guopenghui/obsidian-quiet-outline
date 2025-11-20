@@ -125,6 +125,7 @@ import { store, SupportedIcon, Heading } from "@/store";
 import type { QuietOutline } from "@/plugin";
 import { useEvent } from "@/utils/use";
 import { escapeHtml, getOrigin, htmlToText } from "@/utils/html"
+import { MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
 
 type TreeOptionX = TreeOption & {
     no?: number;
@@ -613,8 +614,10 @@ function modifyExpandKeys(
 function syncExpandKeys() {
     const path = plugin.navigator.getPath();
     if (!path) return;
-
-    plugin.heading_states[path] = toRaw(expanded.value);
+    
+    const keys = toRaw(expanded.value)
+    plugin.navigator.onExpandKeysChange(path, keys);
+    plugin.heading_states[path] = keys;
 }
 
 function expand(keys: string[], option: TreeOption[]) {
@@ -745,8 +748,11 @@ watch(
         pattern.value = "";
         level.value = getDefaultLevel();
 
-        const old_state = plugin.heading_states[plugin.navigator.getPath()];
-        if (plugin.settings.remember_state && old_state) {
+        const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
+        const old_state = plugin.navigator.getId() === "markdown"
+            ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys
+            : null;
+        if (plugin.settings.persist_md_states && old_state) {
             modifyExpandKeys(old_state);
         } else {
             switchLevel(level.value);

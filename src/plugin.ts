@@ -1,12 +1,14 @@
 import {
     Constructor,
     debounce,
+    FileSystemAdapter,
     FileView,
     MarkdownView,
     Notice,
     Plugin,
     TFile,
     View,
+    WorkspaceLeaf,
 } from "obsidian";
 // import { around } from "monkey-around"
 
@@ -16,6 +18,9 @@ import { store } from "./store";
 import { debounceCb } from "./utils/debounce";
 
 import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";
+import { DataManager } from "./utils/data-manager";
+import { around } from "monkey-around";
+import { MarkdownStates, MD_DATA_FILE } from "./navigators/markdown";
 
 const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
 
@@ -25,6 +30,7 @@ export class QuietOutline extends Plugin {
     jumping: boolean;
     heading_states: Record<string, string[]> = {};
     klasses: Record<string, Constructor<any>> = {};
+    data_manager: DataManager;
 
     allow_scroll = true;
     block_scroll: () => void;
@@ -36,6 +42,8 @@ export class QuietOutline extends Plugin {
 
     async onload() {
         await this.loadSettings();
+        this.data_manager = new DataManager(this.app, this.getPluginPath());
+        await this.data_manager.loadFileData<MarkdownStates>(MD_DATA_FILE , {});
 
         // TEST: 测试插件功能
         // this.addRibbonIcon('bot', 'test something', (evt) => {
@@ -208,8 +216,8 @@ export class QuietOutline extends Plugin {
             this.app.workspace.on("quiet-outline:active-fileview-change", async (view) => {
                 const outlineView = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
                 // @ts-ignore
-                if (outlineView?.group) { return;}
-                
+                if (outlineView?.group) { return; }
+
                 if (!view) {
                     await this.updateNav("dummy", null as any);
                     await this.refresh_outline();
@@ -225,6 +233,29 @@ export class QuietOutline extends Plugin {
                 store.refreshTree();
             }),
         );
+
+        // patch leaf.setViewState early to restore markdown scroll/cursor position
+        const plugin = this;
+        this.register(around(WorkspaceLeaf.prototype, {
+            setViewState(next) {
+                return async function (viewState, eState) {
+                    if (viewState.type !== "markdown") {
+                        return next.apply(this, [viewState, eState]);
+                    }
+
+                    if (plugin.settings.persist_md_states) {
+                        const states = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE)!;
+                        const data = states[<string>viewState.state?.file ?? ""]
+                        if (data) {
+                            eState = eState || {};
+                            eState.scroll = data.scroll;
+                            eState.cursor = data.cursor;
+                        }
+                    }
+                    return next.apply(this, [viewState, eState]);
+                };
+            }
+        }));
     }
 
     // set store.headers
@@ -322,6 +353,14 @@ export class QuietOutline extends Plugin {
     async saveSettings() {
         await this.saveData(this.settings);
     }
+
+    getPluginPath() {
+        return this.manifest.dir!;
+    }
+
+    // getPluginFullPath() {
+    //     return (this.app.vault.adapter as FileSystemAdapter).getFullPath(this.getPluginPath());
+    // }
 
     async activateView() {
         // fix console error

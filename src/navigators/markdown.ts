@@ -5,6 +5,8 @@ import {
     debounce,
     Menu,
     Notice,
+    WorkspaceLeaf,
+    EditorRange,
 } from "obsidian";
 import { EditorView } from "@codemirror/view";
 import { editorEvent } from "@/editorExt";
@@ -18,15 +20,18 @@ import {
     moveHeading,
 } from "@/utils/md-process";
 import { TreeOption } from "naive-ui";
+import { around } from "monkey-around";
 import { setupMenu, normal, parent, separator } from "@/utils/menu";
 import { t } from "@/lang/helper";
 import { HeadingUpdater } from "@/utils/update-heading-links";
 
 let plugin: QuietOutline;
+export const MD_DATA_FILE = "markdown-states.json"
 
 export class MarkDownNav extends Nav {
     declare view: MarkdownView;
     canDrop: boolean = true;
+    expandedKeys: string[] | undefined;
     constructor(_plugin: QuietOutline, view: MarkdownView) {
         super(_plugin, view);
         plugin = _plugin;
@@ -159,6 +164,13 @@ export class MarkDownNav extends Nav {
         return this.view.file!.path;
     }
 
+    onExpandKeysChange(path: string, keys: string[]) {
+        if (path === this.view.file?.path) {
+            this.expandedKeys = keys;
+            this.storeMarkdownState();
+        }
+    }
+
     changeContent(no: number, content: string) {
         if (!content) return;
 
@@ -255,9 +267,38 @@ export class MarkDownNav extends Nav {
         menu.onHide(onClose || (() => { }));
         menu.showAtMouseEvent(event);
     }
+
+    async loadMarkdownState() {
+        return plugin.data_manager.loadFileData<MarkdownStates>(MD_DATA_FILE , {});
+    }
+
+    storeMarkdownState() {
+        const view = this.view;
+        if (!view.file?.path) return;
+
+        const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE) || {};
+        const keysToSave = this.expandedKeys || dataMap[view.file.path]?.expandedKeys || [];
+        const data: MarkdownState = {
+            scroll: 0,
+            cursor: {
+                from: {line: 0, ch: 0},
+                to: {line: 0, ch: 0}
+            },
+            expandedKeys: keysToSave,
+            ...view.getEphemeralState()
+        };
+
+        dataMap[view.file?.path] = data;
+        plugin.data_manager.saveFileData(MD_DATA_FILE, dataMap); // <MarkdownStates>
+    }
+
 }
 
 function handleCursorChange(e?: CustomEvent) {
+    if (plugin.settings.persist_md_states) {
+        (plugin.navigator as MarkDownNav).storeMarkdownState();
+    }
+
     if (!plugin.allow_cursor_change || plugin.jumping || e?.detail.docChanged) {
         return;
     }
@@ -273,6 +314,13 @@ function handleCursorChange(e?: CustomEvent) {
         store.onPosChange(index);
     }
 }
+
+type MarkdownState = {
+    scroll: number,
+    cursor: EditorRange,
+    expandedKeys: string[],
+}
+export type MarkdownStates = Record<string, MarkdownState>;
 
 function currentLine(fromScroll: boolean, isSourcemode: boolean) {
     // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
@@ -360,6 +408,10 @@ function nearestHeading(line: number): undefined | number {
 const handleScroll = debounce(_handleScroll, 200, true);
 
 function _handleScroll(evt: Event) {
+    if (plugin.settings.persist_md_states) {
+        (plugin.navigator as MarkDownNav).storeMarkdownState();
+    }
+
     if (!plugin.allow_scroll) {
         return;
     }

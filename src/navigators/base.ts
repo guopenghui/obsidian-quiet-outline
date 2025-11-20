@@ -61,6 +61,7 @@ export abstract class Nav extends Component {
         onClose?: () => void,
     ) {}
     toBottom() {}
+    onExpandKeysChange(path: string, keys: string[]) {}
     changeContent(no: number, content: string) {}
     abstract jump(key: number): Promise<void>;
     async jumpWithoutFocus(key: number) { this.jump(key); }
