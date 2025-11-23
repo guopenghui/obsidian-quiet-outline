@@ -1,4 +1,4 @@
-import { Component, HeadingCache } from "obsidian";
+import { Component, HeadingCache, Menu } from "obsidian";
 import type { QuietOutline } from "@/plugin";
 import { store } from "@/store";
 import { TreeOption } from "naive-ui";
@@ -58,6 +58,7 @@ export abstract class Nav extends Component {
     onRightClick(
         event: MouseEvent,
         nodeInfo: { node: TreeOption; no: number; level: number; raw: string },
+        menu: Menu,
         onClose?: () => void,
     ) {}
     toBottom() {}

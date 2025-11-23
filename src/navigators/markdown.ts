@@ -203,9 +203,9 @@ export class MarkDownNav extends Nav {
     onRightClick(
         event: MouseEvent,
         nodeInfo: { node: TreeOption; no: number; level: number; raw: string; },
+        menu: Menu,
         onClose?: () => void,
     ): void {
-        const menu = new Menu().setNoIcon();
         setupMenu(menu, [
             parent(t("Copy"), [
                 normal(t("Heading"), async () => {
@@ -240,6 +240,10 @@ export class MarkDownNav extends Nav {
                     }
 
                     await navigator.clipboard.writeText(slice.join("\n"));
+                }),
+                normal(t("Link of heading"), async () => {
+                    const link = this.plugin.app.fileManager.generateMarkdownLink(this.view.file!, "", "#" + nodeInfo.raw)
+                    await navigator.clipboard.writeText(link);
                 }),
                 normal(t("Heading and Content"), async () => {
                     store.headers[0].position.start.line;

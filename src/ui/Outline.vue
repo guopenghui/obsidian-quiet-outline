@@ -110,7 +110,7 @@ import {
 import { Icon } from "@vicons/utils";
 
 import { marked } from "marked";
-import { sanitizeHTMLToDom } from "obsidian";
+import { Menu, sanitizeHTMLToDom } from "obsidian";
 
 import {
     formula,
@@ -125,7 +125,9 @@ import { store, SupportedIcon, Heading } from "@/store";
 import type { QuietOutline } from "@/plugin";
 import { useEvent } from "@/utils/use";
 import { escapeHtml, getOrigin, htmlToText } from "@/utils/html"
+import { setupMenu, normal, separator } from "@/utils/menu";
 import { MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
+import { t } from "@/lang/helper";
 
 type TreeOptionX = TreeOption & {
     no?: number;
@@ -439,7 +441,7 @@ function autoExpand(index: number) {
 
 let locateIdx = ref(0);
 function resetLocated(idx: number) {
-    let path = getPath(idx);
+    let path = getPathFromArr(idx);
     let index = path.find(
         (v) => !expanded.value.contains(toKey(store.headers[v], v)),
     );
@@ -489,6 +491,20 @@ const nodeProps = computed(() => {
             },
             onContextmenu(event: MouseEvent) {
                 selectedKeys.value = [info.option.key as string];
+                const { self, siblings, descendants } = getNode(fromKey(info.option.key as string));
+                const menu = new Menu().setNoIcon();
+                
+                const subtreeKeys = [self, ...descendants].filter(node => node.children).map(node => node.key as string);
+                const siblingKeys = siblings.filter(node => node.children).map(node => node.key as string);
+                setupMenu(menu, [
+                    expanded.value.includes(info.option.key as string)
+                        ? normal(t("Collapse Recursively"), () => modifyExpandKeys(subtreeKeys, "remove"))
+                        : normal(t("Expand Recursively"), () => modifyExpandKeys(subtreeKeys, "add")),
+                    normal(t("Collapse Sibling"), () => modifyExpandKeys(siblingKeys, "remove")),
+                    normal(t("Expand Sibling"), () => modifyExpandKeys(siblingKeys, "add")),
+                    separator(),
+                ]);
+                
                 plugin.navigator.onRightClick(
                     event,
                     {
@@ -497,6 +513,7 @@ const nodeProps = computed(() => {
                         level: lev,
                         raw,
                     },
+                    menu,
                     () => {
                         selectedKeys.value = [];
                     },
@@ -904,9 +921,14 @@ function arrToTree(headers: Heading[]): TreeOptionX[] {
     return root.children!;
 }
 
-// get ancestor heading indexes of a given heading
-function getPath(index: number) {
-    let res: number[] = [];
+// get associated heading indexes of a given heading
+function getNode(index: number): {
+    self: TreeOptionX,
+    path: TreeOptionX[],
+    siblings: TreeOptionX[],
+    descendants: TreeOptionX[]
+} {
+    let path: TreeOptionX[] = [];
     function pushLastGreatEq(nodes: TreeOption[] | undefined) {
         if (!nodes || nodes.length === 0) {
             return;
@@ -915,7 +937,7 @@ function getPath(index: number) {
         for (let i = nodes.length - 1; i >= 0; i--) {
             let pos = fromKey(nodes[i].key as string);
             if (pos <= index) {
-                res.push(pos);
+                path.push(nodes[i]);
                 idx = i;
                 break;
             }
@@ -923,7 +945,31 @@ function getPath(index: number) {
         pushLastGreatEq(nodes[idx].children);
     }
     pushLastGreatEq(data2.value);
-    return res;
+    
+    const self = path[path.length - 1];
+    const siblings = path[path.length - 2]
+        ? path[path.length - 2].children || []
+        : data2.value;
+    
+    const descendants: TreeOptionX[] = [];
+    function traverse(nodes: TreeOption[] | undefined) {
+        if (!nodes || nodes.length === 0) {
+            return;
+        }
+        for (let i = 0; i < nodes.length; i++) {
+            let node = nodes[i];
+            descendants.push(node);
+            traverse(node.children);
+        }
+    }
+    traverse(self.children);
+    
+    return {
+        self,
+        path,
+        siblings,
+        descendants,
+    };
 }
 // calculate path of heading by store.header array
 function getPathFromArr(index: number) {
@@ -1070,7 +1116,7 @@ function isLeaf(idx: number) {
 }
 
 function selectVisible() {
-    const path = getPath(locateIdx.value);
+    const path = getPathFromArr(locateIdx.value);
     const firstCollapse = path.findIndex(item => !expanded.value.contains(idxToKey(item)));
     const visibleOne = firstCollapse === -1 ? locateIdx.value : path[firstCollapse];
     

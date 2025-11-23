@@ -53,6 +53,11 @@ export default {
     "Heading and Content": "Heading and Content",
     "Heading and siblings headings": "Heading and siblings headings",
     "Rename heading": "Rename",
+    "Link of heading": "Link of heading",
+    "Collapse Recursively": "Collapse Recursively",
+    "Expand Recursively": "Expand Recursively",
+    "Collapse Sibling": "Collapse Sibling",
+    "Expand Sibling": "Expand Sibling",
     "Vimlize Canvas": "Vimlize Canvas",
     "Add vim-like keymap for canvas": "Add vim-like keymap for canvas",
 

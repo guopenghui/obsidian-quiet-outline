@@ -54,6 +54,13 @@ export default {
     "Heading and Content": "该段内容",
     "Heading and siblings headings": "标题和兄弟标题",
     "Rename heading": "重命名标题",
+    "Link of heading": "标题链接",
+
+    // Context menu items
+    "Collapse Recursively": "递归折叠",
+    "Expand Recursively": "递归展开",
+    "Collapse Sibling": "折叠同级标题",
+    "Expand Sibling": "展开同级标题",
 
     "Vimlize Canvas": "Vim Canvas",
     "Add vim-like keymap for canvas": "给 Canvas 添加 Vim 风格的快捷键",
