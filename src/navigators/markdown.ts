@@ -281,18 +281,14 @@ export class MarkDownNav extends Nav {
         if (!view.file?.path) return;
 
         const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE) || {};
+        const oldData = dataMap[view.file.path] || {};
         const keysToSave = this.expandedKeys || dataMap[view.file.path]?.expandedKeys || [];
-        const data: MarkdownState = {
-            scroll: 0,
-            cursor: {
-                from: {line: 0, ch: 0},
-                to: {line: 0, ch: 0}
-            },
+        const data: MarkdownState = Object.assign({},  DEFAULT_STATE, oldData, {
             expandedKeys: keysToSave,
             ...view.getEphemeralState()
-        };
+        });
 
-        dataMap[view.file?.path] = data;
+        dataMap[view.file.path] = data;
         plugin.data_manager.saveFileData(MD_DATA_FILE, dataMap); // <MarkdownStates>
     }
 
@@ -324,6 +320,16 @@ type MarkdownState = {
     cursor: EditorRange,
     expandedKeys: string[],
 }
+
+const DEFAULT_STATE: MarkdownState = Object.freeze({
+    scroll: 0,
+    cursor: {
+        from: {line: 0, ch: 0},
+        to: {line: 0, ch: 0},
+    },
+    expandedKeys: [],
+});
+
 export type MarkdownStates = Record<string, MarkdownState>;
 
 function currentLine(fromScroll: boolean, isSourcemode: boolean) {
