@@ -611,7 +611,6 @@ onUnmounted(() => {
 // let level = ref(parseInt(plugin.settings.expand_level));
 let level = ref(getDefaultLevel());
 let expanded = ref<string[]>([]);
-switchLevel(level.value);
 
 function modifyExpandKeys(
     newKeys: string[],
@@ -757,32 +756,6 @@ watch(
 // force remake tree
 let update_tree = ref(0);
 
-watch(
-    () => store.leafChange,
-    () => {
-        const old_pattern = pattern.value;
-
-        pattern.value = "";
-        level.value = getDefaultLevel();
-
-        const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
-        const old_state = plugin.navigator.getId() === "markdown"
-            ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys
-            : null;
-        if (plugin.settings.persist_md_states && old_state) {
-            modifyExpandKeys(old_state);
-        } else {
-            switchLevel(level.value);
-        }
-
-        if (plugin.settings.keep_search_input) {
-            nextTick(() => {
-                pattern.value = old_pattern;
-            });
-        }
-    },
-);
-
 const marks = {
     0: "",
     1: "",
@@ -843,6 +816,35 @@ let renderMethod = computed<RenderMethodType>(() => {
 
 // search
 let pattern = ref("");
+
+watch(
+    () => store.leafChange,
+    () => {
+        const old_pattern = pattern.value;
+
+        pattern.value = "";
+        level.value = getDefaultLevel();
+
+        const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
+        const old_state = plugin.navigator.getId() === "markdown"
+            ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys
+            : null;
+        if (plugin.settings.persist_md_states && old_state) {
+            modifyExpandKeys(old_state);
+        } else {
+            switchLevel(level.value);
+        }
+
+        if (plugin.settings.keep_search_input) {
+            nextTick(() => {
+                pattern.value = old_pattern;
+            });
+        }
+    },
+    {
+        immediate: true,
+    }
+);
 
 function regexFilter(pattern: string, option: TreeOption): boolean {
     let rule = /.*/;
