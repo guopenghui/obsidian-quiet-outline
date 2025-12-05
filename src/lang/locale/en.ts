@@ -46,6 +46,12 @@ export default {
 
     "Export Format": "Export Format",
 
+    "Canvas Sort Order": "Canvas Sort Order",
+    "Sort method for canvas nodes": "Sort method for canvas nodes",
+    "Sort by Area": "Sort by Area (Big -> Small)",
+    "Sort by Name (A -> Z)": "Sort by Name (A -> Z)",
+    "Sort by Name (Z -> A)": "Sort by Name (Z -> A)",
+
     // menu
     "Copy": "Copy",
     "Heading": "Heading",

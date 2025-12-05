@@ -47,6 +47,12 @@ export default {
 
     "Export Format": "标题输出格式",
 
+    "Canvas Sort Order": "白板大纲排序",
+    "Sort method for canvas nodes": "白板卡片的排序逻辑",
+    "Sort by Area": "按面积 (大 -> 小)",
+    "Sort by Name (A -> Z)": "按名称 (A -> Z)",
+    "Sort by Name (Z -> A)": "按名称 (Z -> A)",
+
     // menu
     "Copy": "复制",
     "Heading": "标题",
