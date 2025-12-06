@@ -45,6 +45,11 @@ export default {
     "is decided by": "由什麼決定",
 
     "Export Format": "標題輸出格式",
+    "Canvas Sort Order": "白板大綱排序",
+    "Sort method for canvas nodes": "白板卡片的排序邏輯",
+    "Sort by Area": "按面積 (大 -> 小)",
+    "Sort by Name (A -> Z)": "按名稱 (A -> Z)",
+    "Sort by Name (Z -> A)": "按名稱 (Z -> A)",
 
     // menu
     "Copy": "複製",

@@ -118,7 +118,7 @@ export class CanvasNav extends Nav {
         const nodes = this.view.canvas.data.nodes as AllCanvasNodeData[];
         // nodes may be undefined when switch to canvas view
         if (nodes) {
-            return canvasNodesToHeaders(nodes);
+            return canvasNodesToHeaders(nodes, this.plugin.settings.canvas_sort_by);
         }
         return [];
     }
@@ -161,9 +161,22 @@ export class CanvasNav extends Nav {
     }
 }
 
-function canvasNodesToHeaders(nodes: AllCanvasNodeData[]): Heading[] {
+function canvasNodesToHeaders(
+    nodes: AllCanvasNodeData[], 
+    sortMode: "area" | "name_asc" | "name_desc" = "area"
+): Heading[] {
+    // 下行为原注释
     // const groups = nodes.filter(node => node.type === "group").sort((a, b) => - cmpArea(a, b));
-    const nodesDec = nodes.slice().sort((a, b) => -cmpArea(a, b));
+    const nodesDec = nodes.slice().sort((a, b) => {
+        if (sortMode === "name_asc") {
+            return text(a).localeCompare(text(b), undefined, { numeric: true });
+        }
+        if (sortMode === "name_desc") {
+            return text(b).localeCompare(text(a), undefined, { numeric: true });
+        }
+        // 默认按面积倒序
+        return -cmpArea(a, b);
+    });
 
     const trees: TreeNode[] = [];
     for (let i = 0; i < nodesDec.length; i++) {

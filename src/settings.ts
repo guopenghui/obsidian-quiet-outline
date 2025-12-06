@@ -27,6 +27,7 @@ interface QuietOutlineSettings {
     lang_direction_decide_by: "system" | "text";
     auto_scroll_into_view: boolean;
     vimlize_canvas: boolean;
+    canvas_sort_by: "area" | "name_asc" | "name_desc";
 
     // Style settings
     patch_color: boolean;
@@ -76,6 +77,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     lang_direction_decide_by: "system",
     auto_scroll_into_view: true,
     vimlize_canvas: true,
+    canvas_sort_by: "area",
 
     // Style settings
     patch_color: true,
@@ -360,6 +362,27 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.vimlize_canvas = value;
                         await this.plugin.saveSettings();
                     }),
+            );
+
+        new Setting(container)
+            .setName(t("Canvas Sort Order"))
+            .setDesc(t("Sort method for canvas nodes"))
+            .addDropdown((dropdown) =>
+                dropdown
+                    .addOption("area", t("Sort by Area"))
+                    .addOption("name_asc", t("Sort by Name (A -> Z)"))
+                    .addOption("name_desc", t("Sort by Name (Z -> A)"))
+                    .setValue(this.plugin.settings.canvas_sort_by)
+                    .onChange(
+                        async (
+                            value: "area" | "name_asc" | "name_desc",
+                        ) => {
+                            this.plugin.settings.canvas_sort_by = value;
+                            await this.plugin.saveSettings();
+                            // 触发刷新
+                            this.plugin.refresh(); 
+                        },
+                    ),
             );
 
         new Setting(container)
