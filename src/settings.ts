@@ -380,7 +380,7 @@ class SettingTab extends PluginSettingTab {
                             this.plugin.settings.canvas_sort_by = value;
                             await this.plugin.saveSettings();
                             // 触发刷新
-                            this.plugin.refresh(); 
+                            this.plugin.refresh();
                         },
                     ),
             );

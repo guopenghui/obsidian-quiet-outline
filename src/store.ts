@@ -62,7 +62,7 @@ const store = reactive({
         this.refreshTree();
     },
     headers: [] as Heading[],
-    onPosChange: (index: number) => {},
+    onPosChange: (index: number) => { },
     dark: true,
     cssChange: false,
     markdown: true,
@@ -74,7 +74,6 @@ const store = reactive({
     hideUnsearched: true,
     regexSearch: false,
     currentEditingKey: "",
-    // autoExpand: true,
     modifyKeys: {} as ModifyKeys,
     dragModify: false,
     textDirectionDecideBy: "system" as "system" | "text",

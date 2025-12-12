@@ -4,8 +4,6 @@ import {
     HeadingCache,
     debounce,
     Menu,
-    Notice,
-    WorkspaceLeaf,
     EditorRange,
 } from "obsidian";
 import { EditorView } from "@codemirror/view";
@@ -20,13 +18,13 @@ import {
     moveHeading,
 } from "@/utils/md-process";
 import { TreeOption } from "naive-ui";
-import { around } from "monkey-around";
-import { setupMenu, normal, parent, separator } from "@/utils/menu";
+import { setupMenu, normal, parent } from "@/utils/menu";
 import { t } from "@/lang/helper";
 import { HeadingUpdater } from "@/utils/update-heading-links";
+import { stringifyHeaders } from "@/utils/heading";
 
 let plugin: QuietOutline;
-export const MD_DATA_FILE = "markdown-states.json"
+export const MD_DATA_FILE = "markdown-states.json";
 
 export class MarkDownNav extends Nav {
     declare view: MarkdownView;
@@ -213,8 +211,7 @@ export class MarkDownNav extends Nav {
                 }),
                 normal(t("Heading and siblings headings"), async () => {
                     const { no } = nodeInfo;
-                    const headers = this.plugin
-                        .stringifyHeaders()
+                    const headers = stringifyHeaders(store.headers, this.plugin.settings.export_format)
                         .map((s) => s.slice(store.headers[no].level - 1));
                     const siblingSet = getSiblings(no, store.headers);
                     const siblings = headers.filter((_, i) =>
@@ -226,8 +223,8 @@ export class MarkDownNav extends Nav {
                 normal(t("Heading and children headings"), async () => {
                     const { no, level } = nodeInfo;
 
-                    let headers = this.plugin.stringifyHeaders();
-                    headers = headers.map((s, i) =>
+                    let headers = stringifyHeaders(store.headers, this.plugin.settings.export_format);
+                    headers = headers.map(s =>
                         s.slice(store.headers[no].level - 1),
                     );
 
@@ -242,7 +239,7 @@ export class MarkDownNav extends Nav {
                     await navigator.clipboard.writeText(slice.join("\n"));
                 }),
                 normal(t("Link of heading"), async () => {
-                    const link = this.plugin.app.fileManager.generateMarkdownLink(this.view.file!, "", "#" + nodeInfo.raw)
+                    const link = this.plugin.app.fileManager.generateMarkdownLink(this.view.file!, "", "#" + nodeInfo.raw);
                     await navigator.clipboard.writeText(link);
                 }),
                 normal(t("Heading and Content"), async () => {
@@ -273,7 +270,7 @@ export class MarkDownNav extends Nav {
     }
 
     async loadMarkdownState() {
-        return plugin.data_manager.loadFileData<MarkdownStates>(MD_DATA_FILE , {});
+        return plugin.data_manager.loadFileData<MarkdownStates>(MD_DATA_FILE, {});
     }
 
     storeMarkdownState() {
@@ -283,7 +280,7 @@ export class MarkDownNav extends Nav {
         const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE) || {};
         const oldData = dataMap[view.file.path] || {};
         const keysToSave = this.expandedKeys || dataMap[view.file.path]?.expandedKeys || [];
-        const data: MarkdownState = Object.assign({},  DEFAULT_STATE, oldData, {
+        const data: MarkdownState = Object.assign({}, DEFAULT_STATE, oldData, {
             expandedKeys: keysToSave,
             ...view.getEphemeralState()
         });
@@ -319,13 +316,13 @@ type MarkdownState = {
     scroll: number,
     cursor: EditorRange,
     expandedKeys: string[],
-}
+};
 
 const DEFAULT_STATE: MarkdownState = Object.freeze({
     scroll: 0,
     cursor: {
-        from: {line: 0, ch: 0},
-        to: {line: 0, ch: 0},
+        from: { line: 0, ch: 0 },
+        to: { line: 0, ch: 0 },
     },
     expandedKeys: [],
 });
@@ -333,18 +330,13 @@ const DEFAULT_STATE: MarkdownState = Object.freeze({
 export type MarkdownStates = Record<string, MarkdownState>;
 
 function currentLine(fromScroll: boolean, isSourcemode: boolean) {
-    // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
     const view = (plugin.navigator as MarkDownNav).view;
-    // if (!view || (plugin.current_view_type !== "markdown" /*&& plugin.current_view_type !== "embed-markdown-file"*/)) {
-    //     return;
-    // }
 
     const markdownView = view as MarkdownView;
     if (plugin.settings.locate_by_cursor && !fromScroll) {
         return isSourcemode
             ? markdownView.editor.getCursor("from").line
             : Math.ceil(markdownView.previewMode.getScroll());
-        // return markdownView.editor.getCursor("from").line;
     } else {
         return isSourcemode
             ? // @ts-ignore
@@ -444,17 +436,6 @@ function _handleScroll(evt: Event) {
 
     const isSourcemode =
         (plugin.navigator as MarkDownNav).view.getMode() === "source";
-
-    // if (plugin.jumping) {
-    // 	if (isSourcemode) {
-    // 		onPosChange(false, isSourcemode);
-    // 		return
-    // 	}
-    // }
-
-    // if (plugin.settings.locate_by_cursor) {
-    //     return;
-    // }
 
     const current = currentLine(true, isSourcemode);
     const index = nearestHeading(current);

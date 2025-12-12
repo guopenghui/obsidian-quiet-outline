@@ -43,7 +43,7 @@ export class EmbedMarkdownFileNav extends Nav {
             // }, 1000);
         });
     }
-    
+
     async jumpWithoutFocus(key: number): Promise<void> {
         const line = store.headers[key].position.start.line;
 
@@ -66,9 +66,9 @@ export class EmbedMarkdownFileNav extends Nav {
             // 	plugin.jumping = false;
             // }, 1000);
         });
-        
+
     }
-    
+
     async getHeaders(): Promise<HeadingCache[]> {
         const cache = this.plugin.app.metadataCache.getFileCache(
             this.view.file,
@@ -119,7 +119,7 @@ export class EmbedMarkdownTextNav extends Nav {
     }
 }
 
-function setEphemeralState(view: EmbedMarkdownView, option: { line: number, focus?: boolean }) {
+function setEphemeralState(view: EmbedMarkdownView, option: { line: number, focus?: boolean; }) {
     if (view.getMode() === "source") {
         editorScroll(view.editMode.editor, option.line);
         option.focus && view.editMode.editor.focus();

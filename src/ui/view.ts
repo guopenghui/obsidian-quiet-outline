@@ -39,12 +39,7 @@ export class OutlineView extends ItemView {
         this.vueApp = createApp(Outline);
         this.vueApp.provide("plugin", this.plugin);
         this.vueApp.provide("container", mountPoint);
-        // this.vueApp.config.globalProperties.plugin = this.plugin;
-        // this.vueApp.config.globalProperties.container = mountPoint;
-        this.vueInstance = this.vueApp.mount(mountPoint) as InstanceType<
-            typeof Outline
-        >;
-        // setTimeout(()=> { createApp(Outline).mount(mountPoint) }, 0)
+        this.vueInstance = this.vueApp.mount(mountPoint) as InstanceType<typeof Outline>;
     }
 
     setupScopes() {
@@ -54,8 +49,8 @@ export class OutlineView extends ItemView {
         tree.register([], "K", () => this.vueInstance.move("up"));
         tree.register([], "L", () => this.vueInstance.setExpand(true));
         tree.register([], "G", () => {
-            if(this.pendingKey === "G") {
-                this.vueInstance.move("top")
+            if (this.pendingKey === "G") {
+                this.vueInstance.move("top");
                 this.pendingKey = undefined;
                 return;
             }
@@ -63,7 +58,7 @@ export class OutlineView extends ItemView {
             setTimeout(() => this.pendingKey = undefined, 500);
         });
         tree.register([], "Z", () => {
-            if(this.pendingKey === "Z") {
+            if (this.pendingKey === "Z") {
                 this.vueInstance.center();
                 this.pendingKey = undefined;
                 return;
@@ -88,21 +83,21 @@ export class OutlineView extends ItemView {
         });
         tree.register([], "Enter", () => {
             const idx = this.vueInstance.currentSelected();
-            if(idx !== undefined) {
+            if (idx !== undefined) {
                 this.plugin.navigator.jump(idx);
                 this.vueInstance.resetPattern();
             }
         });
         tree.register(null, null, (evt) => {
-            if(evt.key !== "Escape") return;
+            if (evt.key !== "Escape") return;
             setTimeout(() => {
-                this.plugin.app.workspace.activeLeaf?.setEphemeralState({ focus: true })
+                this.plugin.app.workspace.activeLeaf?.setEphemeralState({ focus: true });
             });
-        })
+        });
 
         const search = new Scope(this.app.scope);
-        search.register([], "Escape", () => this.vueInstance.resetPattern())
-        search.register([], "Enter", () => this.focusOn("tree"))
+        search.register([], "Escape", () => this.vueInstance.resetPattern());
+        search.register([], "Enter", () => this.focusOn("tree"));
 
         const switcher = new Scope(this.app.scope);
 
@@ -127,12 +122,11 @@ export class OutlineView extends ItemView {
                     this.contentEl.querySelector(".n-input__input-el")!;
                 search.focus();
                 this.scope = this.scopes.search;
-                // this.vueInstance.resetPattern();
                 break;
         }
     }
 
-    async onClose() {}
+    async onClose() { }
     onunload(): void {
         this.vueApp.unmount();
     }

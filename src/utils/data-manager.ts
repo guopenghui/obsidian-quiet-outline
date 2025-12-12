@@ -2,7 +2,7 @@ import { App, debounce } from "obsidian";
 
 export class DataManager {
     private cache: Record<string, any> = {};
-    constructor(private app: App, private pluginPath: string) {}
+    constructor(private app: App, private pluginPath: string) { }
 
     private async checkPath(normalizedPath: string) {
         const parent = normalizedPath.split("/").slice(0, -1).join("/");
@@ -37,7 +37,7 @@ export class DataManager {
         return this.cache[path];
     }
 
-    saveFileData = debounce<[string, any], void>(this._saveFileData.bind(this), 200, true)
+    saveFileData = debounce<[string, any], void>(this._saveFileData.bind(this), 200, true);
     async _saveFileData<Data>(path: string, data: Data) {
         this.cache[path] = data;
         let filePath = [this.pluginPath, path].join("/");

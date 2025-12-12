@@ -2,18 +2,18 @@ import { Menu } from "obsidian";
 
 export type MenuItemConfig =
     | {
-          title: string;
-          type: "normal";
-          fn: () => void;
-      }
+        title: string;
+        type: "normal";
+        fn: () => void;
+    }
     | {
-          title: string;
-          type: "parent";
-          subMenu: MenuItemConfig[];
-      }
+        title: string;
+        type: "parent";
+        subMenu: MenuItemConfig[];
+    }
     | {
-          type: "separator";
-      };
+        type: "separator";
+    };
 
 export function setupMenu(menu: Menu, menuConfig: MenuItemConfig[]) {
     function addItem(parent: Menu, itemConfig: MenuItemConfig) {

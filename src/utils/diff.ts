@@ -14,10 +14,10 @@ type ModifyDiff = {
     length: number;
     levelChange: boolean;
     levelChangeType:
-        | "parent2parent"
-        | "parent2child"
-        | "child2parent"
-        | "child2child";
+    | "parent2parent"
+    | "parent2child"
+    | "child2parent"
+    | "child2child";
 };
 
 const MODIFY_CHECK_STEP = 5;
@@ -45,8 +45,8 @@ export function diff(prev: Heading[], cur: Heading[]): Diff[] {
                         ? "parent2parent"
                         : "parent2child"
                     : cur[j].level < cur[j + 1].level
-                      ? "child2parent"
-                      : "child2child";
+                        ? "child2parent"
+                        : "child2child";
             res.push({
                 type: action.type,
                 begin: i,
@@ -64,8 +64,8 @@ export function diff(prev: Heading[], cur: Heading[]): Diff[] {
         action.type === "add"
             ? (j += action.length)
             : action.type === "remove"
-              ? (i += action.length)
-              : ((i += action.length), (j += action.length));
+                ? (i += action.length)
+                : ((i += action.length), (j += action.length));
     }
 
     // deal with rest
@@ -91,7 +91,7 @@ function addOrRemoveOrModify(
     cur: Heading[],
     i: number,
     j: number,
-): { type: "add" | "remove" | "modify"; length: number } {
+): { type: "add" | "remove" | "modify"; length: number; } {
     const stepAdd = findSteps(prev[i], cur, j);
     const stepRm = findSteps(cur[j], prev, i);
     const stepMod = findModifyStep(prev, cur, i, j);
@@ -99,7 +99,7 @@ function addOrRemoveOrModify(
         { type: "add", length: stepAdd },
         { type: "remove", length: stepRm },
         { type: "modify", length: stepMod },
-    ] as { type: "add" | "remove" | "modify"; length: number }[];
+    ] as { type: "add" | "remove" | "modify"; length: number; }[];
     res.sort((a, b) => a.length - b.length);
 
     // choose remove first
@@ -194,4 +194,4 @@ export function calcModifies(prev: Heading[], cur: Heading[]) {
     return modifyKeys;
 }
 
-export {};
+export { };

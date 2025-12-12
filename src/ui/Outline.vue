@@ -608,7 +608,6 @@ onUnmounted(() => {
 });
 
 // switch heading expand levels
-// let level = ref(parseInt(plugin.settings.expand_level));
 let level = ref(getDefaultLevel());
 let expanded = ref<string[]>([]);
 
@@ -633,7 +632,6 @@ function syncExpandKeys() {
     
     const keys = toRaw(expanded.value)
     plugin.navigator.onExpandKeysChange(path, keys);
-    plugin.heading_states[path] = keys;
 }
 
 function expand(keys: string[], option: TreeOption[]) {

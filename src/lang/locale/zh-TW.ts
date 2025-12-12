@@ -19,7 +19,7 @@ export default {
     "Regex Search": '正則搜尋',
     "Search headings using regular expression": '支援使用正則運算式來搜尋',
     "Auto Expand": '自動展開',
-    "Auto expand and collapse headings when scrolling and cursor position change":  "當捲動頁面或游標改變時，自動跟隨目前所在標題並展開",
+    "Auto expand and collapse headings when scrolling and cursor position change": "當捲動頁面或游標改變時，自動跟隨目前所在標題並展開",
     "Auto Scroll Into View": '自動捲動到定位的標題',
     "Auto scroll located heading into view": '當捲動或游標位置變化時，大綱自動捲動到相應標題',
     "Only Expand": '僅展開目前標題',

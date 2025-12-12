@@ -1,4 +1,4 @@
-import { compile } from "html-to-text"
+import { compile } from "html-to-text";
 export function escapeHtml(unsafe: string) {
     return unsafe
         .replace(/&/g, "&amp;") // 必须先替换 &
@@ -13,7 +13,7 @@ export const htmlToText = compile({
 });
 
 export const getOrigin = compile({
-    selectors: [{selector: "mjx-container", format: "origin"}],
+    selectors: [{ selector: "mjx-container", format: "origin" }],
     formatters: {
         "origin": (elem, walk, builder, options) => {
             builder.openBlock();
@@ -21,4 +21,4 @@ export const getOrigin = compile({
             builder.closeBlock();
         }
     }
-})
+});

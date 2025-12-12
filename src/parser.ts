@@ -30,7 +30,6 @@ export const formula: Extension = {
             return formula.outerHTML;
         } catch {
             loadMathJax().then(() => {
-                //store.activeView()
                 store.refreshTree();
             });
             return false;
@@ -148,5 +147,5 @@ export const remove_href = (token: marked.Token) => {
 // remove list
 export const tokenizer: marked.Tokenizer = {
     // @ts-ignore
-    list(src) {},
+    list(src) { },
 };

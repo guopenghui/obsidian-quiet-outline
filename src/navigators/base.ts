@@ -32,7 +32,7 @@ export abstract class Nav extends Component {
         if (!this._loaded) return;
         this._loaded = false;
         // @ts-ignore
-        for (; this._events.length > 0; ) this._events.pop()();
+        for (; this._events.length > 0;) this._events.pop()();
 
         await this.onunload();
 
@@ -47,23 +47,23 @@ export abstract class Nav extends Component {
         return "";
     }
     abstract getId(): string;
-    async install() {}
-    async onload(): Promise<void> {}
-    async onunload(): Promise<void> {}
+    async install() { }
+    async onload(): Promise<void> { }
+    async onunload(): Promise<void> { }
     async handleDrop(
         from: number,
         to: number,
         position: "before" | "after" | "inside",
-    ) {}
+    ) { }
     onRightClick(
         event: MouseEvent,
-        nodeInfo: { node: TreeOption; no: number; level: number; raw: string },
+        nodeInfo: { node: TreeOption; no: number; level: number; raw: string; },
         menu: Menu,
         onClose?: () => void,
-    ) {}
-    toBottom() {}
-    onExpandKeysChange(path: string, keys: string[]) {}
-    changeContent(no: number, content: string) {}
+    ) { }
+    toBottom() { }
+    onExpandKeysChange(path: string, keys: string[]) { }
+    changeContent(no: number, content: string) { }
     abstract jump(key: number): Promise<void>;
     async jumpWithoutFocus(key: number) { this.jump(key); }
     async jumpWhenClick(key: number) { this.jumpWithoutFocus(key); }
@@ -76,12 +76,12 @@ export class DummyNav extends Nav {
     getId() {
         return "dummy";
     }
-    async jump(_key: number) {}
+    async jump(_key: number) { }
     async getHeaders(): Promise<HeadingCache[]> {
         return [];
     }
     async setHeaders(): Promise<void> {
         store.headers = [];
     }
-    async updateHeaders() {}
+    async updateHeaders() { }
 }

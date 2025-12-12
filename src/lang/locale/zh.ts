@@ -1,7 +1,6 @@
 // 简体中文
 
 export default {
-
     'Settings for Quiet Outline.': 'Quiet Outline 的设置页面',
     "Set Primary Color": '设置主颜色 明/暗',
     "Patch default color": '用设置覆盖默认主颜色',
@@ -20,7 +19,7 @@ export default {
     "Regex Search": '正则搜索',
     "Search headings using regular expression": '支持使用正则表达式来搜索',
     "Auto Expand": '自动展开',
-    "Auto expand and collapse headings when scrolling and cursor position change":  "当滚动页面时，自动跟踪当前所在标题并展开",
+    "Auto expand and collapse headings when scrolling and cursor position change": "当滚动页面时，自动跟踪当前所在标题并展开",
     "Auto Scroll Into View": '自动滚动到定位的标题',
     "Auto scroll located heading into view": '当滚动或者光标位置变化时，大纲自动滚动到相应标题',
     "Only Expand": '仅展开当前标题',

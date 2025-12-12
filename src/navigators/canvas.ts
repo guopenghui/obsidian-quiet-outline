@@ -23,7 +23,7 @@ export class CanvasNav extends Nav {
         super(plugin, view);
     }
     async onload(): Promise<void> {
-        if(this.plugin.settings.vimlize_canvas) {
+        if (this.plugin.settings.vimlize_canvas) {
             enableVim(this.view);
         }
     }
@@ -81,7 +81,7 @@ export class CanvasNav extends Nav {
                         store.refreshTree();
                         return;
                     }
-                    
+
                     await plugin.updateNav("dummy", null as any);
                     await plugin.refresh_outline();
                     store.refreshTree();
@@ -101,7 +101,7 @@ export class CanvasNav extends Nav {
             this.view.setEphemeralState({ focus: true });
         }
     }
-    
+
     async jumpWithoutFocus(key: number) {
         // @ts-ignore
         const nodes: Map<string, AllCanvasNodeData> = this.view.canvas.nodes;
@@ -110,7 +110,7 @@ export class CanvasNav extends Nav {
             this.view.canvas.zoomToBbox(node.bbox);
         }
     }
-    
+
     async setHeaders(): Promise<void> {
         store.headers = await this.getHeaders();
     }
@@ -162,7 +162,7 @@ export class CanvasNav extends Nav {
 }
 
 function canvasNodesToHeaders(
-    nodes: AllCanvasNodeData[], 
+    nodes: AllCanvasNodeData[],
     sortMode: "area" | "name_asc" | "name_desc" = "area"
 ): Heading[] {
     // 下行为原注释
@@ -257,7 +257,7 @@ function text(node: AllCanvasNodeData): string {
                         cacheTitle[node.url] =
                             /<title>(.*)<\/title>/.exec(res)?.[1] || "";
                     })
-                    .catch(() => {});
+                    .catch(() => { });
             }
             break;
         }
@@ -269,7 +269,7 @@ function text(node: AllCanvasNodeData): string {
     return text;
 }
 
-type TreeNode = { node: AllCanvasNodeData; children: TreeNode[] };
+type TreeNode = { node: AllCanvasNodeData; children: TreeNode[]; };
 function traverse(
     trees: TreeNode[],
     level: number,
@@ -302,7 +302,7 @@ type Node = {
     y: number;
     width: number;
     height: number;
-}
+};
 /**
  * a inside b
  **/
@@ -318,66 +318,66 @@ function isInside(a: Node, b: Node): boolean {
 function enableVim(view: CanvasView) {
     // @ts-ignore
     if (view.__vimed) return;
-    
+
     view.scope?.register([], "Escape", (e) => {
         check(e) || (e.preventDefault(), view.canvas.deselectAll());
-    })
-    
+    });
+
     view.scope?.register([], "J", (e) => {
         check(e) || (e.preventDefault(), move(view.canvas, "down"));
-    })
+    });
     view.scope?.register([], "K", (e) => {
         check(e) || (e.preventDefault(), move(view.canvas, "up"));
-    })
+    });
     view.scope?.register([], "H", (e) => {
         check(e) || (e.preventDefault(), move(view.canvas, "left"));
-    })
+    });
     view.scope?.register([], "L", (e) => {
         check(e) || (e.preventDefault(), move(view.canvas, "right"));
-    })
-    
+    });
+
     view.scope?.register([], "I", (e) => {
         if (check(e)) return;
         const node = onlyOneNodeSelected(view.canvas);
         if (!node) return;
-        
+
         e.preventDefault();
         node.startEditing();
-    })
-    
+    });
+
     let pending: string | null = null;
     view.scope?.register([], "Z", (e) => {
         if (check(e)) return;
-        
+
         e.preventDefault();
-        if(pending === "Z") {
+        if (pending === "Z") {
             const node = onlyOneNodeSelected(view.canvas);
             if (!node) return;
-            
+
             pending = null;
             view.canvas.zoomToBbox(node.bbox);
             return;
         }
-        
+
         pending = "Z";
         setTimeout(() => {
             pending = null;
         }, 300);
-    })
+    });
     view.scope?.register([], "A", (e) => {
         if (check(e)) return;
         // const node = onlyOneNodeSelected(view.canvas);
         // if (!node) return;
-        
+
         e.preventDefault();
-        if(pending === "Z") {
+        if (pending === "Z") {
             pending = null;
             view.canvas.zoomToFit();
             return;
         }
-    })
-    
-    
+    });
+
+
     // @ts-ignore
     view.__vimed = true;
 }
@@ -385,7 +385,7 @@ function enableVim(view: CanvasView) {
 // copied from app.js
 function check(e: KeyboardEvent) {
     const t = e.targetNode;
-    return t?.instanceOf(HTMLElement) && "true" === t.contentEditable
+    return t?.instanceOf(HTMLElement) && "true" === t.contentEditable;
 }
 
 function onlyOneNodeSelected(canvas: Canvas): CanvasNode | null {
@@ -399,59 +399,59 @@ function move(canvas: Canvas, dir: "up" | "down" | "left" | "right") {
     if (canvas.selection.size > 1) return;
     if (canvas.selection.size === 0) {
         const nodes = canvas.getContainingNodes(canvas.getViewportBBox());
-        if(nodes.length > 0) {
+        if (nodes.length > 0) {
             canvas.selectOnly(nodes[0]);
         }
         return;
     }
-    
+
     const selected = [...canvas.selection.values()][0];
     if (canvas.edges.has(selected.id)) return;
-    
+
     const node = selected as CanvasNode;
-    const box = node.bbox
-    
+    const box = node.bbox;
+
     let nodes = [...canvas.nodes.values()]
         .filter(n => n !== node && n.unknownData.type !== "group");
-    
+
     switch (dir) {
         case "up": {
-            const set1 = nodes.filter(n => n.bbox.maxY < box.minY)
-            const set2 = set1.filter(n => intersect(n.bbox, box, "x"))
+            const set1 = nodes.filter(n => n.bbox.maxY < box.minY);
+            const set2 = set1.filter(n => intersect(n.bbox, box, "x"));
             nodes = set2.length > 0
                 ? set2.sort((a, b) => b.bbox.maxY - a.bbox.maxY)
                 : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
             break;
         }
         case "down": {
-            const set1 = nodes.filter(n => n.bbox.minY > box.maxY)
-            const set2 = set1.filter(n => intersect(n.bbox, box, "x"))
+            const set1 = nodes.filter(n => n.bbox.minY > box.maxY);
+            const set2 = set1.filter(n => intersect(n.bbox, box, "x"));
             nodes = set2.length > 0
                 ? set2.sort((a, b) => a.bbox.minY - b.bbox.minY)
                 : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
             break;
         }
         case "left": {
-            const set1 = nodes.filter(n => n.bbox.maxX < box.minX)
-            const set2 = set1.filter(n => intersect(n.bbox, box, "y"))
+            const set1 = nodes.filter(n => n.bbox.maxX < box.minX);
+            const set2 = set1.filter(n => intersect(n.bbox, box, "y"));
             nodes = set2.length > 0
                 ? set2.sort((a, b) => b.bbox.maxX - a.bbox.maxX)
                 : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
             break;
         }
         case "right": {
-            const set1 = nodes.filter(n => n.bbox.minX > box.maxX)
-            const set2 = set1.filter(n => intersect(n.bbox, box, "y"))
+            const set1 = nodes.filter(n => n.bbox.minX > box.maxX);
+            const set2 = set1.filter(n => intersect(n.bbox, box, "y"));
             nodes = set2.length > 0
                 ? set2.sort((a, b) => a.bbox.minX - b.bbox.minX)
                 : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
             break;
         }
     }
-    
+
     const target = nodes[0];
     if (!target) return;
-    
+
     canvas.selectOnly(target);
     canvas.panIntoView(target.bbox);
 }

@@ -7,7 +7,7 @@ import { KanbanNav } from "./kanban";
 import { EmbedMarkdownFileNav, EmbedMarkdownTextNav } from "./embed-markdown";
 
 type NavConstructor = new (plugin: QuietOutline, view: View) => Nav;
-const NAVGATORS: { [key: string]: NavConstructor } = {
+const NAVGATORS: { [key: string]: NavConstructor; } = {
     dummy: DummyNav,
     markdown: MarkDownNav,
     kanban: KanbanNav,

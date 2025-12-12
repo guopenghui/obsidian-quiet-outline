@@ -1,26 +1,25 @@
+import { around } from "monkey-around";
 import {
     Constructor,
     debounce,
-    FileSystemAdapter,
     FileView,
     MarkdownView,
     Notice,
     Plugin,
     TFile,
     View,
-    WorkspaceLeaf,
+    WorkspaceLeaf
 } from "obsidian";
-// import { around } from "monkey-around"
 
-import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { Nav, NAVGATORS } from "./navigators";
 import { store } from "./store";
+import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { debounceCb } from "./utils/debounce";
 
-import { SettingTab, QuietOutlineSettings, DEFAULT_SETTINGS } from "./settings";
-import { DataManager } from "./utils/data-manager";
-import { around } from "monkey-around";
 import { MarkdownStates, MD_DATA_FILE } from "./navigators/markdown";
+import { DEFAULT_SETTINGS, QuietOutlineSettings, SettingTab } from "./settings";
+import { DataManager } from "./utils/data-manager";
+import { stringifyHeaders } from "./utils/heading";
 
 const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
 
@@ -28,7 +27,6 @@ export class QuietOutline extends Plugin {
     settings: QuietOutlineSettings;
     navigator: Nav = new NAVGATORS["dummy"](this, null as any);
     jumping: boolean;
-    heading_states: Record<string, string[]> = {};
     klasses: Record<string, Constructor<any>> = {};
     data_manager: DataManager;
 
@@ -43,7 +41,7 @@ export class QuietOutline extends Plugin {
     async onload() {
         await this.loadSettings();
         this.data_manager = new DataManager(this.app, this.getPluginPath());
-        await this.data_manager.loadFileData<MarkdownStates>(MD_DATA_FILE , {});
+        await this.data_manager.loadFileData<MarkdownStates>(MD_DATA_FILE, {});
 
         // TEST: 测试插件功能
         // this.addRibbonIcon('bot', 'test something', (evt) => {
@@ -54,7 +52,7 @@ export class QuietOutline extends Plugin {
         this.initStore();
         this.registerView(VIEW_TYPE, (leaf) => new OutlineView(leaf, this));
         this.registerListener();
-        this.registerCommand();
+        this.registerCommands();
         this.addSettingTab(new SettingTab(this.app, this));
 
         // only manually activate view when first time install
@@ -64,40 +62,15 @@ export class QuietOutline extends Plugin {
         }
 
         this.block_scroll = debounceCb(
-            () => {
-                this.allow_scroll = false;
-            },
+            () => { this.allow_scroll = false; },
             300,
-            () => {
-                this.allow_scroll = true;
-            },
+            () => { this.allow_scroll = true; },
         );
         this.block_cursor_change = debounceCb(
-            () => {
-                this.allow_cursor_change = false;
-            },
+            () => { this.allow_cursor_change = false; },
             300,
-            () => {
-                this.allow_cursor_change = true;
-            },
+            () => { this.allow_cursor_change = true; },
         );
-
-        this.setupVimMode();
-    }
-
-    async setupVimMode() {
-        this.addCommand({
-            id: "focus-heading-tree",
-            name: "Focus Heading Tree",
-            callback: async () => {
-                const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
-                if (!leaf) return;
-                const view = leaf.view as OutlineView;
-
-                await this.app.workspace.revealLeaf(leaf);
-                view.focusOn("tree");
-            }
-        });
     }
 
     async firstTimeInstall() {
@@ -118,7 +91,6 @@ export class QuietOutline extends Plugin {
         store.levelSwitch = this.settings.level_switch;
         store.hideUnsearched = this.settings.hide_unsearched;
         store.regexSearch = this.settings.regex_search;
-        // store.autoExpand = this.settings.auto_expand;
         store.dragModify = this.settings.drag_modify;
         store.textDirectionDecideBy = this.settings.lang_direction_decide_by;
         store.patchColor = this.settings.patch_color;
@@ -152,29 +124,8 @@ export class QuietOutline extends Plugin {
             }),
         );
 
-        // remove states from closed notes
-        this.registerEvent(
-            this.app.workspace.on("layout-change", () => {
-                const leaves = this.app.workspace.getLeavesOfType("markdown");
-                const filteredStates: Record<string, string[]> = {};
-                leaves.forEach((leaf) => {
-                    // when app is just opened, if a markdown tab is not activated,
-                    // there is no 'file' field in leaf.view
-                    if ((leaf.view as MarkdownView).file === undefined) {
-                        return;
-                    }
-                    const path = (leaf.view as MarkdownView).file!.path;
-                    this.heading_states[path] &&
-                        (filteredStates[path] = this.heading_states[path]);
-                });
-
-                this.heading_states = filteredStates;
-            }),
-        );
-
         this.registerEvent(
             this.app.metadataCache.on("changed", (file, data, cache) => {
-                // console.log("metadata changed", {cache});
                 this.refresh("file-modify");
             }),
         );
@@ -245,7 +196,7 @@ export class QuietOutline extends Plugin {
 
                     if (plugin.settings.persist_md_states) {
                         const states = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE)!;
-                        const data = states[<string>viewState.state?.file ?? ""]
+                        const data = states[<string>viewState.state?.file ?? ""];
                         if (data) {
                             eState = eState || {};
                             eState.scroll = data.scroll;
@@ -271,7 +222,6 @@ export class QuietOutline extends Plugin {
 
     async onunload() {
         await this.navigator.unload();
-        // this.app.workspace.detachLeavesOfType(VIEW_TYPE);
     }
 
     async updateNav(type: string, view: View) {
@@ -281,73 +231,8 @@ export class QuietOutline extends Plugin {
         await this.navigator.load();
     }
 
-    stringifyHeaders() {
-        function merge(arr1: string[], arr2: string[]) {
-            return Array(arr1.length + arr2.length)
-                .fill("")
-                .map((_, i) => (i % 2 === 0 ? arr1[i / 2] : arr2[(i - 1) / 2]));
-        }
-
-        const parts = this.settings.export_format.split(/\{.*?\}/);
-        const keys =
-            this.settings.export_format.match(/(?<={)(.*?)(?=})/g) || [];
-
-        function transform(h: (typeof store.headers)[number]) {
-            const num = nums[h.level - 1];
-            const fields = keys.map((key) => {
-                switch (key) {
-                    case "title": {
-                        return h.heading;
-                    }
-                    case "path": {
-                        return "#" + h.heading.replace(/ /g, "%20");
-                    }
-                    case "bullet": {
-                        return "-";
-                    }
-                    case "num": {
-                        return num.toString();
-                    }
-                    case "num-nest": {
-                        return num.toString();
-                    }
-                }
-                const match = key.match(/num-nest\[(.*?)\]/);
-
-                if (match) {
-                    const sep = match[1];
-                    return nums.slice(0, h.level).join(sep);
-                }
-
-                return "";
-            });
-
-            return merge(parts, fields).join("");
-        }
-
-        const nums = [0, 0, 0, 0, 0, 0];
-        const headers: string[] = [];
-        store.headers.forEach((h) => {
-            nums.forEach((num, i) => {
-                if (i > h.level - 1) {
-                    nums[i] = 0;
-                }
-            });
-            nums[h.level - 1]++;
-
-            const text = "\t".repeat(h.level - 1) + transform(h);
-            headers.push(text);
-        });
-
-        return headers;
-    }
-
     async loadSettings() {
-        this.settings = Object.assign(
-            {},
-            DEFAULT_SETTINGS,
-            await this.loadData(),
-        );
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }
 
     async saveSettings() {
@@ -357,10 +242,6 @@ export class QuietOutline extends Plugin {
     getPluginPath() {
         return this.manifest.dir!;
     }
-
-    // getPluginFullPath() {
-    //     return (this.app.vault.adapter as FileSystemAdapter).getFullPath(this.getPluginPath());
-    // }
 
     async activateView() {
         // fix console error
@@ -378,13 +259,26 @@ export class QuietOutline extends Plugin {
         );
     }
 
-    registerCommand() {
+    registerCommands() {
         this.addCommand({
             id: "quiet-outline",
             name: "Quiet Outline",
             callback: () => {
                 this.activateView();
             },
+        });
+
+        this.addCommand({
+            id: "focus-heading-tree",
+            name: "Focus Heading Tree",
+            callback: async () => {
+                const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
+                if (!leaf) return;
+                const view = leaf.view as OutlineView;
+
+                await this.app.workspace.revealLeaf(leaf);
+                view.focusOn("tree");
+            }
         });
 
         this.addCommand({
@@ -411,7 +305,7 @@ export class QuietOutline extends Plugin {
             id: "quiet-outline-copy-as-text",
             name: "Copy Current Headings As Text",
             callback: async () => {
-                const headers = this.stringifyHeaders();
+                const headers = stringifyHeaders(store.headers, this.settings.export_format);
                 await navigator.clipboard.writeText(headers.join("\n"));
                 new Notice("Headings copied");
             },

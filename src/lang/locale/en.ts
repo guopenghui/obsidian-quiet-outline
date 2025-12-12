@@ -19,7 +19,7 @@ export default {
     "Regex Search": 'Regex Search',
     "Search headings using regular expression": 'Search headings using regular expression',
     "Auto Expand": 'Auto Expand',
-    "Auto expand and collapse headings when scrolling and cursor position change":  "Auto expand and collapse headings when scrolling and cursor position change",
+    "Auto expand and collapse headings when scrolling and cursor position change": "Auto expand and collapse headings when scrolling and cursor position change",
     "Auto Scroll Into View": 'Auto Scroll Into View',
     "Auto scroll located heading into view": 'Auto scroll located heading into view',
     "Only Expand": 'Only Expand',
