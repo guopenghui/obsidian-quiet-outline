@@ -67,6 +67,17 @@ export default {
     "Vimlize Canvas": "Vimlize Canvas",
     "Add vim-like keymap for canvas": "Add vim-like keymap for canvas",
 
+    // Confirm modal
+    "Confirm": "Confirm",
+    "Cancel": "Cancel",
+
+    // Markdown navigator menu
+    "Delete": "Delete",
+
+    // Confirm prompt (dangerous operation)
+    "This will delete heading:": "This will delete heading:",
+    "This will modify the note content. Continue?": "This will modify the note content. Continue?",
+
     // New settings
     "General": "General",
     "Styles": "Styles",

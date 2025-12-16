@@ -130,6 +130,14 @@ export function moveHeading(
     );
 }
 
+export function removeHeading(root: Section, toRemoveNo: number) {
+    const [parent, toRemove] = findSection(root, toRemoveNo);
+    parent.content.children.splice(
+        parent.content.children.indexOf(toRemove),
+        1,
+    );
+}
+
 export function findSection(root: Section, id: number): [Section, Section] {
     const res = findSectionIn(root, root, id);
     if (!res) {

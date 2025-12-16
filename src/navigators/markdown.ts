@@ -6,6 +6,7 @@ import {
     Menu,
     EditorRange,
 } from "obsidian";
+import { confirm } from "@/utils/modal";
 import { EditorView } from "@codemirror/view";
 import { editorEvent } from "@/editorExt";
 import type { QuietOutline } from "@/plugin";
@@ -16,9 +17,10 @@ import {
     parseMarkdown,
     stringifySection,
     moveHeading,
+    removeHeading,
 } from "@/utils/md-process";
 import { TreeOption } from "naive-ui";
-import { setupMenu, normal, parent } from "@/utils/menu";
+import { setupMenu, normal, parent, separator, danger } from "@/utils/menu";
 import { t } from "@/lang/helper";
 import { HeadingUpdater } from "@/utils/update-heading-links";
 import { stringifyHeaders } from "@/utils/heading";
@@ -260,9 +262,38 @@ export class MarkDownNav extends Nav {
                     await navigator.clipboard.writeText(text);
                 }),
             ]),
+            separator(),
             normal(t("Rename heading"), async () => {
                 store.currentEditingKey = nodeInfo.node.key as string;
             }),
+            danger(t("Delete"), async () => {
+                // Deleting will modify the note content. Ask user to confirm before proceeding.
+                // Include which heading is being deleted to reduce accidental deletions.
+                const headingText = nodeInfo.raw;
+
+                // i18n note:
+                // `t()` in this project does NOT support interpolation options.
+                // To keep it compatible, we translate a stable prefix/suffix and then insert the heading text.
+                const message = `${t("This will delete heading:" as any)} ${headingText}\n\n${t("This will modify the note content. Continue?" as any)}`;
+
+                const ok = await confirm(this.view.app, {
+                    title: t("Confirm"),
+                    message,
+                    confirmText: t("Delete"),
+                    cancelText: t("Cancel"),
+                    confirmIcon: "trash",
+                    cancelIcon: "x",
+                });
+
+                if (!ok) return;
+
+                const structure = await parseMarkdown(this.view.data, this.view.app);
+                removeHeading(structure, nodeInfo.no);
+                await plugin.app.vault.modify(
+                    this.view.file!,
+                    stringifySection(structure),
+                );
+            })
         ]);
 
         menu.onHide(onClose || (() => { }));

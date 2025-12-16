@@ -13,6 +13,56 @@
     --h5-color: inherit;
     --h6-color: inherit;
 }
+
+/* ConfirmModal: improve spacing/typography for a cleaner layout */
+.quiet-outline-confirm-modal {
+    /* Slightly increase line-height for multi-line warnings */
+    line-height: 1.5;
+}
+
+/* Title spacing */
+.quiet-outline-confirm-modal .modal-title {
+    margin-bottom: 8px;
+}
+
+/* Paragraph spacing (supports multi-paragraph messages) */
+.quiet-outline-confirm-modal p {
+    margin: 0;
+}
+
+/* Spacing between paragraphs */
+.quiet-outline-confirm-modal p + p {
+    margin-top: 10px;
+}
+
+/* ConfirmModal: right-aligned buttons with spacing + vertically centered icons */
+.quiet-outline-confirm-modal .quiet-outline-confirm-modal__buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+/* Make buttons feel consistent and aligned */
+.quiet-outline-confirm-modal .quiet-outline-confirm-modal__buttons button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+}
+
+/* Add spacing between icon and label, and keep the icon vertically centered */
+.quiet-outline-confirm-modal .quiet-outline-confirm-modal__btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+}
+
+/* Fix SVG baseline alignment so it appears visually centered inside the button */
+.quiet-outline-confirm-modal .quiet-outline-confirm-modal__btn-icon svg {
+    display: block;
+}
+
 .quiet-outline-tabs {
     display: flex;
     border-bottom: 1px solid var(--background-modifier-border);

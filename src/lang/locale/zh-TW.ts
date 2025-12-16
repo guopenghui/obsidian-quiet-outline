@@ -1,6 +1,17 @@
 // 繁體中文
 
 export default {
+    // Confirm modal
+    "Confirm": "確認",
+    "Cancel": "取消",
+
+    // Markdown navigator menu
+    "Delete": "刪除",
+
+    // Confirm prompt (dangerous operation)
+    "This will delete heading:": "即將刪除標題：",
+    "This will modify the note content. Continue?": "此操作會修改筆記內容，是否繼續？",
+
     'Settings for Quiet Outline.': 'Quiet Outline 的設定頁面',
     "Set Primary Color": '設定主要顏色 明/暗',
     "Patch default color": '使用設定覆蓋預設主要顏色',

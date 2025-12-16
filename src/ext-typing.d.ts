@@ -246,6 +246,7 @@ declare module "obsidian" {
 
     interface MenuItem {
         setSubmenu(): Menu;
+        setWarning(isWarning: boolean): MenuItem;
     }
 }
 

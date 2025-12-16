@@ -8,6 +8,11 @@ export type MenuItemConfig =
     }
     | {
         title: string;
+        type: "danger";
+        fn: () => void;
+    }
+    | {
+        title: string;
         type: "parent";
         subMenu: MenuItemConfig[];
     }
@@ -21,6 +26,11 @@ export function setupMenu(menu: Menu, menuConfig: MenuItemConfig[]) {
             case "normal":
                 parent.addItem((item) =>
                     item.setTitle(itemConfig.title).onClick(itemConfig.fn),
+                );
+                break;
+            case "danger":
+                parent.addItem((item) =>
+                    item.setTitle(itemConfig.title).setWarning(true).onClick(itemConfig.fn),
                 );
                 break;
             case "parent":
@@ -44,6 +54,14 @@ export function setupMenu(menu: Menu, menuConfig: MenuItemConfig[]) {
 export function normal(title: string, fn: () => void): MenuItemConfig {
     return {
         type: "normal",
+        title,
+        fn,
+    };
+}
+
+export function danger(title: string, fn: () => void): MenuItemConfig {
+    return {
+        type: "danger",
         title,
         fn,
     };

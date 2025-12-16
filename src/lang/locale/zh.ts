@@ -70,6 +70,17 @@ export default {
     "Vimlize Canvas": "Vim Canvas",
     "Add vim-like keymap for canvas": "给 Canvas 添加 Vim 风格的快捷键",
 
+    // Confirm modal
+    "Confirm": "确认",
+    "Cancel": "取消",
+
+    // Markdown navigator menu
+    "Delete": "删除",
+
+    // Confirm prompt (dangerous operation)
+    "This will delete heading:": "即将删除标题：",
+    "This will modify the note content. Continue?": "此操作会修改笔记内容，是否继续？",
+
     // New settings
     "General": "常规设置",
     "Styles": "样式设置",
