@@ -1,0 +1,80 @@
+name: Generate Changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      include_prerelease:
+        description: "Include prereleases"
+        required: false
+        default: "false"
+      include_draft:
+        description: "Include drafts"
+        required: false
+        default: "false"
+      limit:
+        description: "Max releases to include (0 = no limit)"
+        required: false
+        default: "0"
+      output_file:
+        description: "Output file path"
+        required: false
+        default: "CHANGELOG.md"
+      title:
+        description: "Changelog title"
+        required: false
+        default: "Changelog"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: changelog-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Generate changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPO: ${{ github.event.repository.name }}
+
+          OUTPUT_FILE: ${{ inputs.output_file }}
+          INCLUDE_PRERELEASE: ${{ inputs.include_prerelease }}
+          INCLUDE_DRAFT: ${{ inputs.include_draft }}
+          LIMIT: ${{ inputs.limit }}
+          TITLE: ${{ inputs.title }}
+
+          APPEND_SOURCE_NOTE: "true"
+        run: node scripts/generate-changelog.mjs
+
+      - name: Commit & push if changed
+        run: |
+          if git diff --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add "${{ inputs.output_file }}"
+          git commit -m "chore: update changelog"
+          git push
