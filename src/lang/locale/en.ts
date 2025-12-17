@@ -53,6 +53,7 @@ export default {
 
     // Canvas settings
     "Canvas Sort Order": "Canvas Sort Order",
+    "Heading Truncate Length": "Heading Truncate Length",
     "Sort method for canvas nodes": "Sort method for canvas nodes",
     "Sort by Area": "Sort by Area (Big -> Small)",
     "Sort by Name (A -> Z)": "Sort by Name (A -> Z)",

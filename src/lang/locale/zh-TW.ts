@@ -64,6 +64,7 @@ export default {
 
     // Canvas 相關設定
     "Canvas Sort Order": "白板大綱排序",
+    "Heading Truncate Length": "標題截斷長度",
     "Show group nodes": "顯示群組節點",
     "Show file nodes": "顯示檔案節點",
     "Show text nodes": "顯示文字節點",

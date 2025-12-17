@@ -12,10 +12,10 @@ interface QuietOutlineSettings {
     expand_level: string;
     hide_unsearched: boolean;
     auto_expand_ext:
-        | "only-expand"
-        | "expand-and-collapse-rest-to-default"
-        | "expand-and-collapse-rest-to-setting"
-        | "disable";
+    | "only-expand"
+    | "expand-and-collapse-rest-to-default"
+    | "expand-and-collapse-rest-to-setting"
+    | "disable";
     regex_search: boolean;
     ellipsis: boolean;
     label_direction: "top" | "bottom" | "left" | "right";
@@ -32,6 +32,7 @@ interface QuietOutlineSettings {
     vimlize_canvas: boolean;
     canvas_sort_by: "area" | "name_asc" | "name_desc";
     shown_node_types: AllCanvasNodeData['type'][];
+    heading_truncate_length: number,
 
     // Style settings
     patch_color: boolean;
@@ -85,6 +86,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     vimlize_canvas: true,
     canvas_sort_by: "area",
     shown_node_types: ["file", "group", "text", "link"],
+    heading_truncate_length: 20,
 
     // Style settings
     patch_color: true,
@@ -729,6 +731,19 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.vimlize_canvas = value;
                         await this.plugin.saveSettings();
                     }),
+            );
+
+        new Setting(container)
+            .setName(t("Heading Truncate Length"))
+            .addText(text => text
+                .setValue(this.plugin.settings.heading_truncate_length.toString())
+                .onChange(value => {
+                    const length = parseInt(value);
+                    if (!isNaN(length)) {
+                        this.plugin.settings.heading_truncate_length = length;
+                        this.plugin.saveSettings();
+                    }
+                })
             );
 
         new Setting(container)

@@ -53,6 +53,7 @@ export default {
 
     // Canvas 相关设置
     "Canvas Sort Order": "白板大纲排序",
+    "Heading Truncate Length": "标题截断长度",
     "Sort method for canvas nodes": "白板卡片的排序逻辑",
     "Sort by Area": "按面积 (大 -> 小)",
     "Sort by Name (A -> Z)": "按名称 (A -> Z)",

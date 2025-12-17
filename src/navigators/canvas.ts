@@ -119,7 +119,11 @@ export class CanvasNav extends Nav {
         // nodes may be undefined when switch to canvas view
         if (nodes) {
             nodes = nodes.filter(node => this.plugin.settings.shown_node_types.includes(node.type));
-            return canvasNodesToHeaders(nodes, this.plugin.settings.canvas_sort_by);
+            return canvasNodesToHeaders(
+                nodes,
+                this.plugin.settings.canvas_sort_by,
+                this.plugin.settings.heading_truncate_length
+            );
         }
         return [];
     }
@@ -165,6 +169,7 @@ export class CanvasNav extends Nav {
 function canvasNodesToHeaders(
     nodes: AllCanvasNodeData[],
     sortMode: "area" | "name_asc" | "name_desc" = "area",
+    lengthLimit: number = 20
 ): Heading[] {
     // 下行为原注释
     // const groups = nodes.filter(node => node.type === "group").sort((a, b) => - cmpArea(a, b));
@@ -189,7 +194,7 @@ function canvasNodesToHeaders(
     traverse(trees, 1, (node, level) => {
         heads.push({
             level,
-            heading: text(node),
+            heading: text(node, lengthLimit),
             id: node.id,
             icon: chooseIcon(node),
             position: {
@@ -234,14 +239,14 @@ function cmpArea(a: AllCanvasNodeData, b: AllCanvasNodeData) {
 }
 
 const cacheTitle: Record<string, string> = {};
-function text(node: AllCanvasNodeData): string {
+function text(node: AllCanvasNodeData, lengthLimit: number = 20): string {
     let text: string;
     switch (node.type) {
         case "text": {
             text = node.text.split("\n")[0];
             text = text.slice(text.search(/[^#\s].*/));
-            if (text.length > 20) {
-                text = text.substring(0, 20) + "...";
+            if (text.length > lengthLimit) {
+                text = text.substring(0, lengthLimit) + "...";
             }
             break;
         }
