@@ -56,7 +56,18 @@ export default {
     "is decided by": "由什麼決定",
 
     "Export Format": "標題輸出格式",
+
+    // 設定頁籤
+    "Canvas": "白板",
+    "General": "一般設定",
+    "Styles": "樣式設定",
+
+    // Canvas 相關設定
     "Canvas Sort Order": "白板大綱排序",
+    "Show group nodes": "顯示群組節點",
+    "Show file nodes": "顯示檔案節點",
+    "Show text nodes": "顯示文字節點",
+    "Show link nodes": "顯示連結節點",
     "Sort method for canvas nodes": "白板卡片的排序邏輯",
     "Sort by Area": "按面積 (大 -> 小)",
     "Sort by Name (A -> Z)": "按名稱 (A -> Z)",
@@ -81,8 +92,6 @@ export default {
     "Add vim-like keymap for canvas": "給 Canvas 新增 Vim 風格的快捷鍵",
 
     // New settings
-    "General": "一般設定",
-    "Styles": "樣式設定",
     "Font Size": "字型大小",
     "Custom font size for outline text (e.g., 14px, 1rem)": "大綱文字的自訂字型大小（例如：14px, 1rem）",
     "Font Family": "字型家族",

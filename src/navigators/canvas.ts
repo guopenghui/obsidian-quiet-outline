@@ -115,9 +115,10 @@ export class CanvasNav extends Nav {
         store.headers = await this.getHeaders();
     }
     async getHeaders(): Promise<HeadingCache[]> {
-        const nodes = this.view.canvas.data.nodes as AllCanvasNodeData[];
+        let nodes = this.view.canvas.data.nodes as AllCanvasNodeData[];
         // nodes may be undefined when switch to canvas view
         if (nodes) {
+            nodes = nodes.filter(node => this.plugin.settings.shown_node_types.includes(node.type));
             return canvasNodesToHeaders(nodes, this.plugin.settings.canvas_sort_by);
         }
         return [];
@@ -163,7 +164,7 @@ export class CanvasNav extends Nav {
 
 function canvasNodesToHeaders(
     nodes: AllCanvasNodeData[],
-    sortMode: "area" | "name_asc" | "name_desc" = "area"
+    sortMode: "area" | "name_asc" | "name_desc" = "area",
 ): Heading[] {
     // 下行为原注释
     // const groups = nodes.filter(node => node.type === "group").sort((a, b) => - cmpArea(a, b));
@@ -180,6 +181,7 @@ function canvasNodesToHeaders(
 
     const trees: TreeNode[] = [];
     for (let i = 0; i < nodesDec.length; i++) {
+        nodesDec[i].type
         insert(trees, nodesDec[i]);
     }
 

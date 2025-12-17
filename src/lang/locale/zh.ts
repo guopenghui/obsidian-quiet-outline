@@ -46,11 +46,21 @@ export default {
 
     "Export Format": "标题输出格式",
 
+    // 设置页签
+    "Canvas": "白板",
+    "General": "常规设置",
+    "Styles": "样式设置",
+
+    // Canvas 相关设置
     "Canvas Sort Order": "白板大纲排序",
     "Sort method for canvas nodes": "白板卡片的排序逻辑",
     "Sort by Area": "按面积 (大 -> 小)",
     "Sort by Name (A -> Z)": "按名称 (A -> Z)",
     "Sort by Name (Z -> A)": "按名称 (Z -> A)",
+    "Show group nodes": "显示组节点",
+    "Show file nodes": "显示文件节点",
+    "Show text nodes": "显示文本节点",
+    "Show link nodes": "显示链接节点",
 
     // menu
     "Copy": "复制",
@@ -82,8 +92,6 @@ export default {
     "This will modify the note content. Continue?": "此操作会修改笔记内容，是否继续？",
 
     // New settings
-    "General": "常规设置",
-    "Styles": "样式设置",
     "Font Size": "字体大小",
     "Custom font size for outline text (e.g., 14px, 1rem)": "大纲文本的自定义字体大小（例如：14px, 1rem）",
     "Font Family": "字体家族",

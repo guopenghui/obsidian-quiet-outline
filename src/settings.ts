@@ -2,6 +2,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import { QuietOutline } from "./plugin";
 import { store } from "./store";
 import { t } from "./lang/helper";
+import { AllCanvasNodeData } from "obsidian/canvas";
 
 interface QuietOutlineSettings {
     // General settings
@@ -26,8 +27,11 @@ interface QuietOutlineSettings {
     export_format: string;
     lang_direction_decide_by: "system" | "text";
     auto_scroll_into_view: boolean;
+
+    // Canvas settings
     vimlize_canvas: boolean;
     canvas_sort_by: "area" | "name_asc" | "name_desc";
+    shown_node_types: AllCanvasNodeData['type'][];
 
     // Style settings
     patch_color: boolean;
@@ -76,8 +80,11 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     export_format: "{title}",
     lang_direction_decide_by: "system",
     auto_scroll_into_view: true,
+
+    // Canvas settings
     vimlize_canvas: true,
     canvas_sort_by: "area",
+    shown_node_types: ["file", "group", "text", "link"],
 
     // Style settings
     patch_color: true,
@@ -109,7 +116,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
 
 class SettingTab extends PluginSettingTab {
     plugin: QuietOutline;
-    private activeTab: "general" | "styles" = "general";
+    private activeTab: "general" | "styles" | "canvas" = "general";
 
     constructor(app: App, plugin: QuietOutline) {
         super(app, plugin);
@@ -132,6 +139,10 @@ class SettingTab extends PluginSettingTab {
             text: t("Styles"),
             cls: this.activeTab === "styles" ? "active" : ""
         });
+        const canvasTab = tabContainer.createEl("button", {
+            text: t("Canvas"),
+            cls: this.activeTab === "canvas" ? "active" : ""
+        });
 
         // Tab click handlers
         generalTab.addEventListener("click", () => {
@@ -144,13 +155,20 @@ class SettingTab extends PluginSettingTab {
             this.display();
         });
 
+        canvasTab.addEventListener("click", () => {
+            this.activeTab = "canvas";
+            this.display();
+        });
+
         // Content container
         const contentContainer = containerEl.createDiv({ cls: "quiet-outline-tab-content" });
 
         if (this.activeTab === "general") {
             this.renderGeneralSettings(contentContainer);
-        } else {
+        } else if (this.activeTab === "styles") {
             this.renderStyleSettings(contentContainer);
+        } else if (this.activeTab === "canvas") {
+            this.renderCanvasSettings(contentContainer);
         }
     }
 
@@ -350,39 +368,6 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.keep_search_input = value;
                         await this.plugin.saveSettings();
                     }),
-            );
-
-        new Setting(container)
-            .setName(t("Vimlize Canvas"))
-            .setDesc(t("Add vim-like keymap for canvas"))
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.vimlize_canvas)
-                    .onChange(async (value) => {
-                        this.plugin.settings.vimlize_canvas = value;
-                        await this.plugin.saveSettings();
-                    }),
-            );
-
-        new Setting(container)
-            .setName(t("Canvas Sort Order"))
-            .setDesc(t("Sort method for canvas nodes"))
-            .addDropdown((dropdown) =>
-                dropdown
-                    .addOption("area", t("Sort by Area"))
-                    .addOption("name_asc", t("Sort by Name (A -> Z)"))
-                    .addOption("name_desc", t("Sort by Name (Z -> A)"))
-                    .setValue(this.plugin.settings.canvas_sort_by)
-                    .onChange(
-                        async (
-                            value: "area" | "name_asc" | "name_desc",
-                        ) => {
-                            this.plugin.settings.canvas_sort_by = value;
-                            await this.plugin.saveSettings();
-                            // 触发刷新
-                            this.plugin.refresh();
-                        },
-                    ),
             );
 
         new Setting(container)
@@ -729,6 +714,119 @@ class SettingTab extends PluginSettingTab {
                         }),
                 );
         }
+    }
+
+    private renderCanvasSettings(container: HTMLElement): void {
+        container.empty();
+
+        new Setting(container)
+            .setName(t("Vimlize Canvas"))
+            .setDesc(t("Add vim-like keymap for canvas"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.vimlize_canvas)
+                    .onChange(async (value) => {
+                        this.plugin.settings.vimlize_canvas = value;
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
+        new Setting(container)
+            .setName(t("Canvas Sort Order"))
+            .setDesc(t("Sort method for canvas nodes"))
+            .addDropdown((dropdown) =>
+                dropdown
+                    .addOption("area", t("Sort by Area"))
+                    .addOption("name_asc", t("Sort by Name (A -> Z)"))
+                    .addOption("name_desc", t("Sort by Name (Z -> A)"))
+                    .setValue(this.plugin.settings.canvas_sort_by)
+                    .onChange(
+                        async (
+                            value: "area" | "name_asc" | "name_desc",
+                        ) => {
+                            this.plugin.settings.canvas_sort_by = value;
+                            await this.plugin.saveSettings();
+                            // 触发刷新
+                            this.plugin.refresh();
+                        },
+                    ),
+            );
+
+        new Setting(container)
+            .setName(t("Show group nodes"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.shown_node_types.includes("group"))
+                    .onChange(async (isShown) => {
+                        const set = new Set(this.plugin.settings.shown_node_types);
+                        if (isShown) {
+                            set.add("group");
+                        } else {
+                            set.delete("group");
+                        }
+                        this.plugin.settings.shown_node_types = Array.from(set);
+                        await this.plugin.saveSettings();
+                        // 触发刷新
+                        this.plugin.refresh();
+                    }),
+            );
+
+        new Setting(container)
+            .setName(t("Show file nodes"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.shown_node_types.includes("file"))
+                    .onChange(async (isShown) => {
+                        const set = new Set(this.plugin.settings.shown_node_types);
+                        if (isShown) {
+                            set.add("file");
+                        } else {
+                            set.delete("file");
+                        }
+                        this.plugin.settings.shown_node_types = Array.from(set);
+                        await this.plugin.saveSettings();
+                        // 触发刷新
+                        this.plugin.refresh();
+                    }),
+            );
+
+        new Setting(container)
+            .setName(t("Show text nodes"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.shown_node_types.includes("text"))
+                    .onChange(async (isShown) => {
+                        const set = new Set(this.plugin.settings.shown_node_types);
+                        if (isShown) {
+                            set.add("text");
+                        } else {
+                            set.delete("text");
+                        }
+                        this.plugin.settings.shown_node_types = Array.from(set);
+                        await this.plugin.saveSettings();
+                        // 触发刷新
+                        this.plugin.refresh();
+                    }),
+            );
+
+        new Setting(container)
+            .setName(t("Show link nodes"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.shown_node_types.includes("link"))
+                    .onChange(async (isShown) => {
+                        const set = new Set(this.plugin.settings.shown_node_types);
+                        if (isShown) {
+                            set.add("link");
+                        } else {
+                            set.delete("link");
+                        }
+                        this.plugin.settings.shown_node_types = Array.from(set);
+                        await this.plugin.saveSettings();
+                        // 触发刷新
+                        this.plugin.refresh();
+                    }),
+            );
     }
 }
 

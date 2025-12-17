@@ -46,11 +46,21 @@ export default {
 
     "Export Format": "Export Format",
 
+    // Settings tabs
+    "General": "General",
+    "Styles": "Styles",
+    "Canvas": "Canvas",
+
+    // Canvas settings
     "Canvas Sort Order": "Canvas Sort Order",
     "Sort method for canvas nodes": "Sort method for canvas nodes",
     "Sort by Area": "Sort by Area (Big -> Small)",
     "Sort by Name (A -> Z)": "Sort by Name (A -> Z)",
     "Sort by Name (Z -> A)": "Sort by Name (Z -> A)",
+    "Show group nodes": "Show group nodes",
+    "Show file nodes": "Show file nodes",
+    "Show text nodes": "Show text nodes",
+    "Show link nodes": "Show link nodes",
 
     // menu
     "Copy": "Copy",
@@ -78,9 +88,7 @@ export default {
     "This will delete heading:": "This will delete heading:",
     "This will modify the note content. Continue?": "This will modify the note content. Continue?",
 
-    // New settings
-    "General": "General",
-    "Styles": "Styles",
+    // Text style settings
     "Font Size": "Font Size",
     "Custom font size for outline text (e.g., 14px, 1rem)": "Custom font size for outline text (e.g., 14px, 1rem)",
     "Font Family": "Font Family",
