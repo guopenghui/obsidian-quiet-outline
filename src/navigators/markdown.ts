@@ -438,7 +438,7 @@ function nearestHeading(line: number): undefined | number {
     return i;
 }
 
-const handleScroll = debounce(_handleScroll, 200, true);
+const handleScroll = debounce(_handleScroll, 150, false);
 
 function _handleScroll(evt: Event) {
     if (plugin.settings.persist_md_states) {
