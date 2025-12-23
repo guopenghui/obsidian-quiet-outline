@@ -1,5 +1,6 @@
 import { around } from "monkey-around";
 import {
+    Component,
     Constructor,
     debounce,
     FileView,
@@ -9,7 +10,7 @@ import {
     WorkspaceLeaf
 } from "obsidian";
 
-import { Nav, NAVGATORS } from "./navigators";
+import { Nav, NAVIGATORS } from "./navigators";
 import { store } from "./store";
 import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { debounceCb } from "./utils/debounce";
@@ -23,7 +24,7 @@ const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
 
 export class QuietOutline extends Plugin {
     settings: QuietOutlineSettings;
-    navigator: Nav = new NAVGATORS["dummy"](this, null as any);
+    navigator: Nav = new NAVIGATORS["dummy"](this, null);
     jumping: boolean;
     klasses: Record<string, Constructor<any>> = {};
     data_manager: DataManager;
@@ -32,9 +33,9 @@ export class QuietOutline extends Plugin {
     block_scroll: () => void;
     allow_cursor_change = true;
     block_cursor_change: () => void;
-    prevActiveFile: TFile | null = null;
-    prevActiveFileView: FileView | null = null;
-    prevView: View | null = null;
+    private prevActiveFile: TFile | null = null;
+    private prevActiveFileView: FileView | null = null;
+    private prevView: View | null = null;
 
     async onload() {
         await this.loadSettings();
@@ -71,14 +72,14 @@ export class QuietOutline extends Plugin {
         );
     }
 
-    async firstTimeInstall() {
+    private async firstTimeInstall() {
         const existSettingFile = await this.app.vault.adapter.exists(
             this.manifest.dir + "/data.json",
         );
         return !existSettingFile;
     }
 
-    initStore() {
+    private initStore() {
         store.headers = [];
         store.dark = document.body.hasClass("theme-dark");
         store.markdown = this.settings.markdown;
@@ -114,7 +115,7 @@ export class QuietOutline extends Plugin {
         store.h6Color = this.settings.h6_color;
     }
 
-    registerListener() {
+    private registerListener() {
         this.registerEvent(
             this.app.workspace.on("css-change", () => {
                 store.dark = document.body.hasClass("theme-dark");
@@ -168,18 +169,13 @@ export class QuietOutline extends Plugin {
                 if (outlineView?.group) { return; }
 
                 if (!view) {
-                    await this.updateNav("dummy", null as any);
-                    await this.refresh_outline();
-                    store.refreshTree();
+                    await this.updateNavAndRefresh("dummy", null);
                     return;
                 }
 
                 // block cursor change event to trigger auto-expand when switching between notes
                 this.block_cursor_change();
-
-                await this.updateNav(view.getViewType(), view);
-                await this.refresh_outline();
-                store.refreshTree();
+                await this.updateNavAndRefresh(view.getViewType(), view);
             }),
         );
 
@@ -218,15 +214,21 @@ export class QuietOutline extends Plugin {
 
     refresh = debounce(this.refresh_outline, 300, true);
 
-    async onunload() {
+    private async updateNav(type: string, view: Component | null) {
         await this.navigator.unload();
-    }
-
-    async updateNav(type: string, view: View) {
-        await this.navigator.unload();
-        const NavType = NAVGATORS[type] || NAVGATORS["dummy"];
+        const NavType = NAVIGATORS[type] || NAVIGATORS["dummy"];
         this.navigator = new NavType(this, view);
         await this.navigator.load();
+    }
+
+    async updateNavAndRefresh(type: string, view: Component | null) {
+        await this.updateNav(type, view);
+        await this.refresh_outline();
+        store.refreshTree();
+    }
+
+    async onunload() {
+        await this.navigator.unload();
     }
 
     async loadSettings() {

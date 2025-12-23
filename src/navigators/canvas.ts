@@ -51,9 +51,7 @@ export class CanvasNav extends Nav {
                     if (selection.size === 0 || selection.size > 1) {
                         const view = plugin.app.workspace.getActiveFileView();
                         if (!view) return;
-                        await plugin.updateNav(view.getViewType(), view);
-                        await plugin.refresh_outline();
-                        store.refreshTree();
+                        await plugin.updateNavAndRefresh(view.getViewType(), view);
                         return;
                     }
 
@@ -67,24 +65,19 @@ export class CanvasNav extends Nav {
                     if (node.filePath?.endsWith(".md")) {
                         const view = (node as CanvasFileNode)
                             .child as EmbedMarkdownView;
-                        await plugin.updateNav("embed-markdown-file", view);
-                        await plugin.refresh_outline();
-                        store.refreshTree();
+                        await plugin.updateNavAndRefresh("embed-markdown-file", view);
                         return;
                     }
 
                     // @ts-ignore
                     if (node.unknownData.type === "text" || node.text) {
                         const view = (node as CanvasTextNode).child;
-                        await plugin.updateNav("embed-markdown-text", view);
-                        await plugin.refresh_outline();
-                        store.refreshTree();
+
+                        await plugin.updateNavAndRefresh("embed-markdown-text", view);
                         return;
                     }
 
-                    await plugin.updateNav("dummy", null as any);
-                    await plugin.refresh_outline();
-                    store.refreshTree();
+                    await plugin.updateNavAndRefresh("dummy", null);
                 },
             ),
         );
