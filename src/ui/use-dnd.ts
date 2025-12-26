@@ -3,6 +3,7 @@ import type { QuietOutline } from "@/plugin";
 import { store } from "@/store";
 import { TreeDropInfo } from "naive-ui";
 import { nodeToIndex } from "./utils";
+import { MarkDownNav } from "@/navigators/markdown";
 
 export function useOutlineDnd(container: HTMLElement, plugin: QuietOutline) {
     onMounted(() => {
@@ -20,16 +21,14 @@ export function useOutlineDnd(container: HTMLElement, plugin: QuietOutline) {
             const heading = store.headers[no];
 
             e.dataTransfer?.setData("text/plain", heading.heading);
-            // @ts-ignore
             plugin.app.dragManager.onDragStart(e, {
                 source: "outline",
                 type: "heading",
                 icon: "heading-glyph",
                 title: heading.heading,
                 heading,
-                // @ts-ignore
                 // currently only markdownNav allows drop, and its view exists
-                file: plugin.navigator.view.file,
+                file: (plugin.navigator as MarkDownNav).view.file,
             });
         });
     });

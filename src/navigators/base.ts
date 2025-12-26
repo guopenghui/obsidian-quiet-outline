@@ -2,9 +2,12 @@ import { Component, HeadingCache, Menu } from "obsidian";
 import type { QuietOutline } from "@/plugin";
 import { store } from "@/store";
 import { TreeOption } from "naive-ui";
+import { Deferred } from "@/utils/promise";
 
 export abstract class Nav extends Component {
-    private _loaded: boolean = false;
+    private _used = false; // a navigator only allowed to be used once
+    private _loaded = new Deferred();
+    declare private _events: (() => Promise<void>)[];
     canDrop: boolean = false;
     plugin: QuietOutline;
     view: Component | null;
@@ -15,9 +18,9 @@ export abstract class Nav extends Component {
         this.view = view;
     }
     async load(): Promise<void> {
-        if (this._loaded) return;
+        if (this._used) return;
+        this._used = true;
 
-        this._loaded = true;
         // @ts-ignore
         if (!this.constructor._installed) {
             await this.install();
@@ -26,26 +29,25 @@ export abstract class Nav extends Component {
         }
         await this.onload();
 
-        this.view?.addChild(this);
+        this._loaded.resolve();
     }
     async unload(): Promise<void> {
-        if (!this._loaded) return;
-        this._loaded = false;
-        // @ts-ignore
-        for (; this._events.length > 0;) this._events.pop()();
+        // make sure navigator is loaded before unloading
+        await this._loaded.promise;
+
+        for (; this._events.length > 0;) {
+            await this._events.pop()?.();
+        };
 
         await this.onunload();
 
-        this.view?.removeChild(this);
         // for navigator safe: avoid invalid navigator
         this.plugin.navigator = new DummyNav(this.plugin, null);
     }
     getDefaultLevel() {
         return parseInt(this.plugin.settings.expand_level);
     }
-    getPath() {
-        return "";
-    }
+    getPath() { return ""; }
     abstract getId(): string;
     async install() { }
     async onload(): Promise<void> { }
@@ -73,15 +75,10 @@ export abstract class Nav extends Component {
 }
 
 export class DummyNav extends Nav {
-    getId() {
-        return "dummy";
-    }
+    getId() { return "dummy"; }
+    async unload() { }
     async jump(_key: number) { }
-    async getHeaders(): Promise<HeadingCache[]> {
-        return [];
-    }
-    async setHeaders(): Promise<void> {
-        store.headers = [];
-    }
+    async getHeaders(): Promise<HeadingCache[]> { return []; }
+    async setHeaders(): Promise<void> { store.headers = []; }
     async updateHeaders() { }
 }

@@ -5,7 +5,6 @@ export async function parseMetaDataCache(
     app: App,
     text: string,
 ): Promise<CachedMetadata> {
-    // @ts-ignore
     const res = await app.metadataCache.computeMetadataAsync(
         new TextEncoder().encode(text).buffer,
     );

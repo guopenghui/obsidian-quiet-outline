@@ -165,7 +165,6 @@ export class QuietOutline extends Plugin {
         this.registerEvent(
             this.app.workspace.on("quiet-outline:active-fileview-change", async (view) => {
                 const outlineView = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
-                // @ts-ignore
                 if (outlineView?.group) { return; }
 
                 if (!view) {

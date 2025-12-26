@@ -35,14 +35,12 @@ export class CanvasNav extends Nav {
                 .constructor as Constructor<any>;
         }
 
-        // @ts-ignore
         plugin.registerEvent(
             plugin.app.workspace.on("quiet-outline:canvas-change", () => {
                 plugin.refresh();
             }),
         );
 
-        // @ts-ignore
         plugin.registerEvent(
             plugin.app.workspace.on(
                 "quiet-outline:canvas-selection-change",
@@ -316,7 +314,6 @@ function isInside(a: Node, b: Node): boolean {
 }
 
 function enableVim(view: CanvasView) {
-    // @ts-ignore
     if (view.__vimed) return;
 
     view.scope?.register([], "Escape", (e) => {
@@ -378,7 +375,6 @@ function enableVim(view: CanvasView) {
     });
 
 
-    // @ts-ignore
     view.__vimed = true;
 }
 

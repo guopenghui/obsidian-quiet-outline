@@ -13,11 +13,27 @@ declare global {
 }
 
 declare module "obsidian" {
+    interface App {
+        dragManager: DragManager;
+    }
+
+    interface DragManager {
+        onDragStart: (event: DragEvent, data: any) => void;
+    }
+
+    interface MetadataCache {
+        computeMetadataAsync(buffer: ArrayBufferLike): Promise<CachedMetadata>;
+    }
+
     interface Workspace {
         getActiveFileView: () => FileView;
         on(name: "quiet-outline:canvas-change", callback: () => void): EventRef;
         on(name: "quiet-outline:active-fileview-change", callback: (view: FileView | null) => void): EventRef;
         on(name: "quiet-outline:canvas-selection-change", callback: (selection: Set<CanvasComponent>) => Promise<void>): EventRef;
+    }
+
+    interface WorkspaceLeaf {
+        group: string | null;
     }
 
     interface FileManager {
@@ -64,6 +80,7 @@ declare module "obsidian" {
         canvas: Canvas;
         data: string;
         file: TFile;
+        __vimed?: boolean;
 
         /**
          * execute when the canvas is modified

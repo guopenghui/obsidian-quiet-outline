@@ -65,12 +65,6 @@ export interface ConfirmModalOptions {
     onCancel?: () => void | Promise<void>;
 
     /**
-     * Whether the modal can be dismissed via ESC / overlay click (default: true)
-     * - If false, it can only be closed via buttons (still recommended to keep a Cancel button)
-     */
-    allowClose?: boolean;
-
-    /**
      * Whether to auto-close the modal after confirming (default: true)
      */
     closeOnConfirm?: boolean;
@@ -170,19 +164,6 @@ export class ConfirmModal extends Modal {
 
         if (this.options.cancelIcon) {
             prependIconToButton(cancelBtn, this.options.cancelIcon);
-        }
-
-        // Dismiss behavior: ESC / overlay click
-        if (this.options.allowClose === false) {
-            // Disable overlay click to dismiss
-            // `overlayEl` usually exists on Modal; keep a null-safe guard
-            // @ts-ignore
-            const overlayEl: HTMLElement | undefined = (this as any).overlayEl;
-            if (overlayEl) overlayEl.onclick = null;
-
-            // Disable ESC to dismiss: override `closeOnEscape` (Modal reads this flag internally)
-            // @ts-ignore
-            (this as any).closeOnEscape = false;
         }
 
         // Default focus: make "Cancel" more prominent (pause before a dangerous action)
