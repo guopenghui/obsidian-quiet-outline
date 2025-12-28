@@ -64,7 +64,6 @@ import type { QuietOutline } from "@/plugin";
 import { useEvent } from "@/utils/use";
 import { MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from "./icons";
-import { getPathFromArr, headingToKey, isLeaf, nodeToIndex } from "./utils";
 import { useOutlineTree } from "./use-tree";
 import { useOutlineRenderer } from "./use-heading-renderer";
 import { useOutlinePopover } from "./use-popover";
@@ -72,6 +71,7 @@ import { useOutlineTheme } from "./use-theme";
 import { useOutlineDnd } from "./use-dnd";
 import { useOutlineSearch } from "./use-search";
 import { useOutlineExpand } from "./use-expand";
+import { useOutlineController } from "./use-controller";
 
 const plugin = inject("plugin") as QuietOutline;
 const container = inject("container") as HTMLElement;
@@ -156,14 +156,17 @@ useEvent(window, "quiet-outline-levelchange", (e) => {
 // force remake tree
 let update_tree = ref(0);
 
+// when switching between views
 watch(
     () => store.leafChange,
     () => {
         const old_pattern = pattern.value;
 
+        // reset level and searching pattern
         pattern.value = "";
         level.value = getDefaultLevel();
 
+        // try to restore expanding state
         const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
         const old_state =
             plugin.navigator.getId() === "markdown" ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys : null;
@@ -184,96 +187,14 @@ watch(
     },
 );
 
-// handles to expose
-function idxToKey(idx: number) {
-    return headingToKey(store.headers[idx], idx);
-}
-
-function selectVisible() {
-    const path = getPathFromArr(locateIdx.value);
-    const firstCollapse = path.findIndex((item) => !expanded.value.contains(idxToKey(item)));
-    const visibleOne = firstCollapse === -1 ? locateIdx.value : path[firstCollapse];
-
-    selectedKeys.value = [idxToKey(visibleOne)];
-}
-
-function setExpand(open: boolean) {
-    const selectedKey = selectedKeys.value[0];
-    if (!selectedKey || isLeaf(nodeToIndex(selectedKey))) return;
-
-    if (open) {
-        modifyExpandKeys([selectedKey], "add");
-    } else {
-        modifyExpandKeys([selectedKey], "remove");
-    }
-}
-
-function center() {
-    const selectedKey = selectedKeys.value[0];
-    if (!selectedKey) return;
-
-    const no = nodeToIndex(selectedKey);
-    const currentNode = container.querySelector(`.n-tree .n-tree-node-wrapper:has(#no-${no})`);
-    currentNode?.scrollIntoView({ behavior: "smooth", block: "center" });
-}
-
-function move(direction: "up" | "down" | "bottom" | "top") {
-    const selectedKey = selectedKeys.value[0];
-    if (!selectedKey) return;
-
-    const no = nodeToIndex(selectedKey);
-    const currentNode = container.querySelector(`.n-tree .n-tree-node-wrapper:has(#no-${no})`);
-    if (!currentNode) {
-        const nextNode = container.querySelector(`.n-tree .n-tree-node-wrapper`)?.firstElementChild;
-        if (!nextNode) return;
-
-        moveToHeadingEl(nextNode as HTMLElement);
-        return;
-    }
-
-    if (direction === "up") {
-        const prevNode = currentNode.previousSibling?.firstChild as HTMLElement;
-        if (prevNode) {
-            moveToHeadingEl(prevNode);
-        }
-    } else if (direction === "down") {
-        const nextNode = currentNode.nextSibling?.firstChild as HTMLElement;
-        if (nextNode) {
-            moveToHeadingEl(nextNode);
-        }
-    } else if (direction === "bottom") {
-        const bottomNode = currentNode.parentElement?.lastElementChild?.firstElementChild as HTMLElement;
-        if (bottomNode) {
-            moveToHeadingEl(bottomNode);
-        }
-    } else if (direction === "top") {
-        const topNode = currentNode.parentElement?.firstElementChild?.firstElementChild as HTMLElement;
-        if (topNode) {
-            moveToHeadingEl(topNode);
-        }
-    }
-}
-
-function moveToHeadingEl(el: HTMLElement) {
-    // when expanding a heading, there is an intermediate state
-    const match = el.id.match(/no-(\d+)/);
-    if (!match) return;
-
-    const no = parseInt(match[1]);
-    selectedKeys.value = [idxToKey(no)];
-    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
-function resetPattern() {
-    pattern.value = "";
-}
-
-function currentSelected() {
-    const selectedKey = selectedKeys.value[0];
-    if (!selectedKey) return;
-
-    return nodeToIndex(selectedKey);
-}
+const { selectVisible, setExpand, center, move, resetPattern, currentSelected } = useOutlineController({
+    container,
+    locateIdx,
+    selectedKeys,
+    expanded,
+    modifyExpandKeys,
+    pattern,
+});
 
 defineExpose({
     setExpand,
