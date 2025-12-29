@@ -1,6 +1,15 @@
 // 繁體中文
 
 export default {
+    // Markdown navigator menu: change heading level（調整標題層級）
+    "Change Level": "調整層級",
+    "Increase": "增加",
+    "Increase Recursively": "遞迴增加",
+    "Decrease": "減少",
+    "Decrease Recursively": "遞迴減少",
+    "Maximum level reached": "已達到最大層級",
+    "Minimum level reached": "已達到最小層級",
+
     // Confirm modal
     "Confirm": "確認",
     "Cancel": "取消",

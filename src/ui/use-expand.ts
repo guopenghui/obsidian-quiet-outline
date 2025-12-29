@@ -17,18 +17,28 @@ export function useOutlineExpand(plugin: QuietOutline) {
     }
 
     let expanded = ref<string[]>([]);
+    /** revome invalid expand keys */
+    function safeFilter(keys: string[]) {
+        return keys.filter(key => {
+            const index = keyToIndex(key);
+            return index !== store.headers.length
+                && store.headers[index].level < store.headers[index + 1].level;
+        })
+    }
     function modifyExpandKeys(
-        newKeys: string[],
+        keys: string[],
         mode: "add" | "remove" | "replace" = "replace",
     ) {
+        let newKeys: string[];
         if (mode === "replace") {
-            expanded.value = newKeys;
+             newKeys = keys;
         } else if(mode === "remove") {
-            expanded.value = expanded.value.filter(key => !newKeys.includes(key));
+            newKeys = expanded.value.filter(key => !keys.includes(key));
         } else {
-            const mergeSet = new Set([...expanded.value, ...newKeys]);
-            expanded.value = [...mergeSet];
+            const mergeSet = new Set([...expanded.value, ...keys]);
+            newKeys = [...mergeSet];
         }
+        expanded.value = safeFilter(newKeys);
         syncExpandKeys();
     }
 

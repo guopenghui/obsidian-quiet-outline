@@ -78,6 +78,15 @@ export default {
     "Collapse Sibling": "折叠同级标题",
     "Expand Sibling": "展开同级标题",
 
+    // Markdown navigator menu: change heading level（调整标题层级）
+    "Change Level": "调整层级",
+    "Increase": "增加",
+    "Increase Recursively": "递归增加",
+    "Decrease": "减少",
+    "Decrease Recursively": "递归减少",
+    "Maximum level reached": "已达到最大层级",
+    "Minimum level reached": "已达到最小层级",
+
     "Vimlize Canvas": "Vim Canvas",
     "Add vim-like keymap for canvas": "给 Canvas 添加 Vim 风格的快捷键",
 

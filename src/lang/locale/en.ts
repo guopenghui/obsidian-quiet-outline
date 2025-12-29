@@ -1,6 +1,14 @@
 // English
 
 export default {
+    // Markdown navigator menu: change heading level
+    "Change Level": "Change Level",
+    "Increase": "Increase",
+    "Increase Recursively": "Increase Recursively",
+    "Decrease": "Decrease",
+    "Decrease Recursively": "Decrease Recursively",
+    "Maximum level reached": "Maximum level reached",
+    "Minimum level reached": "Minimum level reached",
     'Settings for Quiet Outline.': 'Settings for Quiet Outline.',
     "Set Primary Color": 'Set Primary Color Light/Dark',
     "Patch default color": 'Patch default color',

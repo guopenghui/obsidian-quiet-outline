@@ -5,12 +5,13 @@ import {
     debounce,
     Menu,
     EditorRange,
+    Notice,
 } from "obsidian";
 import { confirm } from "@/utils/modal";
 import { EditorView } from "@codemirror/view";
 import { editorEvent } from "@/editorExt";
 import type { QuietOutline } from "@/plugin";
-import { store, getSiblings } from "@/store";
+import { store, getSiblings, Heading } from "@/store";
 import { Nav } from "./base";
 import { calcModifies } from "@/utils/diff";
 import {
@@ -45,7 +46,7 @@ export class MarkDownNav extends Nav {
         const cache = this.plugin.app.metadataCache.getFileCache(
             this.view.file!,
         );
-        return cache?.headings || [];
+        return structuredClone(cache?.headings) || [];
     }
 
     async setHeaders(): Promise<void> {
@@ -171,7 +172,7 @@ export class MarkDownNav extends Nav {
         }
     }
 
-    changeContent(no: number, content: string) {
+    changeHeadingContent(no: number, content: string) {
         if (!content) return;
 
         const updater = new HeadingUpdater(
@@ -185,6 +186,20 @@ export class MarkDownNav extends Nav {
             store.headers[no].heading,
         );
         updater.updateHeadingLinks(content);
+    }
+
+    /**
+     * Change the level of a heading.
+     * @param index The index of the heading.
+     * @param level The new level of the heading. If provided `level` is less than 1 or greater than 5,
+     * the function does nothing.
+     */
+    changeHeadingLevel(index: number, level: number) {
+        if (level < 1 || level > 6) { return; }
+
+        const lineNo = store.headers[index].position.start.line;
+        store.headers[index].level = level;
+        this.view.editor.setLine(lineNo, `${"#".repeat(level)} ${store.headers[index].heading}`);
     }
 
     async handleDrop(
@@ -263,6 +278,56 @@ export class MarkDownNav extends Nav {
                 }),
             ]),
             separator(),
+            parent(t("Change Level"), [
+                normal(t("Increase"), () => {
+                    this.changeHeadingLevel(nodeInfo.no, nodeInfo.level + 1);
+                }),
+                normal(t("Increase Recursively"), async () => {
+                    // get this header and its descendants
+                    const headersToModify: (Heading & { no: number; })[] = [];
+                    let maxLevel = 0;
+                    for (let i = nodeInfo.no; i < store.headers.length; i++) {
+                        const header = store.headers[i];
+                        if (header.level <= nodeInfo.level && i !== nodeInfo.no) break;
+                        headersToModify.push({ ...header, no: i });
+                        maxLevel = Math.max(maxLevel, header.level);
+                    }
+
+                    // Maximum level is H6, do not allow further increase
+                    if (maxLevel >= 6) {
+                        new Notice(t("Maximum level reached"));
+                        return;
+                    }
+
+                    headersToModify.forEach(header => {
+                        this.changeHeadingLevel(header.no, header.level + 1);
+                    });
+                }),
+                normal(t("Decrease"), () => {
+                    this.changeHeadingLevel(nodeInfo.no, nodeInfo.level - 1);
+                }),
+                normal(t("Decrease Recursively"), async () => {
+                    // get this header and its descendants
+                    const headersToModify: (Heading & { no: number; })[] = [];
+                    let minLevel = Number.MAX_SAFE_INTEGER;
+                    for (let i = nodeInfo.no; i < store.headers.length; i++) {
+                        const header = store.headers[i];
+                        if (header.level <= nodeInfo.level && i !== nodeInfo.no) break;
+                        headersToModify.push({ ...header, no: i });
+                        minLevel = Math.min(minLevel, header.level);
+                    }
+
+                    // Minimum level is H1, do not allow further decrease
+                    if (minLevel <= 1) {
+                        new Notice(t("Minimum level reached"));
+                        return;
+                    }
+
+                    headersToModify.forEach(header => {
+                        this.changeHeadingLevel(header.no, header.level - 1);
+                    });
+                }),
+            ]),
             normal(t("Rename heading"), async () => {
                 store.currentEditingKey = nodeInfo.node.key as string;
             }),
@@ -274,7 +339,7 @@ export class MarkDownNav extends Nav {
                 // i18n note:
                 // `t()` in this project does NOT support interpolation options.
                 // To keep it compatible, we translate a stable prefix/suffix and then insert the heading text.
-                const message = `${t("This will delete heading:" as any)} ${headingText}\n\n${t("This will modify the note content. Continue?" as any)}`;
+                const message = `${t("This will delete heading:")} ${headingText}\n\n${t("This will modify the note content. Continue?")}`;
 
                 const ok = await confirm(this.view.app, {
                     title: t("Confirm"),

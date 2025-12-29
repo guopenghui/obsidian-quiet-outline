@@ -132,11 +132,11 @@ export class ConfirmModal extends Modal {
         const cancelText = resolveText(
             this.options.cancelText,
             // Note: this project uses the English source string as the i18n key for `t()`
-            t("Cancel" as any),
+            t("Cancel"),
         );
         const confirmText = resolveText(
             this.options.confirmText,
-            t("Confirm" as any),
+            t("Confirm"),
         );
 
         // Confirm button (dangerous action: warning color) — placed on the left

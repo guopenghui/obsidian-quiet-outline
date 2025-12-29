@@ -51,7 +51,7 @@ export function useOutlineRenderer(plugin: QuietOutline) {
                 },
                 onKeydown(e) {
                     if (e.key === "Enter") {
-                        plugin.navigator.changeContent(option.no!, editingHeadingText.value || "");
+                        plugin.navigator.changeHeadingContent(option.no!, editingHeadingText.value || "");
                         // store.headers[option.no!].heading = newContent.value || "";
                         store.currentEditingKey = "";
                         editingHeadingText.value = undefined;
