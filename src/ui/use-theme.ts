@@ -203,12 +203,9 @@ export function useOutlineTheme() {
 
 function getDefaultColor() {
     let button = document.body.createEl("button", {
-        cls: "mod-cta",
-        attr: { style: "width: 0px; height: 0px;" },
+        attr: { style: "width: 0px; height: 0px; background-color: var(--interactive-accent);" },
     });
-    let color = getComputedStyle(button, null).getPropertyValue(
-        "background-color",
-    );
+    let color = getComputedStyle(button, null).getPropertyValue("background-color");
     button.remove();
     return color;
 }
