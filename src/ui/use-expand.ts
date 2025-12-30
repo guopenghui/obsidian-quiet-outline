@@ -21,7 +21,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
     function safeFilter(keys: string[]) {
         return keys.filter(key => {
             const index = keyToIndex(key);
-            return index !== store.headers.length
+            return index < store.headers.length - 1
                 && store.headers[index].level < store.headers[index + 1].level;
         })
     }

@@ -58,42 +58,38 @@ export class HeadingUpdater {
         const fileCount = changes.data.size;
         const linkCount = changes.count();
 
-        if (linkCount !== 0) {
-            const fileChanges = changes.get(this.file.path);
-            if (fileChanges && fileChanges.length > 0) {
-                changes.clear(this.file.path);
-                const fileReplacement = this.replaceInFile(content);
-
-                const linkData = {
-                    link: "",
-                    original: "",
-                    position: {
-                        start: {
-                            line: 0,
-                            col: 0,
-                            offset: fileReplacement.start
-                        },
-                        end: {
-                            line: 0,
-                            col: 0,
-                            offset: fileReplacement.end
-                        }
-                    }
-                };
-
-                fileChanges.push({
-                    sourcePath: this.file.path,
-                    change: fileReplacement.text,
-                    reference: linkData
-                });
-
-                await this.app.vault.process(this.file, (content: string) => {
-                    return applyFileChanges(content, fileChanges);
-                });
-            } else {
-                this.replaceInEditor(content);
-            }
+        // deal with self reference
+        const fileChanges = changes.get(this.file.path) || [];
+        if (fileChanges.length > 0) {
+            changes.clear(this.file.path);
         }
+        const fileReplacement = this.replaceInFile(content);
+        const linkData = {
+            link: "",
+            original: "",
+            position: {
+                start: {
+                    line: 0,
+                    col: 0,
+                    offset: fileReplacement.start
+                },
+                end: {
+                    line: 0,
+                    col: 0,
+                    offset: fileReplacement.end
+                }
+            }
+        };
+
+        fileChanges.push({
+            sourcePath: this.file.path,
+            change: fileReplacement.text,
+            reference: linkData
+        });
+
+        await this.app.vault.process(this.file, (content: string) => {
+            return applyFileChanges(content, fileChanges);
+        });
 
         await this.app.fileManager.updateInternalLinks(changes);
 

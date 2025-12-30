@@ -186,6 +186,7 @@ export class MarkDownNav extends Nav {
             store.headers[no].heading,
         );
         updater.updateHeadingLinks(content);
+        store.headers[no].heading = content;
     }
 
     /**
