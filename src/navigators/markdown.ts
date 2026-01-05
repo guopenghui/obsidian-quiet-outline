@@ -43,8 +43,8 @@ export class MarkDownNav extends Nav {
     }
 
     async getHeaders(): Promise<HeadingCache[]> {
-        const cache = this.plugin.app.metadataCache.getFileCache(
-            this.view.file!,
+        const cache = this.view.file && this.plugin.app.metadataCache.getFileCache(
+            this.view.file,
         );
         return structuredClone(cache?.headings) || [];
     }
@@ -150,19 +150,19 @@ export class MarkDownNav extends Nav {
 
     getDefaultLevel(): number {
         let level;
-        const cache = this.plugin.app.metadataCache.getFileCache(
-            this.view.file!,
-        );
-        level = cache?.frontmatter?.["qo-default-level"];
-        if (typeof level === "string") {
-            level = parseInt(level);
+        if (this.view.file) {
+            const cache = this.plugin.app.metadataCache.getFileCache(this.view.file);
+            level = cache?.frontmatter?.["qo-default-level"];
+            if (typeof level === "string") {
+                level = parseInt(level);
+            }
         }
 
         return level || parseInt(plugin.settings.expand_level);
     }
 
     getPath(): string {
-        return this.view.file!.path;
+        return this.view.file?.path ?? "";
     }
 
     onExpandKeysChange(path: string, keys: string[]) {
@@ -173,11 +173,11 @@ export class MarkDownNav extends Nav {
     }
 
     changeHeadingContent(no: number, content: string) {
-        if (!content) return;
+        if (!content || !this.view.file) return;
 
         const updater = new HeadingUpdater(
             this.view.app,
-            this.view.file!,
+            this.view.file,
             this.view.editor,
             {
                 start: store.headers[no].position.start.offset,
@@ -210,8 +210,10 @@ export class MarkDownNav extends Nav {
     ) {
         const structure = await parseMarkdown(this.view.data, this.view.app);
         moveHeading(structure, from, to, position);
+
+        if (!this.view.file) return;
         await plugin.app.vault.modify(
-            this.view.file!,
+            this.view.file,
             stringifySection(structure),
         );
     }
@@ -257,7 +259,9 @@ export class MarkDownNav extends Nav {
                     await navigator.clipboard.writeText(slice.join("\n"));
                 }),
                 normal(t("Link of heading"), async () => {
-                    const link = this.plugin.app.fileManager.generateMarkdownLink(this.view.file!, "", "#" + nodeInfo.raw);
+                    if (!this.view.file) return;
+
+                    const link = this.plugin.app.fileManager.generateMarkdownLink(this.view.file, "", "#" + nodeInfo.raw);
                     await navigator.clipboard.writeText(link);
                 }),
                 normal(t("Heading and Content"), async () => {
@@ -355,8 +359,14 @@ export class MarkDownNav extends Nav {
 
                 const structure = await parseMarkdown(this.view.data, this.view.app);
                 removeHeading(structure, nodeInfo.no);
+
+                if (!this.view.file) {
+                    new Notice("No file in markdown view");
+                    return;
+                }
+
                 await plugin.app.vault.modify(
-                    this.view.file!,
+                    this.view.file,
                     stringifySection(structure),
                 );
             })
@@ -427,9 +437,12 @@ const DEFAULT_STATE: MarkdownState = Object.freeze({
 export type MarkdownStates = Record<string, MarkdownState>;
 
 function currentLine(fromScroll: boolean, isSourcemode: boolean) {
-    const view = (plugin.navigator as MarkDownNav).view;
+    const markdownView  = (plugin.navigator as MarkDownNav).view;
+    // there could be no editor on a markdown view when this view is initializing
+    if (!markdownView.editor) {
+        return 0;
+    }
 
-    const markdownView = view as MarkdownView;
     if (plugin.settings.locate_by_cursor && !fromScroll) {
         return isSourcemode
             ? markdownView.editor.getCursor("from").line

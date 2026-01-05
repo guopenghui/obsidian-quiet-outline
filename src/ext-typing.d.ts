@@ -79,7 +79,6 @@ declare module "obsidian" {
         app: App;
         canvas: Canvas;
         data: string;
-        file: TFile;
         __vimed?: boolean;
 
         /**

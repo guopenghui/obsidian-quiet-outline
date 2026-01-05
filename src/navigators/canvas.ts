@@ -123,7 +123,7 @@ export class CanvasNav extends Nav {
     }
 
     getPath(): string {
-        return this.view.file.path;
+        return this.view.file?.path ?? "";
     }
 
     getId(): string {
