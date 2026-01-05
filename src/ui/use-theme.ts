@@ -202,12 +202,29 @@ export function useOutlineTheme() {
 }
 
 function getDefaultColor() {
-    let button = document.body.createEl("button", {
+    const el = document.body.createEl("div", {
         attr: { style: "width: 0px; height: 0px; background-color: var(--interactive-accent);" },
     });
-    let color = getComputedStyle(button, null).getPropertyValue("background-color");
-    button.remove();
-    return color;
+    let color = getComputedStyle(el, null).getPropertyValue("background-color");
+    el.remove();
+
+    // for compatibility
+    return cssColorToRgba(color);
+}
+
+function cssColorToRgba(color: string) {
+  if (!CSS.supports('color', color)) return "rgba(0, 0, 0, 0)";
+
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 1;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+
+  ctx.clearRect(0, 0, 1, 1);
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, 1, 1);
+
+  const [r, g, b, a255] = ctx.getImageData(0, 0, 1, 1).data;
+  return `rgba(${r}, ${g}, ${b}, ${a255 / 255})`;
 }
 
 function hexToRGB(hex: string) {
