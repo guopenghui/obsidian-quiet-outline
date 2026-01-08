@@ -1,41 +1,42 @@
 {
-	"name": "obsidian-sample-plugin",
-	"version": "1.0.1",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
-	"main": "main.js",
-	"scripts": {
-		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"pub": "node publish.mjs",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "MIT",
-	"dependencies": {
-		"html-to-text": "^9.0.5",
-		"marked": "^4.0.12",
-		"monkey-around": "^3.0.0",
-		"vue": "^3.2.31"
-	},
-	"devDependencies": {
-		"@the_tree/esbuild-plugin-vue3": "^0.3.1",
-		"@types/html-to-text": "^9.0.4",
-		"@types/markdown-it": "^12.2.3",
-		"@types/marked": "^4.0.2",
-		"@types/node": "^16.11.6",
-		"@typescript-eslint/eslint-plugin": "^5.2.0",
-		"@typescript-eslint/parser": "^5.2.0",
-		"@vicons/material": "^0.12.0",
-		"@vicons/utils": "^0.1.4",
-		"@vue/compiler-sfc": "^3.2.31",
-		"builtin-modules": "^3.2.0",
-		"esbuild": "^0.17.4",
-		"hash-sum": "^2.0.0",
-		"naive-ui": "2.28.2",
-		"obsidian": "^1.5.7-1",
-		"octokit": "^5.0.5",
-		"tslib": "2.3.1",
-		"typescript": "5.5.4"
-	}
+    "name": "obsidian-quiet-outline",
+    "version": "1.0.1",
+    "description": "Make outline quiet and more powerful, including no-auto-expand, rendering heading as markdown, and search support.",
+    "main": "main.js",
+    "scripts": {
+        "build": "vue-tsc --noEmit --skipLibCheck && npm run lint && vite build --mode production",
+        "check": "vue-tsc -p tsconfig.app.json --noEmit --skipLibCheck",
+        "dev": "vite build --mode development",
+        "lint": "oxlint",
+        "lint:fix": "oxlint --fix",
+        "pub": "node scripts/publish.mjs",
+        "version": "node scripts/version-bump.mjs && git add manifest.json versions.json"
+    },
+    "keywords": [
+        "obsidian",
+        "outline"
+    ],
+    "author": "the_tree",
+    "license": "MIT",
+    "dependencies": {
+        "html-to-text": "^9.0.5",
+        "marked": "^17.0.1",
+        "monkey-around": "^3.0.0",
+        "vue": "^3.5.26"
+    },
+    "devDependencies": {
+        "@types/html-to-text": "^9.0.4",
+        "@types/node": "^22.17.0",
+        "@vicons/utils": "^0.1.4",
+        "@vitejs/plugin-vue": "^6.0.1",
+        "@vue/tsconfig": "^0.8.1",
+        "naive-ui": "2.43.2",
+        "obsidian": "^1.11.0",
+        "octokit": "^5.0.5",
+        "oxlint": "^1.38.0",
+        "tslib": "2.8.1",
+        "typescript": "~5.9.3",
+        "vite": "^8.0.0-0",
+        "vue-tsc": "^3.1.4"
+    }
 }

@@ -1,4 +1,4 @@
-import {
+import type {
     AllCanvasNodeData,
     CanvasColor,
     CanvasEdgeData,
@@ -232,7 +232,7 @@ declare module "obsidian" {
     export interface EmbedMarkdownView extends View {
         data: string;
         text: string;
-        file: TFile;
+        file: TFile | null;
         editMode: {
             editor: Editor;
         };

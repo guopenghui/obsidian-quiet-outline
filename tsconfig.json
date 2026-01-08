@@ -1,27 +1,7 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "module": "ESNext",
-    "target": "ES2022",
-    "allowJs": true,
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "isolatedModules": true,
-	"strictNullChecks": true,
-    "jsx": "preserve",
-    "lib": [
-      "DOM",
-      "ES2022",
+    "files": [],
+    "references": [
+        { "path": "./tsconfig.app.json" },
+        { "path": "./tsconfig.node.json" },
     ],
-	"paths": {
-		"@/*": ["src/*"]
-	}
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.vue"
-  ]
 }

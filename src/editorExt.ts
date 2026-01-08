@@ -1,12 +1,12 @@
 import {
     EditorView,
-    PluginValue,
+    type PluginValue,
     ViewUpdate,
     ViewPlugin,
 } from "@codemirror/view";
 
 class EditorEvent implements PluginValue {
-    constructor(view: EditorView) {
+    constructor(_view: EditorView) {
         // ...
     }
 

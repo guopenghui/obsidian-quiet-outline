@@ -1,6 +1,6 @@
 
 import { store } from "@/store";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 import { getPathFromArr, headingToKey, isLeaf, nodeToIndex } from "./utils";
 
 type Options = {

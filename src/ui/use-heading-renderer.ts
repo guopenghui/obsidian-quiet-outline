@@ -1,31 +1,18 @@
+import { computed, h, ref, type VNodeChild } from "vue";
+import { NInput, type TreeOption } from "naive-ui";
+import { sanitizeHTMLToDom } from "obsidian";
 import { marked } from "marked";
-import { NInput, TreeOption } from "naive-ui";
-import type { QuietOutline } from "@/plugin";
+import type QuietOutline from "@/plugin";
 import { store } from "@/store";
 import { Icon } from "@vicons/utils";
-import { computed, h, ref, VNodeChild } from "vue";
 import { ArrowForwardIosRound, LocalIcon } from "./icons";
-import {
-    formula,
-    internal_link,
-    highlight,
-    tag,
-    remove_href,
-    remove_ref,
-    tokenizer,
-} from "../parser";
-import { sanitizeHTMLToDom } from "obsidian";
-import { TreeOptionX } from "./types";
+import type { TreeOptionX } from "./types";
+import { loadMarkedExtensions } from "../parser";
+loadMarkedExtensions();
 
 type RenderMethodType = ({ option }: { option: TreeOptionX; }) => ReturnType<typeof h>;
 
 export function useOutlineRenderer(plugin: QuietOutline) {
-    marked.use({
-        extensions: [formula, internal_link, highlight, tag, remove_ref],
-    });
-    marked.use({ walkTokens: remove_href });
-    marked.use({ tokenizer });
-
     let editingHeadingText = ref<string | undefined>();
     const renderLabel = computed<RenderMethodType>(() => {
         let renderer: RenderMethodType = store.markdown
@@ -75,7 +62,7 @@ export function useOutlineRenderer(plugin: QuietOutline) {
 
 /** **SANITIZED** html string */
 function mdToHtml(label: string | undefined) {
-    let result = marked.parse(label || "").trim();
+    let result = marked.parse(label || "", { async: false }).trim();
 
     // save mjx elements
     let i = 0;

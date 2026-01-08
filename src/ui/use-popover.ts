@@ -1,4 +1,4 @@
-import type { QuietOutline } from "@/plugin";
+import QuietOutline from "@/plugin";
 import { onMounted, onUnmounted } from "vue";
 
 export function useOutlinePopover(plugin: QuietOutline, container: HTMLElement) {
@@ -19,7 +19,7 @@ export function useOutlinePopover(plugin: QuietOutline, container: HTMLElement) 
         addEventListener("keydown", openPopover);
     }
 
-    function onMouseLeave(event: MouseEvent) {
+    function onMouseLeave(_event: MouseEvent) {
         removeEventListener("keydown", openPopover);
     }
 
@@ -52,11 +52,10 @@ export function useOutlinePopover(plugin: QuietOutline, container: HTMLElement) 
         let fresh = true;
         let timeoutId: any;
 
-        return function (...args: any) {
-            const context = this;
+        return function (this: any, ...args: any) {
             let currentLink = triggerNode?.getAttribute("raw") || "";
             if (currentLink !== prevShowed || fresh) {
-                func.apply(context, args);
+                func.apply(this, args);
 
                 fresh = false;
                 prevShowed = currentLink;

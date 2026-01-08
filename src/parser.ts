@@ -1,18 +1,19 @@
+import type { Token, TokenizerAndRendererExtension, TokenizerObject } from "marked";
 import { marked } from "marked";
 import { renderMath, finishRenderMath, loadMathJax } from "obsidian";
 import { store } from "./store";
 
-type Extension = marked.TokenizerExtension & marked.RendererExtension;
+type  Extension = TokenizerAndRendererExtension<string, string>;
 
 // parse $xxx$ format
-export const formula: Extension = {
+export const formula:  Extension = {
     name: "formula",
     level: "inline",
     start(src) {
         return src.match(/\$/)?.index || -1;
     },
-    tokenizer(src, tokens) {
-        const rule = /^\$([^\$]+)\$/;
+    tokenizer(src, _tokens) {
+        const rule = /^\$([^$]+)\$/;
         const match = rule.exec(src);
         if (match) {
             return {
@@ -30,6 +31,7 @@ export const formula: Extension = {
             return formula.outerHTML;
         } catch {
             loadMathJax().then(() => {
+
                 store.refreshTree();
             });
             return false;
@@ -38,7 +40,7 @@ export const formula: Extension = {
 };
 
 // parse [[xxx]] format
-export const internal_link: Extension = {
+export const internal_link:  Extension = {
     name: "internal",
     level: "inline",
     start(src) {
@@ -46,8 +48,8 @@ export const internal_link: Extension = {
         const match = src.match(/!?\[\[/);
         return match ? match.index! : -1;
     },
-    tokenizer(src, token) {
-        const rule = /^!?\[\[([^\[\]]+?)\]\]/;
+    tokenizer(src, _token) {
+        const rule = /^!?\[\[([^[\]]+?)\]\]/;
         const match = rule.exec(src);
         if (match) {
             const alias = /.*\|(.*)/.exec(match[1]);
@@ -64,15 +66,15 @@ export const internal_link: Extension = {
 };
 
 // remove ref (^ab123ce | ^[footnote] | [^footnote]) format
-export const remove_ref: Extension = {
+export const remove_ref:  Extension = {
     name: "ref",
     level: "inline",
     start(src) {
         const match = src.match(/\^|\[/);
         return match ? match.index! : -1;
     },
-    tokenizer(src, tokens) {
-        const rule = /^(\^[A-Za-z0-9\-]+)|^(\^\[[^\]]*\])|^(\[\^[^\]]*\])/;
+    tokenizer(src, _tokens) {
+        const rule = /^(\^[A-Za-z0-9-]+)|^(\^\[[^\]]*\])|^(\[\^[^\]]*\])/;
         const match = rule.exec(src);
 
         if (match) {
@@ -83,20 +85,20 @@ export const remove_ref: Extension = {
             };
         }
     },
-    renderer(token) {
+    renderer() {
         return "";
     },
 };
 
 // parse ==xxx== format
-export const highlight: Extension = {
+export const highlight:  Extension = {
     name: "highlight",
     level: "inline",
     start(src) {
         const match = src.match(/==/);
         return match ? match.index! : -1;
     },
-    tokenizer(src, token) {
+    tokenizer(src, _token) {
         const rule = /^==([^=]+)==/;
         const match = rule.exec(src);
         if (match) {
@@ -113,16 +115,16 @@ export const highlight: Extension = {
 };
 
 // parse tags eg. #tag
-export const tag: Extension = {
+export const tag:  Extension = {
     name: "tag",
     level: "inline",
     start(src) {
         const match = src.match(/^#|(?<=\s)#/);
         return match ? match.index! : -1;
     },
-    tokenizer(src, token) {
+    tokenizer(src, _token) {
         const rule =
-            /^#([^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^\[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
+            /^#([^[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\d\s][^[\]{}:;'"`~,.<>?|\\!@#$%^&*()=+\s]*)/;
         const match = rule.exec(src);
         if (match) {
             return {
@@ -138,14 +140,22 @@ export const tag: Extension = {
 };
 
 // remove url inside <a>
-export const remove_href = (token: marked.Token) => {
+export const remove_href = (token: Token) => {
     if (token.type === "link") {
         token.href = "javascript:void(0);";
     }
 };
 
 // remove list
-export const tokenizer: marked.Tokenizer = {
+export const tokenizer: TokenizerObject  = {
     // @ts-ignore
-    list(src) { },
+    list(_src) { },
 };
+
+export function loadMarkedExtensions() {
+    marked.use({
+        extensions: [formula, internal_link, highlight, tag, remove_ref],
+    });
+    marked.use({ walkTokens: remove_href });
+    marked.use({ tokenizer });
+}

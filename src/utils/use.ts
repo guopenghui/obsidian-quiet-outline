@@ -2,15 +2,19 @@ import { onMounted, onBeforeUnmount, unref } from "vue";
 import type { Ref } from "vue";
 
 interface EventMap extends GlobalEventHandlersEventMap {
-    "quiet-outline-levelchange": CustomEvent<{
-        level: string | number;
-    }>;
+    "quiet-outline-levelchange": CustomEvent<{ level: string | number; }>;
+    "quiet-outline-reset": CustomEvent<void>;
 }
 
 function useEvent<T extends keyof EventMap>(
     elRef: Ref<EventTarget> | EventTarget,
     type: T,
     listener: (ev: EventMap[T]) => void,
+): void;
+function useEvent<T extends keyof EventMap>(
+    elRef: Ref<EventTarget> | EventTarget,
+    type: T,
+    listener: (ev: any) => void,
 ) {
     onMounted(() => {
         unref(elRef).addEventListener(type, listener);

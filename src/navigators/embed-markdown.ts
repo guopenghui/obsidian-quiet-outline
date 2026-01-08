@@ -1,10 +1,10 @@
 import {
     Editor,
-    EmbedMarkdownView,
-    HeadingCache,
+    type EmbedMarkdownView,
+    type HeadingCache,
     MarkdownPreviewRenderer,
 } from "obsidian";
-import type { QuietOutline } from "@/plugin";
+import type QuietOutline from "@/plugin";
 import { store } from "@/store";
 import { Nav } from "./base";
 import { calcModifies } from "@/utils/diff";
@@ -70,6 +70,7 @@ export class EmbedMarkdownFileNav extends Nav {
     }
 
     async getHeaders(): Promise<HeadingCache[]> {
+        if (!this.view.file) { return []; }
         const cache = this.plugin.app.metadataCache.getFileCache(
             this.view.file,
         );

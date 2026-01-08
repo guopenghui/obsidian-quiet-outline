@@ -1,5 +1,5 @@
-import { Heading, store } from "@/store";
-import { TreeOption } from "naive-ui";
+import { type Heading, store } from "@/store";
+import { type TreeOption } from "naive-ui";
 
 export function headingToKey(h: Heading, i: number) {
     return "item-" + h.level + "-" + i;

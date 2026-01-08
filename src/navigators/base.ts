@@ -1,9 +1,10 @@
-import { Component, HeadingCache, Menu } from "obsidian";
-import type { QuietOutline } from "@/plugin";
+import { Component, type HeadingCache, Menu } from "obsidian";
+import type QuietOutline from "@/plugin";
 import { store } from "@/store";
-import { TreeOption } from "naive-ui";
+import type { TreeOption } from "naive-ui";
 import { Deferred } from "@/utils/promise";
 
+/* oxlint-disable no-unused-vars */
 export abstract class Nav extends Component {
     private _used = false; // a navigator only allowed to be used once
     private _loaded = new Deferred();
@@ -52,7 +53,7 @@ export abstract class Nav extends Component {
     async install() { }
     async onload(): Promise<void> { }
     async onunload(): Promise<void> { }
-    async handleDrop(
+     async handleDrop(
         from: number,
         to: number,
         position: "before" | "after" | "inside",

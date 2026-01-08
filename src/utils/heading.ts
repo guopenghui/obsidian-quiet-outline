@@ -1,4 +1,4 @@
-import { Heading } from "@/store";
+import type { Heading } from "@/store";
 
 export function stringifyHeaders(headers: Heading[], export_format: string) {
     function merge(arr1: string[], arr2: string[]) {

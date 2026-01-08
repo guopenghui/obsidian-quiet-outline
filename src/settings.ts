@@ -1,8 +1,15 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import { QuietOutline } from "./plugin";
+import type QuietOutline from "./plugin";
 import { store } from "./store";
 import { t } from "./lang/helper";
-import { AllCanvasNodeData } from "obsidian/canvas";
+import type { AllCanvasNodeData } from "obsidian/canvas";
+import { assertType } from "./utils/helper";
+
+type AutoExpandMode = "only-expand" | "expand-and-collapse-rest-to-default" | "expand-and-collapse-rest-to-setting" | "disable";
+type ModifierMey = "ctrlKey" | "altKey" | "metaKey" | "disable";
+type Direction = "top" | "bottom" | "left" | "right";
+type TextDirectionDecideBy = "system" | "text";
+type CanvasSortOrder = "area" | "name_asc" | "name_desc";
 
 interface QuietOutlineSettings {
     // General settings
@@ -11,26 +18,22 @@ interface QuietOutlineSettings {
     markdown: boolean;
     expand_level: string;
     hide_unsearched: boolean;
-    auto_expand_ext:
-    | "only-expand"
-    | "expand-and-collapse-rest-to-default"
-    | "expand-and-collapse-rest-to-setting"
-    | "disable";
+    auto_expand_ext: AutoExpandMode;
     regex_search: boolean;
     ellipsis: boolean;
-    label_direction: "top" | "bottom" | "left" | "right";
+    label_direction: Direction;
     drag_modify: boolean;
     locate_by_cursor: boolean;
-    show_popover_key: "ctrlKey" | "altKey" | "metaKey" | "disable";
+    show_popover_key: ModifierMey;
     persist_md_states: boolean;
     keep_search_input: boolean;
     export_format: string;
-    lang_direction_decide_by: "system" | "text";
+    lang_direction_decide_by: TextDirectionDecideBy;
     auto_scroll_into_view: boolean;
 
     // Canvas settings
     vimlize_canvas: boolean;
-    canvas_sort_by: "area" | "name_asc" | "name_desc";
+    canvas_sort_by: CanvasSortOrder;
     shown_node_types: AllCanvasNodeData['type'][];
     heading_truncate_length: number,
 
@@ -283,14 +286,8 @@ class SettingTab extends PluginSettingTab {
                     .addOption("disable", t("Disabled"))
                     .setValue(this.plugin.settings.auto_expand_ext)
                     .onChange(
-                        async (
-                            value:
-                                | "only-expand"
-                                | "expand-and-collapse-rest-to-default"
-                                | "expand-and-collapse-rest-to-setting"
-                                | "disable",
-                        ) => {
-                            this.plugin.settings.auto_expand_ext = value;
+                        async (value: string) => {
+                            this.plugin.settings.auto_expand_ext = value as AutoExpandMode;
                             await this.plugin.saveSettings();
                         },
                     ),
@@ -335,10 +332,8 @@ class SettingTab extends PluginSettingTab {
                     .addOption("disable", t("Disable"))
                     .setValue(this.plugin.settings.show_popover_key)
                     .onChange(
-                        async (
-                            value: "ctrlKey" | "altKey" | "metaKey" | "disable",
-                        ) => {
-                            this.plugin.settings.show_popover_key = value;
+                        async (value: string) => {
+                            this.plugin.settings.show_popover_key = value as ModifierMey;
                             await this.plugin.saveSettings();
                         },
                     ),
@@ -411,9 +406,8 @@ class SettingTab extends PluginSettingTab {
                         .addOption("bottom", "Bottom")
                         .setValue(this.plugin.settings.label_direction)
                         .onChange(
-                            async (
-                                value: "top" | "bottom" | "left" | "right",
-                            ) => {
+                            async (value: string) => {
+                                assertType<Direction>(value);
                                 this.plugin.settings.label_direction = value;
                                 store.labelDirection = value;
                                 await this.plugin.saveSettings();
@@ -431,7 +425,8 @@ class SettingTab extends PluginSettingTab {
                     .addOption("system", "Obsidian Language")
                     .addOption("text", "Specific text of heading")
                     .setValue(this.plugin.settings.lang_direction_decide_by)
-                    .onChange(async (value: "system" | "text") => {
+                    .onChange(async (value: string) => {
+                        assertType<TextDirectionDecideBy>(value);
                         this.plugin.settings.lang_direction_decide_by = value;
                         store.textDirectionDecideBy = value;
                         await this.plugin.saveSettings();
@@ -756,10 +751,8 @@ class SettingTab extends PluginSettingTab {
                     .addOption("name_desc", t("Sort by Name (Z -> A)"))
                     .setValue(this.plugin.settings.canvas_sort_by)
                     .onChange(
-                        async (
-                            value: "area" | "name_asc" | "name_desc",
-                        ) => {
-                            this.plugin.settings.canvas_sort_by = value;
+                        async (value: string) => {
+                            this.plugin.settings.canvas_sort_by = value as CanvasSortOrder;
                             await this.plugin.saveSettings();
                             // 触发刷新
                             this.plugin.refresh();

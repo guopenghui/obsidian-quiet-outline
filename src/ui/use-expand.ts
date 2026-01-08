@@ -1,7 +1,7 @@
 import { store } from "@/store";
 import { ref, toRaw, watch } from "vue";
 import { getPathFromArr, headingToKey, keyToIndex } from "./utils";
-import type { QuietOutline } from "@/plugin";
+import type QuietOutline from "@/plugin";
 
 export function useOutlineExpand(plugin: QuietOutline) {
     function getDefaultLevel(): number {

@@ -1,7 +1,7 @@
 import { around } from "monkey-around";
 import {
     Component,
-    Constructor,
+    type Constructor,
     debounce,
     FileView,
     Plugin,
@@ -10,29 +10,32 @@ import {
     WorkspaceLeaf
 } from "obsidian";
 
-import { Nav, NAVIGATORS } from "./navigators";
+import { Nav, createNav } from "./navigators";
 import { store } from "./store";
 import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { debounceCb } from "./utils/debounce";
 
-import { MarkdownStates, MD_DATA_FILE } from "./navigators/markdown";
-import { DEFAULT_SETTINGS, QuietOutlineSettings, SettingTab } from "./settings";
+import { type MarkdownStates, MD_DATA_FILE } from "./navigators/markdown";
+import { DEFAULT_SETTINGS, type QuietOutlineSettings, SettingTab } from "./settings";
 import { DataManager } from "./utils/data-manager";
 import { registerCommands } from "./commands";
 
+import "./stalin.css";
+
 const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
 
-export class QuietOutline extends Plugin {
-    settings: QuietOutlineSettings;
-    navigator: Nav = new NAVIGATORS["dummy"](this, null);
-    jumping: boolean;
+export default class QuietOutline extends Plugin {
+    settings!: QuietOutlineSettings;
+    navigator: Nav = createNav("dummy", this, null);
+    jumping: boolean = false;
     klasses: Record<string, Constructor<any>> = {};
-    data_manager: DataManager;
+    data_manager!: DataManager;
+    outlineView: OutlineView | null = null;
 
     allow_scroll = true;
-    block_scroll: () => void;
+    block_scroll!: () => void;
     allow_cursor_change = true;
-    block_cursor_change: () => void;
+    block_cursor_change!: () => void;
     private prevActiveFile: TFile | null = null;
     private prevActiveFileView: FileView | null = null;
     private prevView: View | null = null;
@@ -85,7 +88,10 @@ export class QuietOutline extends Plugin {
         store.markdown = this.settings.markdown;
         store.ellipsis = this.settings.ellipsis;
         store.labelDirection = this.settings.label_direction;
-        store.leafChange = false;
+        store.refreshTree = () => {
+            this.outlineView?.vueInstance.forceRemakeTree();
+            this.app.workspace.trigger("layout-change");
+        };
         store.searchSupport = this.settings.search_support;
         store.levelSwitch = this.settings.level_switch;
         store.hideUnsearched = this.settings.hide_unsearched;
@@ -124,7 +130,7 @@ export class QuietOutline extends Plugin {
         );
 
         this.registerEvent(
-            this.app.metadataCache.on("changed", (file, data, cache) => {
+            this.app.metadataCache.on("changed", () => {
                 this.refresh("file-modify");
             }),
         );
@@ -179,10 +185,11 @@ export class QuietOutline extends Plugin {
         );
 
         // patch leaf.setViewState early to restore markdown scroll/cursor position
+        /* oxlint-disable no-this-alias */
         const plugin = this;
         this.register(around(WorkspaceLeaf.prototype, {
             setViewState(next) {
-                return async function (viewState, eState) {
+                return async function (this: WorkspaceLeaf, viewState, eState) {
                     if (viewState.type !== "markdown") {
                         return next.apply(this, [viewState, eState]);
                     }
@@ -215,19 +222,24 @@ export class QuietOutline extends Plugin {
 
     private async updateNav(type: string, view: Component | null) {
         await this.navigator.unload();
-        const NavType = NAVIGATORS[type] || NAVIGATORS["dummy"];
-        this.navigator = new NavType(this, view);
+        this.navigator = createNav(type, this, view);
         await this.navigator.load();
     }
 
     async updateNavAndRefresh(type: string, view: Component | null) {
         await this.updateNav(type, view);
-        await this.refresh_outline();
-        store.refreshTree();
+
+        // update naive-ui tree's data and expandedKey in the same tick
+        // to avoid animation-in-progress stuck
+        // https://github.com/tusen-ai/naive-ui/issues/5217
+        const newHeaders = await this.navigator.getHeaders();
+        store.headers = newHeaders;
+        this.outlineView?.vueInstance.handleLeafChange();
     }
 
     async onunload() {
         await this.navigator.unload();
+        this.outlineView = null;
     }
 
     async loadSettings() {

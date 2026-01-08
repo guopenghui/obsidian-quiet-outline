@@ -1,7 +1,7 @@
 export class Deferred<T = void> {
     state: 'resolved' | 'rejected' | 'unresolved' = 'unresolved';
-    resolve: (value: T | Promise<T>) => void;
-    reject: (err?: unknown) => void;
+    resolve!: (value: T | Promise<T>) => void;
+    reject!: (err?: unknown) => void;
 
     promise = new Promise<T>((resolve, reject) => {
         this.resolve = resolve;

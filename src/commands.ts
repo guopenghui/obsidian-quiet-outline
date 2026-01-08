@@ -1,5 +1,5 @@
-import { Notice, Command } from "obsidian";
-import type QuietOutline from "../main";
+import { Notice, type Command } from "obsidian";
+import type QuietOutline from "./plugin";
 import { store } from "./store";
 import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { stringifyHeaders } from "./utils/heading";

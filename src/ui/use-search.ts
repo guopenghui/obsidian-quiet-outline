@@ -1,4 +1,4 @@
-import { TreeOption } from "naive-ui";
+import type { TreeOption } from "naive-ui";
 import { computed, ref } from "vue";
 import { store } from "@/store";
 import { escapeHtml, getOrigin, htmlToText } from "@/utils/html"
@@ -28,10 +28,10 @@ function regexFilter(pattern: string, option: TreeOption): boolean {
     let rule = /.*/;
     try {
         rule = RegExp(pattern, "i");
-    } catch (e) {
-    } finally {
-        return rule.test(mdToHtmlTextContent(option.label));
+    } catch {
+
     }
+    return rule.test(mdToHtmlTextContent(option.label));
 }
 
 function simpleFilter(pattern: string, option: TreeOption): boolean {
@@ -47,8 +47,8 @@ function simpleFilter(pattern: string, option: TreeOption): boolean {
  * @param keepRawFormula - Whether to keep raw formula in the output.
  * @returns The textContent (**no sanitized!!!**)
  */
-function mdToHtmlTextContent(text: string | undefined, keepRawFormula: boolean = false) {
-    let result = marked.parse(text || "").trim();
+function mdToHtmlTextContent(text: string | undefined) {
+    let result = marked.parse(text || "", { async: false }).trim();
 
     // save mjx elements
     let i = 0;

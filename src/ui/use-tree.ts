@@ -1,17 +1,19 @@
-import { Heading, store } from "@/store";
-import { computed, HTMLAttributes, ref, ComputedRef, toRaw, Ref } from "vue";
-import { TreeOptionX } from "./types";
-import { TreeOption } from "naive-ui";
+import { type Heading, store } from "@/store";
+import { computed, ref } from "vue";
+import type { HTMLAttributes, ComputedRef, Ref } from "vue";
+import type { TreeOptionX } from "./types";
+import type { TreeOption } from "naive-ui";
 import { getPathFromArr, headingToKey, keyToIndex } from "./utils";
 import { Menu } from "obsidian";
 import { normal, separator, setupMenu } from "@/utils/menu";
-import type { QuietOutline } from "@/plugin";
+import type QuietOutline from "@/plugin";
 import { t } from "@/lang/helper";
 
 // add html attributes to nodes
 interface HTMLAttr extends HTMLAttributes {
     "data-tooltip-position": "top" | "bottom" | "left" | "right";
     raw: string;
+    [key: string]: unknown;
 }
 
 type OutlineTreeOptions = {
@@ -22,7 +24,7 @@ type OutlineTreeOptions = {
     modifyExpandKeys: (newKeys: string[], mode: "add" | "remove" | "replace") => void,
 };
 
-export function useOutlineTree({ plugin, container, level, expanded, modifyExpandKeys }: OutlineTreeOptions) {
+export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }: OutlineTreeOptions) {
     // prepare data for tree component
     let data = computed(() => {
         return makeTree(store.headers);

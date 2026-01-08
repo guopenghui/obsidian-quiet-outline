@@ -1,4 +1,4 @@
-import { App, CachedMetadata } from "obsidian";
+import { App, type CachedMetadata } from "obsidian";
 
 // a trick to use obsidian builtin function to parse markdown headings
 export async function parseMetaDataCache(

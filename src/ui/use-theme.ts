@@ -1,6 +1,6 @@
 import { store } from '@/store';
 import { computed, reactive, ref, watchEffect } from 'vue';
-import { darkTheme, GlobalThemeOverrides } from 'naive-ui';
+import { darkTheme, type GlobalThemeOverrides } from 'naive-ui';
 
 type MakeRequired<T, K extends keyof T> = T & {
     [P in K]-?: T[P];

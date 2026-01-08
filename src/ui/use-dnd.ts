@@ -1,7 +1,7 @@
 import { onMounted } from "vue";
-import type { QuietOutline } from "@/plugin";
+import type QuietOutline from "@/plugin";
 import { store } from "@/store";
-import { TreeDropInfo } from "naive-ui";
+import type { TreeDropInfo } from "naive-ui";
 import { nodeToIndex } from "./utils";
 import { MarkDownNav } from "@/navigators/markdown";
 

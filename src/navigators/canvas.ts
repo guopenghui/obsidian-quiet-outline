@@ -1,4 +1,4 @@
-import {
+import type {
     Canvas,
     CanvasView,
     CanvasComponent,
@@ -8,13 +8,13 @@ import {
     Constructor,
     HeadingCache,
     EmbedMarkdownView,
-    request,
     BBox,
 } from "obsidian";
-import { AllCanvasNodeData } from "obsidian/canvas";
+import { request } from "obsidian";
+import type { AllCanvasNodeData } from "obsidian/canvas";
 import { around } from "monkey-around";
-import type { QuietOutline } from "@/plugin";
-import { store, Heading, SupportedIcon } from "@/store";
+import type QuietOutline from "@/plugin";
+import { store, type Heading, type SupportedIcon } from "@/store";
 import { Nav } from "./base";
 
 export class CanvasNav extends Nav {
@@ -135,7 +135,7 @@ export class CanvasNav extends Nav {
         plugin.register(
             around(canvas.constructor.prototype as Canvas, {
                 requestSave(next) {
-                    return function (...args: any[]) {
+                    return function (this: Canvas, ...args: any) {
                         plugin.app.workspace.trigger(
                             "quiet-outline:canvas-change",
                         );
@@ -143,7 +143,7 @@ export class CanvasNav extends Nav {
                     };
                 },
                 updateSelection(next) {
-                    return function (...args: any[]) {
+                    return function (this: Canvas, ...args: any) {
                         next.apply(this, args);
                         plugin.app.workspace.trigger(
                             "quiet-outline:canvas-selection-change",
@@ -177,7 +177,6 @@ function canvasNodesToHeaders(
 
     const trees: TreeNode[] = [];
     for (let i = 0; i < nodesDec.length; i++) {
-        nodesDec[i].type
         insert(trees, nodesDec[i]);
     }
 
@@ -317,20 +316,35 @@ function enableVim(view: CanvasView) {
     if (view.__vimed) return;
 
     view.scope?.register([], "Escape", (e) => {
-        check(e) || (e.preventDefault(), view.canvas.deselectAll());
+        if (!check(e)) {
+            e.preventDefault();
+            view.canvas.deselectAll();
+        }
     });
 
     view.scope?.register([], "J", (e) => {
-        check(e) || (e.preventDefault(), move(view.canvas, "down"));
+        if (!check(e)) {
+            e.preventDefault();
+            move(view.canvas, "down");
+        }
     });
     view.scope?.register([], "K", (e) => {
-        check(e) || (e.preventDefault(), move(view.canvas, "up"));
+        if (!check(e)) {
+            e.preventDefault();
+            move(view.canvas, "up");
+        }
     });
     view.scope?.register([], "H", (e) => {
-        check(e) || (e.preventDefault(), move(view.canvas, "left"));
+        if (!check(e)) {
+            e.preventDefault();
+            move(view.canvas, "left");
+        }
     });
     view.scope?.register([], "L", (e) => {
-        check(e) || (e.preventDefault(), move(view.canvas, "right"));
+        if (!check(e)) {
+            e.preventDefault();
+            move(view.canvas, "right");
+        }
     });
 
     view.scope?.register([], "I", (e) => {

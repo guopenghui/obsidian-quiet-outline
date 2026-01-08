@@ -31,6 +31,7 @@
             />
             <code v-if="pattern">{{ matchCount }} result(s): </code>
             <NTree
+                ref="tree"
                 block-line
                 :pattern="pattern"
                 :data="data"
@@ -42,7 +43,7 @@
                 :expanded-keys="expanded"
                 :render-switcher-icon="renderSwitcherIcon"
                 :on-update:expanded-keys="expand"
-                :key="update_tree"
+                :key="keyOfTree"
                 :filter="filter"
                 :show-irrelevant-nodes="!store.hideUnsearched"
                 :class="{ ellipsis: store.ellipsis }"
@@ -56,13 +57,13 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick, inject } from "vue";
-import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider } from "naive-ui";
+import { NTree, NButton, NInput, NSlider, NConfigProvider } from "naive-ui";
 
 import { Icon } from "@vicons/utils";
 import { store } from "@/store";
-import type { QuietOutline } from "@/plugin";
+import type QuietOutline from "@/plugin";
 import { useEvent } from "@/utils/use";
-import { MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
+import { type MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from "./icons";
 import { useOutlineTree } from "./use-tree";
 import { useOutlineRenderer } from "./use-heading-renderer";
@@ -75,6 +76,7 @@ import { useOutlineController } from "./use-controller";
 
 const plugin = inject("plugin") as QuietOutline;
 const container = inject("container") as HTMLElement;
+let tree = ref<InstanceType<typeof NTree>>();
 
 // level switch
 const marks = { 0: "", 1: "", 2: "", 3: "", 4: "", 5: "" };
@@ -129,7 +131,7 @@ function resetSelected() {
     selectedKeys.value = [];
 }
 
-function expand(keys: string[], option: TreeOption[]) {
+function expand(keys: string[]) {
     modifyExpandKeys(keys);
 }
 
@@ -141,7 +143,7 @@ function onPosChange(index: number) {
 store.onPosChange = onPosChange;
 
 // react to some events
-useEvent(window, "quiet-outline-reset" as any, reset);
+useEvent(window, "quiet-outline-reset", reset);
 useEvent(window, "click", resetSelected);
 useEvent(window, "quiet-outline-levelchange", (e) => {
     if (typeof e.detail.level === "number") {
@@ -154,38 +156,38 @@ useEvent(window, "quiet-outline-levelchange", (e) => {
 });
 
 // force remake tree
-let update_tree = ref(0);
+let keyOfTree = ref(0);
+function forceRemakeTree() {
+    keyOfTree.value++;
+}
 
-// when switching between views
-watch(
-    () => store.leafChange,
-    () => {
-        const old_pattern = pattern.value;
+function handleLeafChange() {
+    // force reset animation-in-progress state of naive-ui tree component
+    tree.value?.handleAfterEnter();
 
-        // reset level and searching pattern
-        pattern.value = "";
-        level.value = getDefaultLevel();
+    const old_pattern = pattern.value;
 
-        // try to restore expanding state
-        const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
-        const old_state =
-            plugin.navigator.getId() === "markdown" ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys : null;
-        if (plugin.settings.persist_md_states && old_state) {
-            modifyExpandKeys(old_state);
-        } else {
-            switchLevel(level.value);
-        }
+    // reset level and searching pattern
+    pattern.value = "";
+    level.value = getDefaultLevel();
 
-        if (plugin.settings.keep_search_input) {
-            nextTick(() => {
-                pattern.value = old_pattern;
-            });
-        }
-    },
-    {
-        immediate: true,
-    },
-);
+    // try to restore expanding state
+    const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
+    const old_state =
+        plugin.navigator.getId() === "markdown" ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys : null;
+    if (plugin.settings.persist_md_states && old_state) {
+        modifyExpandKeys(old_state);
+    } else {
+        switchLevel(level.value);
+    }
+
+    if (plugin.settings.keep_search_input) {
+        nextTick(() => {
+            pattern.value = old_pattern;
+        });
+    }
+}
+handleLeafChange();
 
 const { selectVisible, setExpand, center, move, resetPattern, currentSelected } = useOutlineController({
     container,
@@ -203,6 +205,8 @@ defineExpose({
     selectVisible,
     resetPattern,
     currentSelected,
+    handleLeafChange,
+    forceRemakeTree,
 });
 </script>
 

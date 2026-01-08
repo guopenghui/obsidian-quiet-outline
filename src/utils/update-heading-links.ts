@@ -251,7 +251,7 @@ function applyFileChanges(content: string, changes: Array<{ reference: any, chan
     let frontmatterObj: any;
     try {
         frontmatterObj = parseYaml(frontmatterInfo.frontmatter);
-    } catch (error) {
+    } catch {
         return content;
     }
 
@@ -355,6 +355,7 @@ function SL(reference: any, newPath: string, protectedAliases?: any): string {
 }
 
 function encodeLinkText(text: string) {
+    // oxlint-disable-next-line no-control-regex
     return text.replace(/[\\\x00\x08\x0B\x0C\x0E-\x1F ]/g, encodeURIComponent);
 }
 

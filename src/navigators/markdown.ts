@@ -1,17 +1,17 @@
 import {
+    type MarkdownPreviewSection,
+    type HeadingCache,
+    type EditorRange,
     MarkdownView,
-    MarkdownPreviewSection,
-    HeadingCache,
     debounce,
     Menu,
-    EditorRange,
     Notice,
 } from "obsidian";
 import { confirm } from "@/utils/modal";
 import { EditorView } from "@codemirror/view";
 import { editorEvent } from "@/editorExt";
-import type { QuietOutline } from "@/plugin";
-import { store, getSiblings, Heading } from "@/store";
+import type QuietOutline from "@/plugin";
+import { store, getSiblings, type Heading } from "@/store";
 import { Nav } from "./base";
 import { calcModifies } from "@/utils/diff";
 import {
@@ -20,7 +20,7 @@ import {
     moveHeading,
     removeHeading,
 } from "@/utils/md-process";
-import { TreeOption } from "naive-ui";
+import type { TreeOption } from "naive-ui";
 import { setupMenu, normal, parent, separator, danger } from "@/utils/menu";
 import { t } from "@/lang/helper";
 import { HeadingUpdater } from "@/utils/update-heading-links";
@@ -265,7 +265,6 @@ export class MarkDownNav extends Nav {
                     await navigator.clipboard.writeText(link);
                 }),
                 normal(t("Heading and Content"), async () => {
-                    store.headers[0].position.start.line;
                     const { no, level } = nodeInfo;
                     let i = no + 1;
                     for (; i < store.headers.length; i++) {

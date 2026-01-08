@@ -57,12 +57,8 @@ export type ModifyKeys = {
 };
 
 const store = reactive({
-    activeView() {
-        this.plugin.activateView();
-        this.refreshTree();
-    },
     headers: [] as Heading[],
-    onPosChange: (index: number) => { },
+    onPosChange: (_index: number) => { },
     dark: true,
     cssChange: false,
     markdown: true,
@@ -77,9 +73,7 @@ const store = reactive({
     modifyKeys: {} as ModifyKeys,
     dragModify: false,
     textDirectionDecideBy: "system" as "system" | "text",
-    refreshTree() {
-        this.leafChange = !this.leafChange;
-    },
+    refreshTree: () => { },
     patchColor: false,
     primaryColorLight: "",
     primaryColorDark: "",

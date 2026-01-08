@@ -1,15 +1,15 @@
 import { ItemView, Scope, WorkspaceLeaf } from "obsidian";
-import { createApp, App } from "vue";
+import { createApp, type App } from "vue";
 import Outline from "./Outline.vue";
-import type { QuietOutline } from "../plugin";
+import type QuietOutline from "../plugin";
 
 export const VIEW_TYPE = "quiet-outline";
 
 export class OutlineView extends ItemView {
-    vueApp: App;
-    vueInstance: InstanceType<typeof Outline>;
+    vueApp!: App;
+    vueInstance!: InstanceType<typeof Outline>;
     plugin: QuietOutline;
-    scopes: Record<string, Scope>;
+    scopes!: Record<string, Scope>;
     pendingKey?: string;
     constructor(leaf: WorkspaceLeaf, plugin: QuietOutline) {
         super(leaf);
@@ -40,6 +40,8 @@ export class OutlineView extends ItemView {
         this.vueApp.provide("plugin", this.plugin);
         this.vueApp.provide("container", mountPoint);
         this.vueInstance = this.vueApp.mount(mountPoint) as InstanceType<typeof Outline>;
+
+        this.plugin.outlineView = this;
     }
 
     setupScopes() {
@@ -129,5 +131,6 @@ export class OutlineView extends ItemView {
     async onClose() { }
     onunload(): void {
         this.vueApp.unmount();
+        this.plugin.outlineView = null;
     }
 }

@@ -61,11 +61,14 @@ export function diff(prev: Heading[], cur: Heading[]): Diff[] {
                 length: action.length,
             });
         }
-        action.type === "add"
-            ? (j += action.length)
-            : action.type === "remove"
-                ? (i += action.length)
-                : ((i += action.length), (j += action.length));
+        if (action.type === "add") {
+            j += action.length;
+        } else if (action.type === "remove") {
+            i += action.length;
+        } else {
+            i += action.length;
+            j += action.length;
+        }
     }
 
     // deal with rest
@@ -193,5 +196,3 @@ export function calcModifies(prev: Heading[], cur: Heading[]) {
     });
     return modifyKeys;
 }
-
-export { };

@@ -1,5 +1,5 @@
-import { SupportedIcon } from "@/store";
-import { TreeOption } from "naive-ui";
+import type { SupportedIcon } from "@/store";
+import type { TreeOption } from "naive-ui";
 
 export type TreeOptionX = TreeOption & {
     no?: number;
