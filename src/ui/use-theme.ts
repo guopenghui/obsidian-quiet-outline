@@ -63,14 +63,14 @@ export function useOutlineTheme() {
     let locatedColor = ref(getDefaultColor());
 
     watchEffect(() => {
-        if (store.patchColor) {
+        if (store.theme.patchColor) {
             lightThemeConfig.common.primaryColor =
                 lightThemeConfig.common.primaryColorHover =
                 // @ts-ignore type indication error
                 lightThemeConfig.Slider.fillColor =
                 // @ts-ignore type indication error
                 lightThemeConfig.Slider.fillColorHover =
-                store.primaryColorLight;
+                store.theme.primaryColorLight;
             // @ts-ignore type indication error
             lightThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorLight}`;
 
@@ -80,9 +80,10 @@ export function useOutlineTheme() {
                 darkThemeConfig.Slider.fillColor =
                 // @ts-ignore type indication error
                 darkThemeConfig.Slider.fillColorHover =
-                store.primaryColorDark;
+                store.theme.primaryColorDark;
             // @ts-ignore type indication error
             darkThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorDark}`;
+            locatedColor.value = store.dark ? store.theme.primaryColorDark : store.theme.primaryColorLight;
             return;
         }
         // when css changed, recompute
@@ -116,12 +117,12 @@ export function useOutlineTheme() {
     let rainbowColor5 = ref("");
 
     watchEffect(() => {
-        if (store.rainbowLine) {
-            rainbowColor1.value = `rgba(${hexToRGB(store.rainbowColor1)}, 0.6)`;
-            rainbowColor2.value = `rgba(${hexToRGB(store.rainbowColor2)}, 0.6)`;
-            rainbowColor3.value = `rgba(${hexToRGB(store.rainbowColor3)}, 0.6)`;
-            rainbowColor4.value = `rgba(${hexToRGB(store.rainbowColor4)}, 0.6)`;
-            rainbowColor5.value = `rgba(${hexToRGB(store.rainbowColor5)}, 0.6)`;
+        if (store.theme.rainbowLine) {
+            rainbowColor1.value = `rgba(${hexToRGB(store.theme.rainbowColor1)}, 0.6)`;
+            rainbowColor2.value = `rgba(${hexToRGB(store.theme.rainbowColor2)}, 0.6)`;
+            rainbowColor3.value = `rgba(${hexToRGB(store.theme.rainbowColor3)}, 0.6)`;
+            rainbowColor4.value = `rgba(${hexToRGB(store.theme.rainbowColor4)}, 0.6)`;
+            rainbowColor5.value = `rgba(${hexToRGB(store.theme.rainbowColor5)}, 0.6)`;
             return;
         }
         if (store.cssChange === store.cssChange) {
@@ -137,42 +138,27 @@ export function useOutlineTheme() {
     let containerStyle = computed(() => {
         const style: Record<string, string> = {};
 
-        if (store.fontSize) {
-            style['--custom-font-size'] = store.fontSize;
-        }
-        if (store.fontFamily) {
-            style['--custom-font-family'] = store.fontFamily;
-        }
-        if (store.fontWeight) {
-            style['--custom-font-weight'] = store.fontWeight;
-        }
-        if (store.lineHeight) {
-            style['--custom-line-height'] = store.lineHeight;
-        }
-        if (store.lineGap) {
-            style['--custom-line-gap'] = store.lineGap;
-        }
+        style['--custom-font-size'] = store.theme.fontSize;
+        style['--custom-font-family'] = store.theme.fontFamily;
+        style['--custom-font-weight'] = store.theme.fontWeight;
+        style['--custom-line-height'] = store.theme.lineHeight;
+        style['--custom-line-gap'] = store.theme.lineGap;
 
         // Font color settings
-        if (store.customFontColor) {
-            if (store.h1Color) {
-                style['--h1-color'] = store.h1Color;
-            }
-            if (store.h2Color) {
-                style['--h2-color'] = store.h2Color;
-            }
-            if (store.h3Color) {
-                style['--h3-color'] = store.h3Color;
-            }
-            if (store.h4Color) {
-                style['--h4-color'] = store.h4Color;
-            }
-            if (store.h5Color) {
-                style['--h5-color'] = store.h5Color;
-            }
-            if (store.h6Color) {
-                style['--h6-color'] = store.h6Color;
-            }
+        if (store.theme.customFontColor) {
+            let h1Color = store.dark ? store.theme.h1ColorDark : store.theme.h1ColorLight;
+            let h2Color = store.dark ? store.theme.h2ColorDark : store.theme.h2ColorLight;
+            let h3Color = store.dark ? store.theme.h3ColorDark : store.theme.h3ColorLight;
+            let h4Color = store.dark ? store.theme.h4ColorDark : store.theme.h4ColorLight;
+            let h5Color = store.dark ? store.theme.h5ColorDark : store.theme.h5ColorLight;
+            let h6Color = store.dark ? store.theme.h6ColorDark : store.theme.h6ColorLight;
+
+            style['--h1-color'] = h1Color;
+            style['--h2-color'] = h2Color;
+            style['--h3-color'] = h3Color;
+            style['--h4-color'] = h4Color;
+            style['--h5-color'] = h5Color;
+            style['--h6-color'] = h6Color;
         }
 
         return style;

@@ -63,6 +63,12 @@ interface QuietOutlineSettings {
     h4_color: string;
     h5_color: string;
     h6_color: string;
+    h1_color_dark: string;
+    h2_color_dark: string;
+    h3_color_dark: string;
+    h4_color_dark: string;
+    h5_color_dark: string;
+    h6_color_dark: string;
 }
 
 const DEFAULT_SETTINGS: QuietOutlineSettings = {
@@ -117,6 +123,12 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     h4_color: "#000000",
     h5_color: "#000000",
     h6_color: "#000000",
+    h1_color_dark: "#000000",
+    h2_color_dark: "#000000",
+    h3_color_dark: "#000000",
+    h4_color_dark: "#000000",
+    h5_color_dark: "#000000",
+    h6_color_dark: "#000000",
 };
 
 class SettingTab extends PluginSettingTab {
@@ -469,7 +481,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.patch_color)
                     .onChange(async (value) => {
                         this.plugin.settings.patch_color = value;
-                        store.patchColor = value;
+                        store.theme.patchColor = value;
                         this.plugin.saveSettings();
                     }),
             )
@@ -478,7 +490,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.primary_color_light)
                     .onChange(async (value) => {
                         this.plugin.settings.primary_color_light = value;
-                        store.primaryColorLight = value;
+                        store.theme.primaryColorLight = value;
                         this.plugin.saveSettings();
                     }),
             )
@@ -487,7 +499,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.primary_color_dark)
                     .onChange(async (value) => {
                         this.plugin.settings.primary_color_dark = value;
-                        store.primaryColorDark = value;
+                        store.theme.primaryColorDark = value;
                         this.plugin.saveSettings();
                     }),
             );
@@ -501,7 +513,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.rainbow_line)
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_line = value;
-                        store.rainbowLine = value;
+                        store.theme.rainbowLine = value;
                         this.plugin.saveSettings();
                     }),
             )
@@ -510,7 +522,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.rainbow_color_1)
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_1 = value;
-                        store.rainbowColor1 = value;
+                        store.theme.rainbowColor1 = value;
                         this.plugin.saveSettings();
                     }),
             )
@@ -519,7 +531,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.rainbow_color_2)
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_2 = value;
-                        store.rainbowColor2 = value;
+                        store.theme.rainbowColor2 = value;
                         this.plugin.saveSettings();
                     }),
             )
@@ -528,7 +540,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.rainbow_color_3)
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_3 = value;
-                        store.rainbowColor3 = value;
+                        store.theme.rainbowColor3 = value;
                         this.plugin.saveSettings();
                     }),
             )
@@ -537,7 +549,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.rainbow_color_4)
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_4 = value;
-                        store.rainbowColor4 = value;
+                        store.theme.rainbowColor4 = value;
                         this.plugin.saveSettings();
                     }),
             )
@@ -546,7 +558,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.rainbow_color_5)
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_5 = value;
-                        store.rainbowColor5 = value;
+                        store.theme.rainbowColor5 = value;
                         this.plugin.saveSettings();
                     }),
             );
@@ -561,7 +573,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.font_size)
                     .onChange(async (value) => {
                         this.plugin.settings.font_size = value;
-                        store.fontSize = value;
+                        store.theme.fontSize = value;
                         await this.plugin.saveSettings();
                     })
             );
@@ -575,7 +587,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.font_family)
                     .onChange(async (value) => {
                         this.plugin.settings.font_family = value;
-                        store.fontFamily = value;
+                        store.theme.fontFamily = value;
                         await this.plugin.saveSettings();
                     })
             );
@@ -589,7 +601,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.font_weight)
                     .onChange(async (value) => {
                         this.plugin.settings.font_weight = value;
-                        store.fontWeight = value;
+                        store.theme.fontWeight = value;
                         await this.plugin.saveSettings();
                     })
             );
@@ -603,7 +615,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.line_height)
                     .onChange(async (value) => {
                         this.plugin.settings.line_height = value;
-                        store.lineHeight = value;
+                        store.theme.lineHeight = value;
                         await this.plugin.saveSettings();
                     })
             );
@@ -617,7 +629,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.line_gap)
                     .onChange(async (value) => {
                         this.plugin.settings.line_gap = value;
-                        store.lineGap = value;
+                        store.theme.lineGap = value;
                         await this.plugin.saveSettings();
                     })
             );
@@ -631,7 +643,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.custom_font_color)
                     .onChange(async (value) => {
                         this.plugin.settings.custom_font_color = value;
-                        store.customFontColor = value;
+                        store.theme.customFontColor = value;
                         await this.plugin.saveSettings();
                         // Refresh the display to show/hide color pickers
                         this.display();
@@ -646,7 +658,16 @@ class SettingTab extends PluginSettingTab {
                         .setValue(this.plugin.settings.h1_color)
                         .onChange(async (value) => {
                             this.plugin.settings.h1_color = value;
-                            store.h1Color = value;
+                            store.theme.h1ColorLight = value;
+                            await this.plugin.saveSettings();
+                        }),
+                )
+                .addColorPicker((color) =>
+                    color
+                        .setValue(this.plugin.settings.h1_color_dark)
+                        .onChange(async (value) => {
+                            this.plugin.settings.h1_color_dark = value;
+                            store.theme.h1ColorDark = value;
                             await this.plugin.saveSettings();
                         }),
                 );
@@ -658,7 +679,16 @@ class SettingTab extends PluginSettingTab {
                         .setValue(this.plugin.settings.h2_color)
                         .onChange(async (value) => {
                             this.plugin.settings.h2_color = value;
-                            store.h2Color = value;
+                            store.theme.h2ColorLight = value;
+                            await this.plugin.saveSettings();
+                        }),
+                )
+                .addColorPicker((color) =>
+                    color
+                        .setValue(this.plugin.settings.h2_color_dark)
+                        .onChange(async (value) => {
+                            this.plugin.settings.h2_color_dark = value;
+                            store.theme.h2ColorDark = value;
                             await this.plugin.saveSettings();
                         }),
                 );
@@ -670,7 +700,16 @@ class SettingTab extends PluginSettingTab {
                         .setValue(this.plugin.settings.h3_color)
                         .onChange(async (value) => {
                             this.plugin.settings.h3_color = value;
-                            store.h3Color = value;
+                            store.theme.h3ColorLight = value;
+                            await this.plugin.saveSettings();
+                        }),
+                )
+                .addColorPicker((color) =>
+                    color
+                        .setValue(this.plugin.settings.h3_color_dark)
+                        .onChange(async (value) => {
+                            this.plugin.settings.h3_color_dark = value;
+                            store.theme.h3ColorDark = value;
                             await this.plugin.saveSettings();
                         }),
                 );
@@ -682,7 +721,16 @@ class SettingTab extends PluginSettingTab {
                         .setValue(this.plugin.settings.h4_color)
                         .onChange(async (value) => {
                             this.plugin.settings.h4_color = value;
-                            store.h4Color = value;
+                            store.theme.h4ColorLight = value;
+                            await this.plugin.saveSettings();
+                        }),
+                )
+                .addColorPicker((color) =>
+                    color
+                        .setValue(this.plugin.settings.h4_color_dark)
+                        .onChange(async (value) => {
+                            this.plugin.settings.h4_color_dark = value;
+                            store.theme.h4ColorDark = value;
                             await this.plugin.saveSettings();
                         }),
                 );
@@ -694,7 +742,16 @@ class SettingTab extends PluginSettingTab {
                         .setValue(this.plugin.settings.h5_color)
                         .onChange(async (value) => {
                             this.plugin.settings.h5_color = value;
-                            store.h5Color = value;
+                            store.theme.h5ColorLight = value;
+                            await this.plugin.saveSettings();
+                        }),
+                )
+                .addColorPicker((color) =>
+                    color
+                        .setValue(this.plugin.settings.h5_color_dark)
+                        .onChange(async (value) => {
+                            this.plugin.settings.h5_color_dark = value;
+                            store.theme.h5ColorDark = value;
                             await this.plugin.saveSettings();
                         }),
                 );
@@ -706,7 +763,16 @@ class SettingTab extends PluginSettingTab {
                         .setValue(this.plugin.settings.h6_color)
                         .onChange(async (value) => {
                             this.plugin.settings.h6_color = value;
-                            store.h6Color = value;
+                            store.theme.h6ColorLight = value;
+                            await this.plugin.saveSettings();
+                        }),
+                )
+                .addColorPicker((color) =>
+                    color
+                        .setValue(this.plugin.settings.h6_color_dark)
+                        .onChange(async (value) => {
+                            this.plugin.settings.h6_color_dark = value;
+                            store.theme.h6ColorDark = value;
                             await this.plugin.saveSettings();
                         }),
                 );
