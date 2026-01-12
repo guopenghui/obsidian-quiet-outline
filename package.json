@@ -4,7 +4,7 @@
     "description": "Make outline quiet and more powerful, including no-auto-expand, rendering heading as markdown, and search support.",
     "main": "main.js",
     "scripts": {
-        "build": "vue-tsc --noEmit --skipLibCheck && npm run lint && vite build --mode production",
+        "build": "npm run check && npm run lint && vite build --mode production",
         "check": "vue-tsc -p tsconfig.app.json --noEmit --skipLibCheck",
         "dev": "vite build --mode development",
         "lint": "oxlint",

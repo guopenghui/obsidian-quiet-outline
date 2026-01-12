@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, inject } from "vue";
+import { ref, nextTick, inject } from "vue";
 import { NTree, NButton, NInput, NSlider, NConfigProvider } from "naive-ui";
 
 import { Icon } from "@vicons/utils";
