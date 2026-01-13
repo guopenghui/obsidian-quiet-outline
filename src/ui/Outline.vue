@@ -95,12 +95,8 @@ const {
     lightThemeConfig,
     darkThemeConfig,
     iconColor,
-    locatedColor,
-    rainbowColor1,
-    rainbowColor2,
-    rainbowColor3,
-    rainbowColor4,
-    rainbowColor5,
+    primaryColor,
+    rainbowColors,
     containerStyle,
     biDi,
 } = useOutlineTheme();
@@ -245,7 +241,7 @@ defineExpose({
 .quiet-outline .level-4 .n-tree-node-indent:first-child,
 .quiet-outline .level-5 .n-tree-node-indent:first-child,
 .quiet-outline .level-6 .n-tree-node-indent:first-child)::after {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor1);
+    border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h1");
     /* border-right: 2px solid rgb(253, 139, 31, 0.6); */
 }
 
@@ -253,31 +249,31 @@ defineExpose({
 .quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
 .quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(2))::after {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor2);
+    border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h2");
     /* border-right: 2px solid rgb(255, 223, 0, 0.6); */
 }
 
 :is(.quiet-outline .level-4 .n-tree-node-indent:nth-child(3),
 .quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(3))::after {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor3);
+    border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h3");
     /* border-right: 2px solid rgb(7, 235, 35, 0.6); */
 }
 
 :is(.quiet-outline .level-5 .n-tree-node-indent:nth-child(4),
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(4))::after {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor4);
+    border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h4");
     /* border-right: 2px solid rgb(45, 143, 240, 0.6); */
 }
 
 .quiet-outline .level-6 .n-tree-node-indent:nth-child(5)::after {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor5);
+    border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h5");
     /* border-right: 2px solid rgb(188, 1, 226, 0.6); */
 }
 
 /* located heading*/
 .n-tree-node.located p {
-    color: v-bind("locatedColor");
+    color: v-bind(primaryColor);
 }
 
 /* adjust indent */
