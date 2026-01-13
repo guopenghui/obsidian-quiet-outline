@@ -33,6 +33,7 @@
             <NTree
                 ref="tree"
                 block-line
+                :indent="17"
                 :pattern="pattern"
                 :data="data"
                 :selected-keys="selectedKeys"
@@ -229,38 +230,47 @@ defineExpose({
 .quiet-outline .n-tree .n-tree-node-content :is(p, h1, h2, h3, h4, h5) {
     unicode-bidi: v-bind(biDi);
 }
+.quiet-outline .n-tree-node-indent {
+    position: relative;
+}
+.quiet-outline .n-tree-node-indent::after {
+    content: "";
+    position: absolute;
+    height: 100%;
+    right: 8px;
+}
 
-.quiet-outline .level-2 .n-tree-node-indent,
+:is(.quiet-outline .level-2 .n-tree-node-indent:first-child,
 .quiet-outline .level-3 .n-tree-node-indent:first-child,
 .quiet-outline .level-4 .n-tree-node-indent:first-child,
 .quiet-outline .level-5 .n-tree-node-indent:first-child,
-.quiet-outline .level-6 .n-tree-node-indent:first-child {
+.quiet-outline .level-6 .n-tree-node-indent:first-child)::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor1);
     /* border-right: 2px solid rgb(253, 139, 31, 0.6); */
 }
 
-.quiet-outline .level-3 .n-tree-node-indent,
+:is(.quiet-outline .level-3 .n-tree-node-indent:nth-child(2),
 .quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
 .quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(2) {
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(2))::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor2);
     /* border-right: 2px solid rgb(255, 223, 0, 0.6); */
 }
 
-.quiet-outline .level-4 .n-tree-node-indent,
+:is(.quiet-outline .level-4 .n-tree-node-indent:nth-child(3),
 .quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(3) {
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(3))::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor3);
     /* border-right: 2px solid rgb(7, 235, 35, 0.6); */
 }
 
-.quiet-outline .level-5 .n-tree-node-indent,
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(4) {
+:is(.quiet-outline .level-5 .n-tree-node-indent:nth-child(4),
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(4))::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor4);
     /* border-right: 2px solid rgb(45, 143, 240, 0.6); */
 }
 
-.quiet-outline .level-6 .n-tree-node-indent {
+.quiet-outline .level-6 .n-tree-node-indent:nth-child(5)::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor5);
     /* border-right: 2px solid rgb(188, 1, 226, 0.6); */
 }

@@ -101,10 +101,6 @@
     font-weight: var(--custom-font-weight);
 }
 
-.quiet-outline .n-tree-node-indent {
-    flex: 0 0 13px !important;
-}
-
 .quiet-outline .n-tree-node-wrapper {
     padding: 0px;
 }

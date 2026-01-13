@@ -33,6 +33,7 @@ export function useOutlineTheme() {
         },
         Tree: {
             nodeTextColor: "var(--nav-item-color)",
+            arrowColor: "var(--nav-collapse-icon-color)",
         },
     });
 
@@ -49,6 +50,7 @@ export function useOutlineTheme() {
         },
         Tree: {
             nodeTextColor: "var(--nav-item-color)",
+            arrowColor: "var(--nav-collapse-icon-color)",
         },
     });
 
@@ -66,23 +68,17 @@ export function useOutlineTheme() {
         if (store.theme.patchColor) {
             lightThemeConfig.common.primaryColor =
                 lightThemeConfig.common.primaryColorHover =
-                // @ts-ignore type indication error
                 lightThemeConfig.Slider.fillColor =
-                // @ts-ignore type indication error
                 lightThemeConfig.Slider.fillColorHover =
                 store.theme.primaryColorLight;
-            // @ts-ignore type indication error
-            lightThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorLight}`;
+            lightThemeConfig.Slider.dotBorderActive = `2px solid ${store.theme.primaryColorLight}`;
 
             darkThemeConfig.common.primaryColor =
                 darkThemeConfig.common.primaryColorHover =
-                // @ts-ignore type indication error
                 darkThemeConfig.Slider.fillColor =
-                // @ts-ignore type indication error
                 darkThemeConfig.Slider.fillColorHover =
                 store.theme.primaryColorDark;
-            // @ts-ignore type indication error
-            darkThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorDark}`;
+            darkThemeConfig.Slider.dotBorderActive = `2px solid ${store.theme.primaryColorDark}`;
             locatedColor.value = store.dark ? store.theme.primaryColorDark : store.theme.primaryColorLight;
             return;
         }
@@ -91,20 +87,14 @@ export function useOutlineTheme() {
             let color = getDefaultColor();
             lightThemeConfig.common.primaryColor =
                 lightThemeConfig.common.primaryColorHover =
-                // @ts-ignore type indication error
                 lightThemeConfig.Slider.fillColor =
-                // @ts-ignore type indication error
                 lightThemeConfig.Slider.fillColorHover =
                 darkThemeConfig.common.primaryColor =
                 darkThemeConfig.common.primaryColorHover =
-                // @ts-ignore type indication error
                 darkThemeConfig.Slider.fillColor =
-                // @ts-ignore type indication error
                 darkThemeConfig.Slider.fillColorHover =
                 color;
-            // @ts-ignore type indication error
             lightThemeConfig.Slider.dotBorderActive =
-                // @ts-ignore type indication error
                 darkThemeConfig.Slider.dotBorderActive = `2px solid ${color}`;
             locatedColor.value = color;
         }
