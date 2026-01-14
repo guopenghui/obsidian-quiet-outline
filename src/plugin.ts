@@ -51,7 +51,8 @@ export default class QuietOutline extends Plugin {
         // 	console.dir(view.getState())
         // })
 
-        this.initStore();
+        store.init(this);
+
         this.registerView(VIEW_TYPE, (leaf) => new OutlineView(leaf, this));
         this.registerListener();
         registerCommands(this);
@@ -80,51 +81,6 @@ export default class QuietOutline extends Plugin {
             this.manifest.dir + "/data.json",
         );
         return !existSettingFile;
-    }
-
-    private initStore() {
-        store.headers = [];
-        store.dark = document.body.hasClass("theme-dark");
-        store.markdown = this.settings.markdown;
-        store.ellipsis = this.settings.ellipsis;
-        store.labelDirection = this.settings.label_direction;
-        store.refreshTree = () => {
-            this.outlineView?.vueInstance.forceRemakeTree();
-            this.app.workspace.trigger("layout-change");
-        };
-        store.searchSupport = this.settings.search_support;
-        store.levelSwitch = this.settings.level_switch;
-        store.hideUnsearched = this.settings.hide_unsearched;
-        store.regexSearch = this.settings.regex_search;
-        store.dragModify = this.settings.drag_modify;
-        store.textDirectionDecideBy = this.settings.lang_direction_decide_by;
-        store.theme.patchColor = this.settings.patch_color;
-        store.theme.primaryColorLight = this.settings.primary_color_light;
-        store.theme.primaryColorDark = this.settings.primary_color_dark;
-        store.theme.rainbowLine = this.settings.rainbow_line;
-        store.theme.rainbowColor1 = this.settings.rainbow_color_1;
-        store.theme.rainbowColor2 = this.settings.rainbow_color_2;
-        store.theme.rainbowColor3 = this.settings.rainbow_color_3;
-        store.theme.rainbowColor4 = this.settings.rainbow_color_4;
-        store.theme.rainbowColor5 = this.settings.rainbow_color_5;
-        store.theme.fontSize = this.settings.font_size;
-        store.theme.fontFamily = this.settings.font_family;
-        store.theme.fontWeight = this.settings.font_weight;
-        store.theme.lineHeight = this.settings.line_height;
-        store.theme.lineGap = this.settings.line_gap;
-        store.theme.customFontColor = this.settings.custom_font_color;
-        store.theme.h1ColorLight = this.settings.h1_color;
-        store.theme.h2ColorLight = this.settings.h2_color;
-        store.theme.h3ColorLight = this.settings.h3_color;
-        store.theme.h4ColorLight = this.settings.h4_color;
-        store.theme.h5ColorLight = this.settings.h5_color;
-        store.theme.h6ColorLight = this.settings.h6_color;
-        store.theme.h1ColorDark = this.settings.h1_color_dark;
-        store.theme.h2ColorDark = this.settings.h2_color_dark;
-        store.theme.h3ColorDark = this.settings.h3_color_dark;
-        store.theme.h4ColorDark = this.settings.h4_color_dark;
-        store.theme.h5ColorDark = this.settings.h5_color_dark;
-        store.theme.h6ColorDark = this.settings.h6_color_dark;
     }
 
     private registerListener() {

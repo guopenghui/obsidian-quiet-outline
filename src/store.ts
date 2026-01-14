@@ -1,5 +1,6 @@
 import { reactive } from "vue";
 import type { HeadingCache } from "obsidian";
+import type QuietOutline from "./plugin";
 
 export type SupportedIcon = string;
 
@@ -56,7 +57,7 @@ export type ModifyKeys = {
     }[];
 };
 
-const store = reactive({
+export const store = reactive({
     headers: [] as Heading[],
     dark: true,
     cssChange: false,
@@ -101,7 +102,51 @@ const store = reactive({
         h4ColorDark: "",
         h5ColorDark: "",
         h6ColorDark: "",
-    }
+    },
+    init,
 });
 
-export { store };
+function init(plugin: QuietOutline) {
+    const { app, settings } = plugin;
+    store.dark = document.body.hasClass("theme-dark");
+    store.markdown = settings.markdown;
+    store.ellipsis = settings.ellipsis;
+    store.labelDirection = settings.label_direction;
+    store.refreshTree = () => {
+        plugin.outlineView?.vueInstance.forceRemakeTree();
+        app.workspace.trigger("layout-change");
+    };
+    store.searchSupport = settings.search_support;
+    store.levelSwitch = settings.level_switch;
+    store.hideUnsearched = settings.hide_unsearched;
+    store.regexSearch = settings.regex_search;
+    store.dragModify = settings.drag_modify;
+    store.textDirectionDecideBy = settings.lang_direction_decide_by;
+    store.theme.patchColor = settings.patch_color;
+    store.theme.primaryColorLight = settings.primary_color_light;
+    store.theme.primaryColorDark = settings.primary_color_dark;
+    store.theme.rainbowLine = settings.rainbow_line;
+    store.theme.rainbowColor1 = settings.rainbow_color_1;
+    store.theme.rainbowColor2 = settings.rainbow_color_2;
+    store.theme.rainbowColor3 = settings.rainbow_color_3;
+    store.theme.rainbowColor4 = settings.rainbow_color_4;
+    store.theme.rainbowColor5 = settings.rainbow_color_5;
+    store.theme.fontSize = settings.font_size;
+    store.theme.fontFamily = settings.font_family;
+    store.theme.fontWeight = settings.font_weight;
+    store.theme.lineHeight = settings.line_height;
+    store.theme.lineGap = settings.line_gap;
+    store.theme.customFontColor = settings.custom_font_color;
+    store.theme.h1ColorLight = settings.h1_color;
+    store.theme.h2ColorLight = settings.h2_color;
+    store.theme.h3ColorLight = settings.h3_color;
+    store.theme.h4ColorLight = settings.h4_color;
+    store.theme.h5ColorLight = settings.h5_color;
+    store.theme.h6ColorLight = settings.h6_color;
+    store.theme.h1ColorDark = settings.h1_color_dark;
+    store.theme.h2ColorDark = settings.h2_color_dark;
+    store.theme.h3ColorDark = settings.h3_color_dark;
+    store.theme.h4ColorDark = settings.h4_color_dark;
+    store.theme.h5ColorDark = settings.h5_color_dark;
+    store.theme.h6ColorDark = settings.h6_color_dark;
+}
