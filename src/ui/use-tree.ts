@@ -26,15 +26,15 @@ type OutlineTreeOptions = {
 
 export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }: OutlineTreeOptions) {
     // prepare data for tree component
-    let data = computed(() => {
+    const data = computed(() => {
         return makeTree(store.headers);
     });
 
-    let locateIdx = ref(0);
-    let selectedKeys = ref<string[]>([]);
+    const locateIdx = ref(0);
+    const selectedKeys = ref<string[]>([]);
 
     function resetLocated(idx: number) {
-        let path = getPathFromArr(idx);
+        const path = getPathFromArr(idx);
         let index = path.find(
             (v) => !expanded.value.contains(headingToKey(store.headers[v], v)),
         );
@@ -44,7 +44,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
 
         setTimeout(() => {
             if (!plugin.settings.auto_scroll_into_view) return;
-            let curLocation = container.querySelector(`#no-${index}`);
+            const curLocation = container.querySelector(`#no-${index}`);
             if (curLocation) {
                 curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
             }
@@ -53,11 +53,11 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
 
     const nodeProps = computed(() => {
         return (info: { option: TreeOption }): HTMLAttr => {
-            let lev = parseInt((info.option.key as string).split("-")[1]);
-            let no = parseInt((info.option.key as string).split("-")[2]);
-            let raw = info.option.label || "";
+            const lev = parseInt((info.option.key as string).split("-")[1]);
+            const no = parseInt((info.option.key as string).split("-")[2]);
+            const raw = info.option.label || "";
 
-            let locate = locateIdx.value === no ? "located" : "";
+            const locate = locateIdx.value === no ? "located" : "";
 
             // click and jump
             async function jump(node: TreeOption): Promise<void> {
@@ -130,7 +130,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
 }
 
 function makeTree(headers: Heading[]): TreeOptionX[] {
-    let tree: TreeOptionX[] = arrToTree(headers);
+    const tree: TreeOptionX[] = arrToTree(headers);
     return tree;
 }
 
@@ -139,7 +139,7 @@ function arrToTree(headers: Heading[]): TreeOptionX[] {
     const stack = [{ node: root, level: -1 }];
 
     headers.forEach((h, i) => {
-        let node: TreeOptionX = {
+        const node: TreeOptionX = {
             label: h.heading,
             key: "item-" + h.level + "-" + i,
             line: h.position.start.line,
@@ -151,7 +151,7 @@ function arrToTree(headers: Heading[]): TreeOptionX[] {
             stack.pop();
         }
 
-        let parent = stack.last()!.node;
+        const parent = stack.last()!.node;
         if (parent.children === undefined) {
             parent.children = [];
         }
@@ -171,7 +171,7 @@ function getNode(data: ComputedRef<TreeOptionX[]>, index: number): {
     siblings: TreeOptionX[],
     descendants: TreeOptionX[]
 } {
-    let path: TreeOptionX[] = [];
+    const path: TreeOptionX[] = [];
     function pushLastGreatEq(nodes: TreeOption[] | undefined) {
         if (!nodes || nodes.length === 0) {
             return;

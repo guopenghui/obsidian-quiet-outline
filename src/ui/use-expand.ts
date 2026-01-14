@@ -8,7 +8,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
         return plugin.navigator.getDefaultLevel();
     }
 
-    let level = ref(getDefaultLevel());
+    const level = ref(getDefaultLevel());
     function switchLevel(lev: number) {
         level.value = lev;
 
@@ -16,7 +16,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
         modifyExpandKeys(newKeys);
     }
 
-    let expanded = ref<string[]>([]);
+    const expanded = ref<string[]>([]);
     /** revome invalid expand keys */
     function safeFilter(keys: string[]) {
         return keys.filter(key => {
@@ -52,9 +52,9 @@ export function useOutlineExpand(plugin: QuietOutline) {
 
     function autoExpand(index: number) {
         if (plugin.settings.auto_expand_ext !== "disable") {
-            let current_heading = store.headers[index];
+            const current_heading = store.headers[index];
             // if current heading is a parent, expand itself as well
-            let should_expand =
+            const should_expand =
                 index < store.headers.length - 1 &&
                 store.headers[index].level < store.headers[index + 1].level
                     ? [headingToKey(current_heading, index)]
@@ -121,12 +121,12 @@ export function useOutlineExpand(plugin: QuietOutline) {
                     const offsetBase = offsetModifies.findLastIndex(
                         (modify) => modify.begin <= index,
                     );
-                    let newKey =
+                    const newKey =
                         offsetBase === -1
                             ? key
                             : offset(key, offsetModifies[offsetBase].offset);
 
-                    let newIndex = keyToIndex(newKey);
+                    const newIndex = keyToIndex(newKey);
                     if (Parent2Parent) {
                         return `item-${store.headers[Parent2Parent.newBegin].level}-${newIndex}`;
                     } else {

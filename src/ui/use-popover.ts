@@ -8,9 +8,9 @@ export function useOutlinePopover(plugin: QuietOutline, container: HTMLElement) 
     let prevShowed = "";
 
     function onMouseEnter(event: MouseEvent) {
-        let target = event.target as HTMLElement;
+        const target = event.target as HTMLElement;
 
-        let node = target.closest(".n-tree-node") as HTMLElement;
+        const node = target.closest(".n-tree-node") as HTMLElement;
         if (!node) {
             return;
         }
@@ -53,7 +53,7 @@ export function useOutlinePopover(plugin: QuietOutline, container: HTMLElement) 
         let timeoutId: any;
 
         return function (this: any, ...args: any) {
-            let currentLink = triggerNode?.getAttribute("raw") || "";
+            const currentLink = triggerNode?.getAttribute("raw") || "";
             if (currentLink !== prevShowed || fresh) {
                 func.apply(this, args);
 

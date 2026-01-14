@@ -13,9 +13,9 @@ loadMarkedExtensions();
 type RenderMethodType = ({ option }: { option: TreeOptionX; }) => ReturnType<typeof h>;
 
 export function useOutlineRenderer(plugin: QuietOutline) {
-    let editingHeadingText = ref<string | undefined>();
+    const editingHeadingText = ref<string | undefined>();
     const renderLabel = computed<RenderMethodType>(() => {
-        let renderer: RenderMethodType = store.markdown
+        const renderer: RenderMethodType = store.markdown
             ? renderMarkdown
             : ({ option }) => h("div", option.label);
 
@@ -66,7 +66,7 @@ function mdToHtml(label: string | undefined) {
 
     // save mjx elements
     let i = 0;
-    let mjxes: string[] = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) || [];
+    const mjxes: string[] = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) || [];
 
     result = result.replace(/<mjx-container.*?>.*?<\/mjx-container>/g, () => {
         return `<math></math>`;

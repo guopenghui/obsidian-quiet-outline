@@ -70,7 +70,7 @@ export class MarkDownNav extends Nav {
         const state = { line, cursor };
 
         this.plugin.jumping = true;
-        store.onPosChange(key);
+        plugin.outlineView?.vueInstance.onPosChange(key);
 
         setTimeout(() => {
             this.view.setEphemeralState(state);
@@ -95,7 +95,7 @@ export class MarkDownNav extends Nav {
         const state = { line };
 
         this.plugin.jumping = true;
-        store.onPosChange(key);
+        plugin.outlineView?.vueInstance.onPosChange(key);
 
         setTimeout(() => {
             this.view.setEphemeralState(state);
@@ -414,7 +414,7 @@ function handleCursorChange(e?: CustomEvent) {
         const index = nearestHeading(current);
         if (index === undefined) return;
 
-        store.onPosChange(index);
+        plugin.outlineView?.vueInstance.onPosChange(index);
     }
 }
 
@@ -550,5 +550,5 @@ function _handleScroll(evt: Event) {
     const index = nearestHeading(current);
     if (index === undefined) return;
 
-    store.onPosChange(index);
+    plugin.outlineView?.vueInstance.onPosChange(index);
 }

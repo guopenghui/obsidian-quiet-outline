@@ -77,12 +77,12 @@ import { useOutlineController } from "./use-controller";
 
 const plugin = inject("plugin") as QuietOutline;
 const container = inject("container") as HTMLElement;
-let tree = ref<InstanceType<typeof NTree>>();
+const tree = ref<InstanceType<typeof NTree>>();
 
 // level switch
 const marks = { 0: "", 1: "", 2: "", 3: "", 4: "", 5: "" };
 function formatTooltip(value: number): string {
-    let num = store.headers.filter((h) => h.level === value).length;
+    const num = store.headers.filter((h) => h.level === value).length;
 
     if (value > 0) {
         return `H${value}: ${num}`;
@@ -90,16 +90,8 @@ function formatTooltip(value: number): string {
     return "No expand";
 }
 
-const {
-    theme,
-    lightThemeConfig,
-    darkThemeConfig,
-    iconColor,
-    primaryColor,
-    rainbowColors,
-    containerStyle,
-    biDi,
-} = useOutlineTheme();
+const { theme, lightThemeConfig, darkThemeConfig, iconColor, primaryColor, rainbowColors, containerStyle, biDi } =
+    useOutlineTheme();
 const { level, switchLevel, expanded, modifyExpandKeys, getDefaultLevel, autoExpand } = useOutlineExpand(plugin);
 const { data, nodeProps, locateIdx, resetLocated, selectedKeys } = useOutlineTree({
     plugin,
@@ -132,13 +124,6 @@ function expand(keys: string[]) {
     modifyExpandKeys(keys);
 }
 
-function onPosChange(index: number) {
-    autoExpand(index);
-    resetLocated(index);
-}
-
-store.onPosChange = onPosChange;
-
 // react to some events
 useEvent(window, "quiet-outline-reset", reset);
 useEvent(window, "click", resetSelected);
@@ -153,12 +138,17 @@ useEvent(window, "quiet-outline-levelchange", (e) => {
 });
 
 // force remake tree
-let keyOfTree = ref(0);
+const keyOfTree = ref(0);
 function forceRemakeTree() {
     keyOfTree.value++;
 }
 
-function handleLeafChange() {
+function onPosChange(index: number) {
+    autoExpand(index);
+    resetLocated(index);
+}
+
+function onLeafChange() {
     // force reset animation-in-progress state of naive-ui tree component
     tree.value?.handleAfterEnter();
 
@@ -184,7 +174,7 @@ function handleLeafChange() {
         });
     }
 }
-handleLeafChange();
+onLeafChange();
 
 const { selectVisible, setExpand, center, move, resetPattern, currentSelected } = useOutlineController({
     container,
@@ -202,7 +192,8 @@ defineExpose({
     selectVisible,
     resetPattern,
     currentSelected,
-    handleLeafChange,
+    onPosChange,
+    onLeafChange,
     forceRemakeTree,
 });
 </script>
@@ -210,6 +201,11 @@ defineExpose({
 <style>
 .quiet-outline .n-tree {
     padding-top: 5px;
+}
+
+/* RTL language support */
+.quiet-outline .n-tree .n-tree-node-content :is(p, h1, h2, h3, h4, h5) {
+    unicode-bidi: v-bind(biDi);
 }
 
 /* ============ */
@@ -221,11 +217,6 @@ defineExpose({
     height: unset;
     align-self: stretch;
 }
-
-/* RTL language support */
-.quiet-outline .n-tree .n-tree-node-content :is(p, h1, h2, h3, h4, h5) {
-    unicode-bidi: v-bind(biDi);
-}
 .quiet-outline .n-tree-node-indent {
     position: relative;
 }
@@ -236,32 +227,40 @@ defineExpose({
     right: 8px;
 }
 
-:is(.quiet-outline .level-2 .n-tree-node-indent:first-child,
-.quiet-outline .level-3 .n-tree-node-indent:first-child,
-.quiet-outline .level-4 .n-tree-node-indent:first-child,
-.quiet-outline .level-5 .n-tree-node-indent:first-child,
-.quiet-outline .level-6 .n-tree-node-indent:first-child)::after {
+:is(
+    .quiet-outline .level-2 .n-tree-node-indent:first-child,
+    .quiet-outline .level-3 .n-tree-node-indent:first-child,
+    .quiet-outline .level-4 .n-tree-node-indent:first-child,
+    .quiet-outline .level-5 .n-tree-node-indent:first-child,
+    .quiet-outline .level-6 .n-tree-node-indent:first-child
+)::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h1");
     /* border-right: 2px solid rgb(253, 139, 31, 0.6); */
 }
 
-:is(.quiet-outline .level-3 .n-tree-node-indent:nth-child(2),
-.quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
-.quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(2))::after {
+:is(
+    .quiet-outline .level-3 .n-tree-node-indent:nth-child(2),
+    .quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
+    .quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
+    .quiet-outline .level-6 .n-tree-node-indent:nth-child(2)
+)::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h2");
     /* border-right: 2px solid rgb(255, 223, 0, 0.6); */
 }
 
-:is(.quiet-outline .level-4 .n-tree-node-indent:nth-child(3),
-.quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(3))::after {
+:is(
+    .quiet-outline .level-4 .n-tree-node-indent:nth-child(3),
+    .quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
+    .quiet-outline .level-6 .n-tree-node-indent:nth-child(3)
+)::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h3");
     /* border-right: 2px solid rgb(7, 235, 35, 0.6); */
 }
 
-:is(.quiet-outline .level-5 .n-tree-node-indent:nth-child(4),
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(4))::after {
+:is(
+    .quiet-outline .level-5 .n-tree-node-indent:nth-child(4),
+    .quiet-outline .level-6 .n-tree-node-indent:nth-child(4)
+)::after {
     border-right: var(--nav-indentation-guide-width) solid v-bind("rainbowColors.h4");
     /* border-right: 2px solid rgb(45, 143, 240, 0.6); */
 }

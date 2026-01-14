@@ -240,7 +240,7 @@ export default class QuietOutline extends Plugin {
         // https://github.com/tusen-ai/naive-ui/issues/5217
         const newHeaders = await this.navigator.getHeaders();
         store.headers = newHeaders;
-        this.outlineView?.vueInstance.handleLeafChange();
+        this.outlineView?.vueInstance.onLeafChange();
     }
 
     async onunload() {

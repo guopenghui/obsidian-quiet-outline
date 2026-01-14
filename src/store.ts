@@ -58,7 +58,6 @@ export type ModifyKeys = {
 
 const store = reactive({
     headers: [] as Heading[],
-    onPosChange: (_index: number) => { },
     dark: true,
     cssChange: false,
     markdown: true,

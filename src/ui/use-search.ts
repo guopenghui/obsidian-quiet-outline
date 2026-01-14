@@ -5,14 +5,14 @@ import { escapeHtml, getOrigin, htmlToText } from "@/utils/html"
 import { marked } from "marked";
 
 export function useOutlineSearch() {
-    let pattern = ref("");
-    let filter = computed(() => {
+    const pattern = ref("");
+    const filter = computed(() => {
         return store.regexSearch ? regexFilter : simpleFilter;
     });
 
-    let matchCount = computed(() => {
+    const matchCount = computed(() => {
         return store.headers.filter((h) => {
-            let node = { label: h.heading } as TreeOption;
+            const node = { label: h.heading } as TreeOption;
             return filter.value(pattern.value, node);
         }).length;
     });
