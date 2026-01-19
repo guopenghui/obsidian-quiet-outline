@@ -28,7 +28,7 @@ export function getPathFromArr(index: number) {
     for (let i = index; i >= 0; i--) {
         if (store.headers[i].level < curLevel) {
             res.push(i);
-            curLevel--;
+            curLevel = store.headers[i].level;
         }
     }
     return res.reverse();
