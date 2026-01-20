@@ -174,15 +174,8 @@
     min-width: 10px;
 }
 
-/*mobile behaves weird*/
-.is-mobile .quiet-outline .function-bar .n-button {
-    margin-right: 5px;
-    text-align: center;
-    flex: 1;
-}
-.is-mobile .quiet-outline .function-bar .n-input {
-    min-width: 10px;
-    flex: none;
+.quiet-outline .function-bar input[type="text"]:hover {
+    background-color: transparent;
 }
 
 /* 图标大小 */
