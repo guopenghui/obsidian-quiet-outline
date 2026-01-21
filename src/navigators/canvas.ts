@@ -59,18 +59,14 @@ export class CanvasNav extends Nav {
 
                     const node = component as CanvasNode;
 
-                    // @ts-ignore
-                    if (node.filePath?.endsWith(".md")) {
-                        const view = (node as CanvasFileNode)
-                            .child as EmbedMarkdownView;
+                    if (isFileNode(node) && node.filePath.endsWith(".md")) {
+                        const view = node.child as EmbedMarkdownView;
                         await plugin.updateNavAndRefresh("embed-markdown-file", view);
                         return;
                     }
 
-                    // @ts-ignore
-                    if (node.unknownData.type === "text" || node.text) {
-                        const view = (node as CanvasTextNode).child;
-
+                    if (isTextNode(node)) {
+                        const view = node.child;
                         await plugin.updateNavAndRefresh("embed-markdown-text", view);
                         return;
                     }
@@ -82,20 +78,17 @@ export class CanvasNav extends Nav {
     }
 
     async jump(key: number): Promise<void> {
-        // @ts-ignore
-        const nodes: Map<string, AllCanvasNodeData> = this.view.canvas.nodes;
+        const nodes = this.view.canvas.nodes;
         const node = nodes.get(store.headers[key].id!);
         if (node !== undefined) {
-            let node_ = node as unknown as CanvasNode;
-            this.view.canvas.zoomToBbox(node_.bbox);
-            this.view.canvas.selectOnly(node_);
+            this.view.canvas.zoomToBbox(node.bbox);
+            this.view.canvas.selectOnly(node);
             this.view.setEphemeralState({ focus: true });
         }
     }
 
     async jumpWithoutFocus(key: number) {
-        // @ts-ignore
-        const nodes: Map<string, AllCanvasNodeData> = this.view.canvas.nodes;
+        const nodes = this.view.canvas.nodes;
         const node = nodes.get(store.headers[key].id!);
         if (node !== undefined) {
             this.view.canvas.zoomToBbox(node.bbox);
@@ -476,4 +469,12 @@ function dist(a: BBox, b: BBox) {
     const centerA = { x: a.minX + (a.maxX - a.minX) / 2, y: a.minY + (a.maxY - a.minY) / 2 };
     const centerB = { x: b.minX + (b.maxX - b.minX) / 2, y: b.minY + (b.maxY - b.minY) / 2 };
     return Math.sqrt(Math.pow(centerA.x - centerB.x, 2) + Math.pow(centerA.y - centerB.y, 2));
+}
+
+function isFileNode(node: CanvasNode): node is CanvasFileNode {
+    return node.unknownData.type === "file";
+}
+
+function isTextNode(node: CanvasNode): node is CanvasTextNode {
+    return node.unknownData.type === "text";
 }
