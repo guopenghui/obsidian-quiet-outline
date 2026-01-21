@@ -3,6 +3,7 @@ import type QuietOutline from "./plugin";
 import { store } from "./store";
 import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { stringifyHeaders } from "./utils/heading";
+import { eventBus } from "./utils/event-bus";
 
 export function registerCommands(plugin: QuietOutline) {
     const commands: Command[] = [
@@ -29,7 +30,7 @@ export function registerCommands(plugin: QuietOutline) {
             id: "quiet-outline-reset",
             name: "Reset expanding level",
             callback: () => {
-                dispatchEvent(new CustomEvent("quiet-outline-reset"));
+                eventBus.trigger("reset-panel");
             },
         },
         {
@@ -59,22 +60,14 @@ export function registerCommands(plugin: QuietOutline) {
             id: "inc-level",
             name: "Increase Level",
             callback: () => {
-                dispatchEvent(
-                    new CustomEvent("quiet-outline-levelchange", {
-                        detail: { level: "inc" },
-                    }),
-                );
+                eventBus.trigger("levelchange", "inc");
             },
         },
         {
             id: "dec-level",
             name: "Decrease Level",
             callback: () => {
-                dispatchEvent(
-                    new CustomEvent("quiet-outline-levelchange", {
-                        detail: { level: "dec" },
-                    }),
-                );
+                eventBus.trigger("levelchange", "dec");
             },
         },
         {

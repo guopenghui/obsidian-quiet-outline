@@ -4,6 +4,7 @@ import {
     ViewUpdate,
     ViewPlugin,
 } from "@codemirror/view";
+import { eventBus } from "./utils/event-bus";
 
 class EditorEvent implements PluginValue {
     constructor(_view: EditorView) {
@@ -13,11 +14,7 @@ class EditorEvent implements PluginValue {
     update(update: ViewUpdate) {
         // ...
         if (update.selectionSet) {
-            document.dispatchEvent(
-                new CustomEvent("quiet-outline-cursorchange", {
-                    detail: { docChanged: update.docChanged },
-                }),
-            );
+            eventBus.trigger("cursorchange", update.docChanged);
         }
     }
 

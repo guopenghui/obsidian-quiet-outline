@@ -16,6 +16,7 @@ import { around } from "monkey-around";
 import type QuietOutline from "@/plugin";
 import { store, type Heading, type SupportedIcon } from "@/store";
 import { Nav } from "./base";
+import { eventBus } from "@/utils/event-bus";
 
 export class CanvasNav extends Nav {
     declare view: CanvasView;
@@ -36,14 +37,14 @@ export class CanvasNav extends Nav {
         }
 
         plugin.registerEvent(
-            plugin.app.workspace.on("quiet-outline:canvas-change", () => {
+            eventBus.on("canvas-change", () => {
                 plugin.refresh();
             }),
         );
 
         plugin.registerEvent(
-            plugin.app.workspace.on(
-                "quiet-outline:canvas-selection-change",
+            eventBus.on(
+                "canvas-selection-change",
                 async (selection: Set<CanvasComponent>) => {
                     // if selection change to 0 or more than 1, return to canvas view
                     if (selection.size === 0 || selection.size > 1) {
@@ -129,19 +130,14 @@ export class CanvasNav extends Nav {
             around(canvas.constructor.prototype as Canvas, {
                 requestSave(next) {
                     return function (this: Canvas, ...args: any) {
-                        plugin.app.workspace.trigger(
-                            "quiet-outline:canvas-change",
-                        );
+                        eventBus.trigger("canvas-change");
                         return next.apply(this, args);
                     };
                 },
                 updateSelection(next) {
                     return function (this: Canvas, ...args: any) {
                         next.apply(this, args);
-                        plugin.app.workspace.trigger(
-                            "quiet-outline:canvas-selection-change",
-                            this.selection,
-                        );
+                        eventBus.trigger("canvas-selection-change", this.selection);
                         return;
                     };
                 },

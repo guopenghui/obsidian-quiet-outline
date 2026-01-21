@@ -63,7 +63,7 @@ import { NTree, NButton, NInput, NSlider, NConfigProvider } from "naive-ui";
 import { Icon } from "@vicons/utils";
 import { store } from "@/store";
 import type QuietOutline from "@/plugin";
-import { useEvent } from "@/utils/use";
+import { useDomEvent, useEventBus } from "@/utils/use";
 import { type MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from "./icons";
 import { useOutlineTree } from "./use-tree";
@@ -125,14 +125,14 @@ function expand(keys: string[]) {
 }
 
 // react to some events
-useEvent(window, "quiet-outline-reset", reset);
-useEvent(window, "click", resetSelected);
-useEvent(window, "quiet-outline-levelchange", (e) => {
-    if (typeof e.detail.level === "number") {
-        switchLevel(e.detail.level);
-    } else if (e.detail.level === "inc") {
+useDomEvent(window, "click", resetSelected);
+useEventBus("reset-panel", reset);
+useEventBus("levelchange", (arg) => {
+    if (typeof arg === "number") {
+        switchLevel(arg);
+    } else if (arg === "inc") {
         switchLevel(Math.clamp(level.value + 1, 0, 5));
-    } else if (e.detail.level === "dec") {
+    } else if (arg === "dec") {
         switchLevel(Math.clamp(level.value - 1, 0, 5));
     }
 });

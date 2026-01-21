@@ -21,6 +21,7 @@ import { DataManager } from "./utils/data-manager";
 import { registerCommands } from "./commands";
 
 import "./stalin.css";
+import { eventBus } from "./utils/event-bus";
 
 const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
 
@@ -107,7 +108,7 @@ export default class QuietOutline extends Plugin {
                 if (!activeFileView) {
                     this.prevActiveFileView = null;
                     this.prevActiveFile = null;
-                    this.app.workspace.trigger("quiet-outline:active-fileview-change", null);
+                    eventBus.trigger("active-fileview-change", null);
                     return;
                 }
 
@@ -124,14 +125,14 @@ export default class QuietOutline extends Plugin {
                     ) {
                         this.prevActiveFileView = leaf.view;
                         this.prevActiveFile = leaf.view.file;
-                        this.app.workspace.trigger("quiet-outline:active-fileview-change", leaf.view);
+                        eventBus.trigger("active-fileview-change", leaf.view);
                     }
                 }
             })
         );
 
         this.registerEvent(
-            this.app.workspace.on("quiet-outline:active-fileview-change", async (view) => {
+            eventBus.on("active-fileview-change", async (view) => {
                 const outlineView = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
                 if (outlineView?.group) { return; }
 

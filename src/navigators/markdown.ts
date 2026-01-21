@@ -25,6 +25,7 @@ import { setupMenu, normal, parent, separator, danger } from "@/utils/menu";
 import { t } from "@/lang/helper";
 import { HeadingUpdater } from "@/utils/update-heading-links";
 import { stringifyHeaders } from "@/utils/heading";
+import { eventBus } from "@/utils/event-bus";
 
 let plugin: QuietOutline;
 export const MD_DATA_FILE = "markdown-states.json";
@@ -121,12 +122,7 @@ export class MarkDownNav extends Nav {
     }
 
     async onload() {
-        // @ts-ignore
-        this.registerDomEvent(
-            document,
-            "quiet-outline-cursorchange",
-            handleCursorChange,
-        );
+        this.registerEvent(eventBus.on("cursorchange", handleCursorChange));
         this.registerDomEvent(
             this.view.contentEl,
             "scroll",
@@ -397,12 +393,12 @@ export class MarkDownNav extends Nav {
 
 }
 
-function handleCursorChange(e?: CustomEvent) {
+function handleCursorChange(docChanged: boolean) {
     if (plugin.settings.persist_md_states) {
         (plugin.navigator as MarkDownNav).storeMarkdownState();
     }
 
-    if (!plugin.allow_cursor_change || plugin.jumping || e?.detail.docChanged) {
+    if (!plugin.allow_cursor_change || plugin.jumping || docChanged) {
         return;
     }
 
@@ -436,7 +432,7 @@ const DEFAULT_STATE: MarkdownState = Object.freeze({
 export type MarkdownStates = Record<string, MarkdownState>;
 
 function currentLine(fromScroll: boolean, isSourcemode: boolean) {
-    const markdownView  = (plugin.navigator as MarkDownNav).view;
+    const markdownView = (plugin.navigator as MarkDownNav).view;
     // there could be no editor on a markdown view when this view is initializing
     if (!markdownView.editor) {
         return 0;
