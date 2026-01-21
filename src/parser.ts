@@ -3,10 +3,10 @@ import { marked } from "marked";
 import { renderMath, finishRenderMath, loadMathJax } from "obsidian";
 import { store } from "./store";
 
-type  Extension = TokenizerAndRendererExtension<string, string>;
+type Extension = TokenizerAndRendererExtension<string, string>;
 
 // parse $xxx$ format
-export const formula:  Extension = {
+export const formula: Extension = {
     name: "formula",
     level: "inline",
     start(src) {
@@ -40,7 +40,7 @@ export const formula:  Extension = {
 };
 
 // parse [[xxx]] format
-export const internal_link:  Extension = {
+export const internal_link: Extension = {
     name: "internal",
     level: "inline",
     start(src) {
@@ -66,7 +66,7 @@ export const internal_link:  Extension = {
 };
 
 // remove ref (^ab123ce | ^[footnote] | [^footnote]) format
-export const remove_ref:  Extension = {
+export const remove_ref: Extension = {
     name: "ref",
     level: "inline",
     start(src) {
@@ -91,7 +91,7 @@ export const remove_ref:  Extension = {
 };
 
 // parse ==xxx== format
-export const highlight:  Extension = {
+export const highlight: Extension = {
     name: "highlight",
     level: "inline",
     start(src) {
@@ -115,7 +115,7 @@ export const highlight:  Extension = {
 };
 
 // parse tags eg. #tag
-export const tag:  Extension = {
+export const tag: Extension = {
     name: "tag",
     level: "inline",
     start(src) {
@@ -147,9 +147,8 @@ export const remove_href = (token: Token) => {
 };
 
 // remove list
-export const tokenizer: TokenizerObject  = {
-    // @ts-ignore
-    list(_src) { },
+export const tokenizer: TokenizerObject = {
+    list(): undefined { },
 };
 
 export function loadMarkedExtensions() {

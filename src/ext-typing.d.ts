@@ -5,6 +5,7 @@ import type {
     EdgeEnd,
     NodeSide,
 } from "obsidian/canvas";
+import { EditorView } from "@codemirror/view";
 
 declare global {
     const i18next: {
@@ -246,6 +247,7 @@ declare module "obsidian" {
     }
 
     interface Editor {
+        cm: EditorView;
         /**
          * @param ranges
          * @param highlightClass set to "is-flashing"

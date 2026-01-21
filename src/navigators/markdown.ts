@@ -444,8 +444,7 @@ function currentLine(fromScroll: boolean, isSourcemode: boolean) {
             : Math.ceil(markdownView.previewMode.getScroll());
     } else {
         return isSourcemode
-            ? // @ts-ignore
-            getCurrentLineFromEditor(markdownView.editor.cm)
+            ? getCurrentLineFromEditor(markdownView.editor.cm)
             : getCurrentLineFromPreview(markdownView);
     }
 }
