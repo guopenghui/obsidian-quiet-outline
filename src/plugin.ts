@@ -19,9 +19,9 @@ import { type MarkdownStates, MD_DATA_FILE } from "./navigators/markdown";
 import { DEFAULT_SETTINGS, type QuietOutlineSettings, SettingTab } from "./settings";
 import { DataManager } from "./utils/data-manager";
 import { registerCommands } from "./commands";
+import { eventBus } from "./utils/event-bus";
 
 import "./stalin.css";
-import { eventBus } from "./utils/event-bus";
 
 const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
 

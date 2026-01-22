@@ -5,7 +5,11 @@ import { t } from "./lang/helper";
 import type { AllCanvasNodeData } from "obsidian/canvas";
 import { assertType } from "./utils/helper";
 
-type AutoExpandMode = "only-expand" | "expand-and-collapse-rest-to-default" | "expand-and-collapse-rest-to-setting" | "disable";
+type AutoExpandMode =
+      "only-expand"
+    | "expand-and-collapse-rest-to-default"
+    | "expand-and-collapse-rest-to-setting"
+    | "disable";
 type ModifierMey = "ctrlKey" | "altKey" | "metaKey" | "disable";
 type Direction = "top" | "bottom" | "left" | "right";
 type TextDirectionDecideBy = "system" | "text";
