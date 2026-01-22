@@ -291,9 +291,7 @@ class SettingTab extends PluginSettingTab {
                     )
                     .addOption(
                         "expand-and-collapse-rest-to-setting",
-                        t(
-                            "Expand and Collapse Rest to Setting Level (Level Switch)",
-                        ),
+                        t("Expand and Collapse Rest to Setting Level (Level Switch)"),
                     )
                     .addOption("disable", t("Disabled"))
                     .setValue(this.plugin.settings.auto_expand_ext)

@@ -18,8 +18,23 @@ declare module "obsidian" {
         dragManager: DragManager;
     }
 
+
+    interface DraggableBase {
+        source?: string;
+        icon?: string;
+        title?: string;
+    }
+
+    interface DraggableHeading extends DraggableBase {
+        type: "heading";
+        heading: n.heading,
+        file: TFile | null;
+    }
+
+    type Draggable = DraggableHeading;
+
     interface DragManager {
-        onDragStart: (event: DragEvent, data: any) => void;
+        onDragStart: (event: DragEvent, data: Draggable) => void;
     }
 
     interface MetadataCache {
@@ -58,6 +73,7 @@ declare module "obsidian" {
     interface MarkdownPreviewRenderer {
         sections: MarkdownPreviewSection[];
         viewportHeight: number;
+        previewEl: HTMLElement;
 
         applyScroll(
             scroll: number,
@@ -65,7 +81,7 @@ declare module "obsidian" {
         ): boolean;
 
         highlightEl(el: HTMLElement): void;
-
+        getSectionForElement(el: HTMLElement): MarkdownPreviewSection | null;
         /**
          * calculate top position of a section by sum height of all previous section
          */

@@ -1,5 +1,4 @@
 import {
-    type MarkdownPreviewSection,
     type HeadingCache,
     type EditorRange,
     MarkdownView,
@@ -474,11 +473,11 @@ function getCurrentLineFromEditor(editorView: EditorView): number {
 
 function getCurrentLineFromPreview(view: MarkdownView): number {
     const renderer = view.previewMode.renderer;
-    const previewEl = (renderer as any).previewEl as HTMLElement;
+    const previewEl = renderer.previewEl;
     const rect = previewEl.getBoundingClientRect();
     const middle = rect.y + rect.height / 2;
 
-    const elsInViewport = previewEl.querySelectorAll(
+    const elsInViewport = previewEl.querySelectorAll<HTMLElement>(
         ".markdown-preview-sizer>div[class|=el]",
     );
 
@@ -486,9 +485,11 @@ function getCurrentLineFromPreview(view: MarkdownView): number {
     elsInViewport.forEach((el) => {
         const { y } = el.getBoundingClientRect();
         if (y <= middle) {
-            const section = (renderer as any).getSectionForElement(el,) as MarkdownPreviewSection;
-            line = section.lineStart  // this property has been removed since Obsidian v1.9.0
-                || section.start.line;
+            const section = renderer.getSectionForElement(el);
+            if (section) {
+                line = section.lineStart  // this property has been removed since Obsidian v1.9.0
+                    || section.start.line;
+            }
         }
     });
 

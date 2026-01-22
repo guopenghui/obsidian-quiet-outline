@@ -31,7 +31,7 @@ export class CanvasNav extends Nav {
     async install(): Promise<void> {
         const plugin = this.plugin;
         if (!plugin.klasses["canvas"]) {
-            this.patchCanvas((this.view as CanvasView).canvas);
+            this.patchCanvas(this.view.canvas);
             plugin.klasses["canvas"] = this.view
                 .constructor as Constructor<any>;
         }
@@ -100,7 +100,7 @@ export class CanvasNav extends Nav {
         store.headers = await this.getHeaders();
     }
     async getHeaders(): Promise<HeadingCache[]> {
-        let nodes = this.view.canvas.data.nodes as AllCanvasNodeData[];
+        let nodes = this.view.canvas.data.nodes;
         // nodes may be undefined when switch to canvas view
         if (nodes) {
             nodes = nodes.filter(node => this.plugin.settings.shown_node_types.includes(node.type));
@@ -129,13 +129,13 @@ export class CanvasNav extends Nav {
         plugin.register(
             around(canvas.constructor.prototype as Canvas, {
                 requestSave(next) {
-                    return function (this: Canvas, ...args: any) {
+                    return function (this: Canvas, ...args: Parameters<typeof next>) {
                         eventBus.trigger("canvas-change");
                         return next.apply(this, args);
                     };
                 },
                 updateSelection(next) {
-                    return function (this: Canvas, ...args: any) {
+                    return function (this: Canvas, ...args: Parameters<typeof next>) {
                         next.apply(this, args);
                         eventBus.trigger("canvas-selection-change", this.selection);
                         return;

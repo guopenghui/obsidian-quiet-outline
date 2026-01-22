@@ -48,11 +48,11 @@ export function useOutlinePopover(plugin: QuietOutline, container: HTMLElement) 
 
     // excute on first time, and wait until next fresh
     // ... or take a break when node pointed changes
-    function customDebounce(func: (_: any) => void, delay: number) {
+    function customDebounce(func: (...args: any[]) => void, delay: number) {
         let fresh = true;
-        let timeoutId: any;
+        let timeoutId: number | undefined;
 
-        return function (this: any, ...args: any) {
+        return function (this: any, ...args: any[]) {
             const currentLink = triggerNode?.getAttribute("raw") || "";
             if (currentLink !== prevShowed || fresh) {
                 func.apply(this, args);

@@ -75,8 +75,8 @@ import { useOutlineSearch } from "./use-search";
 import { useOutlineExpand } from "./use-expand";
 import { useOutlineController } from "./use-controller";
 
-const plugin = inject("plugin") as QuietOutline;
-const container = inject("container") as HTMLElement;
+const plugin = inject<QuietOutline>("plugin")!;
+const container = inject<HTMLElement>("container")!;
 const tree = ref<InstanceType<typeof NTree>>();
 
 // level switch
