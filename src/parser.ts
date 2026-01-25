@@ -31,7 +31,6 @@ export const formula: Extension = {
             return formula.outerHTML;
         } catch {
             loadMathJax().then(() => {
-
                 store.refreshTree();
             });
             return false;
@@ -142,7 +141,7 @@ export const tag: Extension = {
 // remove url inside <a>
 export const remove_href = (token: Token) => {
     if (token.type === "link") {
-        token.href = "javascript:void(0);";
+        token.href = "#";
     }
 };
 

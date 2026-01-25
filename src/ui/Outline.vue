@@ -63,7 +63,7 @@ import { NTree, NButton, NInput, NSlider, NConfigProvider } from "naive-ui";
 import { Icon } from "@vicons/utils";
 import { store } from "@/store";
 import type QuietOutline from "@/plugin";
-import { useDomEvent, useEventBus } from "@/utils/use";
+import { useEventBus } from "@/utils/use";
 import { type MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from "./icons";
 import { useOutlineTree } from "./use-tree";
@@ -110,32 +110,17 @@ useOutlinePopover(plugin, container);
 async function toBottom() {
     plugin.navigator.toBottom();
 }
+
 // reset button
 function reset() {
     pattern.value = "";
     switchLevel(getDefaultLevel());
 }
-
-function resetSelected() {
-    selectedKeys.value = [];
-}
+useEventBus("reset-panel", reset);
 
 function expand(keys: string[]) {
     modifyExpandKeys(keys);
 }
-
-// react to some events
-useDomEvent(window, "click", resetSelected);
-useEventBus("reset-panel", reset);
-useEventBus("levelchange", (arg) => {
-    if (typeof arg === "number") {
-        switchLevel(arg);
-    } else if (arg === "inc") {
-        switchLevel(Math.clamp(level.value + 1, 0, 5));
-    } else if (arg === "dec") {
-        switchLevel(Math.clamp(level.value - 1, 0, 5));
-    }
-});
 
 // force remake tree
 const keyOfTree = ref(0);

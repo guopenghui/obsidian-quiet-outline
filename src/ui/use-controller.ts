@@ -1,7 +1,7 @@
 
 import { store } from "@/store";
 import type { Ref } from "vue";
-import { getPathFromArr, headingToKey, isLeaf, nodeToIndex } from "./utils";
+import { getPathFromArr, makeKey, isLeaf, nodeToIndex } from "./utils";
 
 type Options = {
     pattern: Ref<string>,
@@ -115,5 +115,5 @@ export function useOutlineController({ container, locateIdx, selectedKeys, expan
 }
 
 function idxToKey(idx: number) {
-    return headingToKey(store.headers[idx], idx);
+    return makeKey(store.headers[idx].level, idx);
 }

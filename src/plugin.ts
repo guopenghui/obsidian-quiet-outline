@@ -22,13 +22,14 @@ import { registerCommands } from "./commands";
 import { eventBus } from "./utils/event-bus";
 
 import "./stalin.css";
+import { Deferred } from "./utils/promise";
 
 const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
 
 export default class QuietOutline extends Plugin {
     settings!: QuietOutlineSettings;
     navigator: Nav = createNav("dummy", this, null);
-    jumping: boolean = false;
+    jumping = Deferred.resolved();
     klasses: Record<string, Constructor<any>> = {};
     data_manager!: DataManager;
     outlineView: OutlineView | null = null;
@@ -40,6 +41,14 @@ export default class QuietOutline extends Plugin {
     private prevActiveFile: TFile | null = null;
     private prevActiveFileView: FileView | null = null;
     private prevView: View | null = null;
+
+    async startJumping() {
+        const jumping = this.jumping = new Deferred();
+        // end jumping after scroll event or timeout
+        await Promise.race([jumping.promise, sleep(1000)]);
+
+        jumping.resolve();
+    }
 
     async onload() {
         await this.loadSettings();
@@ -61,8 +70,10 @@ export default class QuietOutline extends Plugin {
 
         // only manually activate view when first time install
         if (await this.firstTimeInstall()) {
-            this.activateView();
-            await this.saveSettings();
+            this.app.workspace.onLayoutReady(() => {
+                this.activateView();
+                this.saveSettings();
+            });
         }
 
         this.block_scroll = debounceCb(
@@ -218,10 +229,6 @@ export default class QuietOutline extends Plugin {
     }
 
     async activateView() {
-        // fix console error
-        // https://github.com/guopenghui/obsidian-quiet-outline/issues/154
-        if (this.app.workspace.rightSplit === null) return;
-
         if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0) {
             await this.app.workspace.getRightLeaf(false)?.setViewState({
                 type: VIEW_TYPE,

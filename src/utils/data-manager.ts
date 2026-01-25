@@ -42,8 +42,8 @@ export class DataManager {
     _saveFileData<Data>(path: string, data: Data) {
         this.cache[path] = data;
         let filePath = [this.pluginPath, path].join("/");
-        this.writeQueue = this.writeQueue.then(
-            () => this.app.vault.adapter.write(filePath, JSON.stringify(data, null, 2))
-        );
+        this.writeQueue = this.writeQueue
+            .then(() => this.app.vault.adapter.write(filePath, JSON.stringify(data, null, 2)))
+            .catch((error) => console.error(`Failed to save data to ${filePath}: ${error}`));
     }
 }

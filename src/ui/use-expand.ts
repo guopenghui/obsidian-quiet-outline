@@ -1,7 +1,8 @@
 import { store } from "@/store";
 import { ref, toRaw, watch } from "vue";
-import { getPathFromArr, headingToKey, keyToIndex } from "./utils";
+import { getPathFromArr, makeKey, keyToIndex } from "./utils";
 import type QuietOutline from "@/plugin";
+import { useEventBus } from "@/utils/use";
 
 export function useOutlineExpand(plugin: QuietOutline) {
     function getDefaultLevel(): number {
@@ -16,6 +17,16 @@ export function useOutlineExpand(plugin: QuietOutline) {
         modifyExpandKeys(newKeys);
     }
 
+    useEventBus("levelchange", (arg) => {
+        if (typeof arg === "number") {
+            switchLevel(arg);
+        } else if (arg === "inc") {
+            switchLevel(Math.clamp(level.value + 1, 0, 5));
+        } else if (arg === "dec") {
+            switchLevel(Math.clamp(level.value - 1, 0, 5));
+        }
+    });
+
     const expanded = ref<string[]>([]);
     /** revome invalid expand keys */
     function safeFilter(keys: string[]) {
@@ -23,7 +34,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
             const index = keyToIndex(key);
             return index < store.headers.length - 1
                 && store.headers[index].level < store.headers[index + 1].level;
-        })
+        });
     }
     function modifyExpandKeys(
         keys: string[],
@@ -31,8 +42,8 @@ export function useOutlineExpand(plugin: QuietOutline) {
     ) {
         let newKeys: string[];
         if (mode === "replace") {
-             newKeys = keys;
-        } else if(mode === "remove") {
+            newKeys = keys;
+        } else if (mode === "remove") {
             newKeys = expanded.value.filter(key => !keys.includes(key));
         } else {
             const mergeSet = new Set([...expanded.value, ...keys]);
@@ -46,7 +57,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
         const path = plugin.navigator.getPath();
         if (!path) return;
 
-        const keys = toRaw(expanded.value)
+        const keys = toRaw(expanded.value);
         plugin.navigator.onExpandKeysChange(path, keys);
     }
 
@@ -56,15 +67,15 @@ export function useOutlineExpand(plugin: QuietOutline) {
             // if current heading is a parent, expand itself as well
             const should_expand =
                 index < store.headers.length - 1 &&
-                store.headers[index].level < store.headers[index + 1].level
-                    ? [headingToKey(current_heading, index)]
+                    store.headers[index].level < store.headers[index + 1].level
+                    ? [makeKey(current_heading.level, index)]
                     : [];
 
             let curLevel = current_heading.level;
             let i = index;
             while (i-- > 0) {
                 if (store.headers[i].level < curLevel) {
-                    should_expand.push(headingToKey(store.headers[i], i));
+                    should_expand.push(makeKey(store.headers[i].level, i));
                     curLevel = store.headers[i].level;
                 }
                 if (curLevel === 1) {
@@ -128,7 +139,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
 
                     const newIndex = keyToIndex(newKey);
                     if (Parent2Parent) {
-                        return `item-${store.headers[Parent2Parent.newBegin].level}-${newIndex}`;
+                        return makeKey(store.headers[Parent2Parent.newBegin].level, newIndex);
                     } else {
                         return newKey;
                     }
@@ -139,7 +150,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
                 .filter((modify) => modify.levelChangeType === "child2parent")
                 .forEach((modify) => {
                     newExpandKeys.push(
-                        `item-${store.headers[modify.newBegin].level}-${modify.newBegin}`,
+                        makeKey(store.headers[modify.newBegin].level, modify.newBegin),
                     );
                 });
 
@@ -149,13 +160,13 @@ export function useOutlineExpand(plugin: QuietOutline) {
                 if (
                     add.begin >= store.headers.length - 1 ||
                     store.headers[add.begin].level >=
-                        store.headers[add.begin + 1].level
+                    store.headers[add.begin + 1].level
                 ) {
                     path.pop(); // remove itself
                 }
                 path.forEach((index) => {
                     newExpandKeys.push(
-                        `item-${store.headers[index].level}-${index}`,
+                        makeKey(store.headers[index].level, index),
                     );
                 });
             });
@@ -170,13 +181,13 @@ export function useOutlineExpand(plugin: QuietOutline) {
         expanded,
         modifyExpandKeys,
         autoExpand
-    }
+    };
 }
 
 
 function offset(key: string, offset: number) {
     const parts = key.split("-");
-    return `item-${parts[1]}-${parseInt(parts[2]) + offset}`;
+    return makeKey(parseInt(parts[1]), parseInt(parts[2]) + offset);
 }
 
 export function filterKeysLessThanEqual(lev: number): string[] {
@@ -192,7 +203,7 @@ export function filterKeysLessThanEqual(lev: number): string[] {
             return arr[i].level <= lev;
         })
         .map((h) => {
-            return "item-" + h.level + "-" + h.no;
+            return makeKey(h.level, h.no);
         });
 
     return newKeys;

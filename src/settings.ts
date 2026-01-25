@@ -10,7 +10,7 @@ type AutoExpandMode =
     | "expand-and-collapse-rest-to-default"
     | "expand-and-collapse-rest-to-setting"
     | "disable";
-type ModifierMey = "ctrlKey" | "altKey" | "metaKey" | "disable";
+type ModifierKey = "ctrlKey" | "altKey" | "metaKey" | "disable";
 type Direction = "top" | "bottom" | "left" | "right";
 type TextDirectionDecideBy = "system" | "text";
 type CanvasSortOrder = "area" | "name_asc" | "name_desc";
@@ -28,7 +28,7 @@ interface QuietOutlineSettings {
     label_direction: Direction;
     drag_modify: boolean;
     locate_by_cursor: boolean;
-    show_popover_key: ModifierMey;
+    show_popover_key: ModifierKey;
     persist_md_states: boolean;
     keep_search_input: boolean;
     export_format: string;
@@ -102,7 +102,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     heading_truncate_length: 20,
 
     // Style settings
-    patch_color: true,
+    patch_color: false,
     primary_color_light: "#18a058",
     primary_color_dark: "#63e2b7",
     rainbow_line: false,
@@ -347,7 +347,7 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.show_popover_key)
                     .onChange(
                         async (value: string) => {
-                            this.plugin.settings.show_popover_key = value as ModifierMey;
+                            this.plugin.settings.show_popover_key = value as ModifierKey;
                             await this.plugin.saveSettings();
                         },
                     ),

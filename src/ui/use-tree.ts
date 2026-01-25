@@ -3,11 +3,12 @@ import { computed, ref } from "vue";
 import type { HTMLAttributes, ComputedRef, Ref } from "vue";
 import type { TreeOptionX } from "./types";
 import type { TreeOption } from "naive-ui";
-import { getPathFromArr, headingToKey, keyToIndex } from "./utils";
+import { getPathFromArr, makeKey, keyToIndex } from "./utils";
 import { Menu } from "obsidian";
 import { normal, separator, setupMenu } from "@/utils/menu";
 import type QuietOutline from "@/plugin";
 import { t } from "@/lang/helper";
+import { useDomEvent } from "@/utils/use";
 
 // add html attributes to nodes
 interface HTMLAttr extends HTMLAttributes {
@@ -18,7 +19,7 @@ interface HTMLAttr extends HTMLAttributes {
 
 type OutlineTreeOptions = {
     plugin: QuietOutline,
-    container: HTMLElement
+    container: HTMLElement;
     level: Ref<number>,
     expanded: Ref<string[]>,
     modifyExpandKeys: (newKeys: string[], mode: "add" | "remove" | "replace") => void,
@@ -33,10 +34,12 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
     const locateIdx = ref(0);
     const selectedKeys = ref<string[]>([]);
 
+    useDomEvent(window, "click", () => { selectedKeys.value = []; });
+
     function resetLocated(idx: number) {
         const path = getPathFromArr(idx);
         let index = path.find(
-            (v) => !expanded.value.contains(headingToKey(store.headers[v], v)),
+            (v) => !expanded.value.contains(makeKey(store.headers[v].level, v)),
         );
         index = index === undefined ? path[path.length - 1] : index;
 
@@ -52,7 +55,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
     }
 
     const nodeProps = computed(() => {
-        return (info: { option: TreeOption }): HTMLAttr => {
+        return (info: { option: TreeOption; }): HTMLAttr => {
             const lev = parseInt((info.option.key as string).split("-")[1]);
             const no = parseInt((info.option.key as string).split("-")[2]);
             const raw = info.option.label || "";
@@ -126,7 +129,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
         locateIdx,
         resetLocated,
         selectedKeys,
-    }
+    };
 }
 
 function makeTree(headers: Heading[]): TreeOptionX[] {
@@ -141,7 +144,7 @@ function arrToTree(headers: Heading[]): TreeOptionX[] {
     headers.forEach((h, i) => {
         const node: TreeOptionX = {
             label: h.heading,
-            key: "item-" + h.level + "-" + i,
+            key: makeKey(h.level, i),
             line: h.position.start.line,
             icon: h.icon,
             no: i
@@ -169,7 +172,7 @@ function getNode(data: ComputedRef<TreeOptionX[]>, index: number): {
     self: TreeOptionX,
     path: TreeOptionX[],
     siblings: TreeOptionX[],
-    descendants: TreeOptionX[]
+    descendants: TreeOptionX[];
 } {
     const path: TreeOptionX[] = [];
     function pushLastGreatEq(nodes: TreeOption[] | undefined) {
@@ -228,7 +231,7 @@ export function filterKeysLessThanEqual(lev: number): string[] {
             return arr[i].level <= lev;
         })
         .map((h) => {
-            return "item-" + h.level + "-" + h.no;
+            return makeKey(h.level, h.no);
         });
 
     return newKeys;

@@ -1,12 +1,12 @@
-import { type Heading, store } from "@/store";
+import { store } from "@/store";
 import { type TreeOption } from "naive-ui";
 
-export function headingToKey(h: Heading, i: number) {
-    return "item-" + h.level + "-" + i;
+export function makeKey(level: number, index: number) {
+    return "item-" + level + "-" + index;
 }
 
 export function keyToIndex(key: string) {
-    return parseInt((key as string).split("-")[2]);
+    return parseInt(key.split("-")[2]);
 }
 
 export function nodeToIndex(node: TreeOption | string): number {

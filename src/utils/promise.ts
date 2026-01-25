@@ -17,6 +17,13 @@ export class Deferred<T = void> {
         }
     }
 
+    static resolved(t: void): Deferred<void>;
+    static resolved<T>(t: T): Deferred<T> {
+        const deferred = new Deferred<T>();
+        deferred.resolve(t);
+        return deferred;
+    }
+
     isResolved(): boolean {
         return this.state === 'resolved';
     }

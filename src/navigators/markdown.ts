@@ -69,17 +69,11 @@ export class MarkDownNav extends Nav {
         };
         const state = { line, cursor };
 
-        this.plugin.jumping = true;
+        this.plugin.startJumping();
         plugin.outlineView?.vueInstance.onPosChange(key);
 
         setTimeout(() => {
             this.view.setEphemeralState(state);
-
-            // 这里假设 jump 一定会 *触发唯一一次* scroll，因此把 jumping = false 的操作交给 handelScroll 函数
-            // 以避免 jump 后的 scroll 泄露
-            // setTimeout(() => {
-            // 	plugin.jumping = false;
-            // }, 1000);
         });
     }
 
@@ -94,17 +88,12 @@ export class MarkDownNav extends Nav {
 
         const state = { line };
 
-        this.plugin.jumping = true;
+        this.plugin.startJumping();
+        // this.plugin.jumping = true;
         plugin.outlineView?.vueInstance.onPosChange(key);
 
         setTimeout(() => {
             this.view.setEphemeralState(state);
-
-            // 这里假设 jump 一定会 *触发唯一一次* scroll，因此把 jumping = false 的操作交给 handelScroll 函数
-            // 以避免 jump 后的 scroll 泄露
-            // setTimeout(() => {
-            // 	plugin.jumping = false;
-            // }, 1000);
         });
     }
 
@@ -397,7 +386,7 @@ function handleCursorChange(docChanged: boolean) {
         (plugin.navigator as MarkDownNav).storeMarkdownState();
     }
 
-    if (!plugin.allow_cursor_change || plugin.jumping || docChanged) {
+    if (!plugin.allow_cursor_change || !plugin.jumping.isResolved() || docChanged) {
         return;
     }
 
@@ -523,8 +512,8 @@ function _handleScroll(evt: Event) {
         return;
     }
 
-    if (plugin.jumping) {
-        plugin.jumping = false;
+    if (!plugin.jumping.isResolved()) {
+        plugin.jumping.resolve();
         return;
     }
 
