@@ -2,20 +2,8 @@
     <div id="container" :style="containerStyle">
         <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
             <div class="function-bar" v-if="store.searchSupport">
-                <NButton size="small" circle @click="toBottom" aria-label="To Bottom">
-                    <template #icon>
-                        <Icon>
-                            <ArrowCircleDownRound :style="iconColor" />
-                        </Icon>
-                    </template>
-                </NButton>
-                <NButton size="small" circle @click="reset" aria-label="Reset">
-                    <template #icon>
-                        <Icon>
-                            <SettingsBackupRestoreRound :style="iconColor" />
-                        </Icon>
-                    </template>
-                </NButton>
+                <QButton @click="toBottom" :icon-style="iconColor" :svg-icon="ArrowCircleDownRound" label="To Bottom" />
+                <QButton @click="reset" :icon-style="iconColor" :svg-icon="SettingsBackupRestoreRound" label="Reset" />
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
             <NSlider
@@ -58,14 +46,14 @@
 
 <script setup lang="ts">
 import { ref, nextTick, inject } from "vue";
-import { NTree, NButton, NInput, NSlider, NConfigProvider } from "naive-ui";
+import { NTree, NInput, NSlider, NConfigProvider } from "naive-ui";
 
-import { Icon } from "@vicons/utils";
 import { store } from "@/store";
 import type QuietOutline from "@/plugin";
 import { useEventBus } from "@/utils/use";
 import { type MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
 import { SettingsBackupRestoreRound, ArrowCircleDownRound } from "./icons";
+import QButton from "./Button.vue";
 import { useOutlineTree } from "./use-tree";
 import { useOutlineRenderer } from "./use-heading-renderer";
 import { useOutlinePopover } from "./use-popover";
