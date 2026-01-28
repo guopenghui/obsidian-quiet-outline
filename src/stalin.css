@@ -174,8 +174,17 @@
     min-width: 10px;
 }
 
-.quiet-outline .function-bar input[type="text"]:hover {
-    background-color: transparent;
+/* avoid <input> style overriding by theme */
+.quiet-outline .function-bar input[type="text"] {
+    &:hover,
+    &:focus {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
 }
 
 /* 图标大小 */
