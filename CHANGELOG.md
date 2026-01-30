@@ -2,6 +2,76 @@
 
 > This file is auto-generated from GitHub Releases. Do not edit by hand.
 
+## 0.5.9 - 2026-01-20
+
+### Fix
++ collapse button not align with indent line.
++ wrong located index in hierarchically discontinuous headings (#278 )
++ button style on mobile
+
+---
+
+### 修复
++ 折叠按钮与缩进线未对齐。
++ 在标题层级不连续时，当前标题的索引位置错误（#278）
++ 移动设备上的按钮样式
+
+## 0.5.8 - 2026-01-12
+
+Switched the build tool to vite.
+### Feature
++ option to customize heading color per theme (light/dark mode) #276
+
+---
+将构建工具转换到了 vite 
+### 功能
++ 增加了可按主题（明亮/暗黑模式）自定义标题颜色的选项 #276
+
+## 0.5.7 - 2026-01-06
+
+### Fix
++ `file` field of `MarkdownView` is null when loading a workspace
++ improve `getDefaultColor` logic to deal with CSS color values not supported by ui library (like oklch). 
++ error with loading and saving `markdown-states.json` file
+
+---
+
+### 修复
+- 修复加载工作区时 `MarkdownView` 的 `file` 字段为空的问题
+- 优化 `getDefaultColor` 逻辑，以兼容 UI 库不支持的 CSS 颜色值 (如 oklch）
+- 修复 `markdown-states.json` 文件加载和保存时出现的错误
+
+## 0.5.6 - 2025-12-30
+
+fix: renaming heading failed (#270)
+
+---
+
+修复：重命名标题失败 （#270）
+
+## 0.5.5 - 2025-12-29
+
++ feat: Add heading level change option in context menu (#251)
++ fix: Located heading gets invisible (#269)
+
+---
+
++ 新功能：在右键菜单中添加标题级别更改选项（#251）
++ 修复：某些主题下当前所在的标题变得不可见（#269）
+
+## 0.5.4 - 2025-12-26
+
+### Feat
++ Support deleting markdown headings with context menu #153
++ Add Canvas settings tab with node type filters #252
++ Add heading truncate length setting in canvas headings #252
+
+---
+### 功能
++ 支持通过右键菜单在面板中直接删除markdown标题 #153
++ 增加了设置项，从而选择在面板中展示的 canvas 节点种类 #252
++ 增加设置项，控制canvas节点标题的截断长度 #252
+
 ## 0.5.3 - 2025-12-07
 
 feat: Added canvas outline sorting options and translation. Thanks for @YouYunyinqv
