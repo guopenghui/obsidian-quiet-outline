@@ -24,8 +24,6 @@ import { eventBus } from "./utils/event-bus";
 import "./stalin.css";
 import { Deferred } from "./utils/promise";
 
-const SUPPORTED_VIEW_TYPES = ["markdown", "canvas", "kanban"];
-
 export default class QuietOutline extends Plugin {
     settings!: QuietOutlineSettings;
     navigator: Nav = createNav("dummy", this, null);
@@ -123,7 +121,7 @@ export default class QuietOutline extends Plugin {
                     return;
                 }
 
-                if (leaf.view instanceof FileView && SUPPORTED_VIEW_TYPES.contains(leaf.view.getViewType()) && leaf.view.file) {
+                if (leaf.view instanceof FileView && leaf.view.file) {
                     // when opening a canvas, it triggers active-leaf-change twice
                     // and at the first time it's not ready
                     const isCanvasTwice = leaf.view.getViewType() === "canvas"
@@ -144,8 +142,7 @@ export default class QuietOutline extends Plugin {
 
         this.registerEvent(
             eventBus.on("active-fileview-change", async (view) => {
-                const outlineView = this.app.workspace.getLeavesOfType(VIEW_TYPE)[0];
-                if (outlineView?.group) { return; }
+                if (this.outlineView?.leaf?.group) { return; }
 
                 if (!view) {
                     await this.updateNavAndRefresh("dummy", null);
