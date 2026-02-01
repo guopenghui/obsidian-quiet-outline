@@ -1,47 +1,45 @@
 <template>
-    <div id="container" :style="containerStyle">
-        <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
-            <div class="function-bar" v-if="store.searchSupport">
-                <QButton @click="toBottom" :icon-style="iconColor" :svg-icon="ArrowCircleDownRound" label="To Bottom" />
-                <QButton @click="reset" :icon-style="iconColor" :svg-icon="SettingsBackupRestoreRound" label="Reset" />
-                <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
-            </div>
-            <NSlider
-                v-if="store.levelSwitch"
-                :value="level"
-                :on-update:value="switchLevel"
-                :marks="marks"
-                step="mark"
-                :min="0"
-                :max="5"
-                style="margin: 4px 0"
-                :format-tooltip="formatTooltip"
-            />
-            <code v-if="pattern">{{ matchCount }} result(s): </code>
-            <NTree
-                ref="tree"
-                block-line
-                :indent="17"
-                :pattern="pattern"
-                :data="data"
-                :selected-keys="selectedKeys"
-                :render-label="renderLabel"
-                :render-prefix="renderPrefix"
-                :node-props="nodeProps"
-                :keyboard="false"
-                :expanded-keys="expanded"
-                :render-switcher-icon="renderSwitcherIcon"
-                :on-update:expanded-keys="expand"
-                :key="keyOfTree"
-                :filter="filter"
-                :show-irrelevant-nodes="!store.hideUnsearched"
-                :class="{ ellipsis: store.ellipsis }"
-                :draggable="store.dragModify && !editingHeadingText"
-                @drop="onDrop"
-                :allow-drop="() => plugin.navigator.canDrop"
-            />
-        </NConfigProvider>
-    </div>
+    <NConfigProvider :theme="theme" :theme-overrides="themeOverrides" :style="containerStyle">
+        <div class="function-bar" v-if="store.searchSupport">
+            <QButton @click="toBottom" :icon-style="iconColor" :svg-icon="ArrowCircleDownRound" label="To Bottom" />
+            <QButton @click="reset" :icon-style="iconColor" :svg-icon="SettingsBackupRestoreRound" label="Reset" />
+            <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
+        </div>
+        <NSlider
+            v-if="store.levelSwitch"
+            :value="level"
+            :on-update:value="switchLevel"
+            :marks="marks"
+            step="mark"
+            :min="0"
+            :max="5"
+            style="margin: 4px 0"
+            :format-tooltip="formatTooltip"
+        />
+        <code v-if="pattern">{{ matchCount }} result(s): </code>
+        <NTree
+            ref="tree"
+            block-line
+            :indent="17"
+            :pattern="pattern"
+            :data="data"
+            :selected-keys="selectedKeys"
+            :render-label="renderLabel"
+            :render-prefix="renderPrefix"
+            :node-props="nodeProps"
+            :keyboard="false"
+            :expanded-keys="expanded"
+            :render-switcher-icon="renderSwitcherIcon"
+            :on-update:expanded-keys="expand"
+            :key="keyOfTree"
+            :filter="filter"
+            :show-irrelevant-nodes="!store.hideUnsearched"
+            :class="{ ellipsis: store.ellipsis }"
+            :draggable="store.dragModify && !editingHeadingText"
+            @drop="onDrop"
+            :allow-drop="() => plugin.navigator.canDrop"
+        />
+    </NConfigProvider>
 </template>
 
 <script setup lang="ts">
@@ -78,8 +76,7 @@ function formatTooltip(value: number): string {
     return "No expand";
 }
 
-const { theme, lightThemeConfig, darkThemeConfig, iconColor, primaryColor, rainbowColors, containerStyle, biDi } =
-    useOutlineTheme();
+const { theme, themeOverrides, iconColor, primaryColor, rainbowColors, containerStyle, biDi } = useOutlineTheme();
 const { level, switchLevel, expanded, modifyExpandKeys, getDefaultLevel, autoExpand } = useOutlineExpand(plugin);
 const { data, nodeProps, locateIdx, resetLocated, selectedKeys } = useOutlineTree({
     plugin,

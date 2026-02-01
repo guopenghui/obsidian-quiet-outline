@@ -69,6 +69,12 @@ export function useOutlineTheme() {
         };
     });
 
+    const themeOverrides = computed(() => {
+        return theme.value === null
+            ? lightThemeConfig.value
+            : darkThemeConfig.value;
+    });
+
     const rainbowColors = computed(() => {
         if (store.theme.rainbowLine) {
             return {
@@ -124,8 +130,7 @@ export function useOutlineTheme() {
 
     return {
         theme,
-        lightThemeConfig,
-        darkThemeConfig,
+        themeOverrides,
         iconColor,
         primaryColor,
         rainbowColors,

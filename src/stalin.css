@@ -312,9 +312,7 @@
 .quiet-outline {
     height: 100%;
 }
-.quiet-outline #container {
-    height: 100%;
-}
+
 .quiet-outline .n-config-provider {
     display: flex;
     flex-direction: column;
