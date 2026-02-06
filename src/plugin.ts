@@ -121,7 +121,7 @@ export default class QuietOutline extends Plugin {
                     return;
                 }
 
-                if (leaf.view instanceof FileView && leaf.view.file) {
+                if (leaf.view instanceof FileView && leaf.view.navigation && leaf.view.file) {
                     // when opening a canvas, it triggers active-leaf-change twice
                     // and at the first time it's not ready
                     const isCanvasTwice = leaf.view.getViewType() === "canvas"
