@@ -1,9 +1,9 @@
 <template>
     <NConfigProvider :theme="theme" :theme-overrides="themeOverrides" :style="containerStyle">
         <div class="function-bar" v-if="store.searchSupport">
-            <QButton @click="toBottom" :icon-style="iconColor" :svg-icon="ArrowCircleDownRound" label="To Bottom" />
-            <QButton @click="reset" :icon-style="iconColor" :svg-icon="SettingsBackupRestoreRound" label="Reset" />
-            <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
+            <QButton @click="toBottom" :icon-style="iconColor" :svg-icon="ArrowCircleDownRound" :label="t('To Bottom')" />
+            <QButton @click="reset" :icon-style="iconColor" :svg-icon="SettingsBackupRestoreRound" :label="t('Reset')" />
+            <NInput v-model:value="pattern" :placeholder="t('Input to search')" size="small" clearable />
         </div>
         <NSlider
             v-if="store.levelSwitch"
@@ -16,7 +16,7 @@
             style="margin: 4px 0"
             :format-tooltip="formatTooltip"
         />
-        <code v-if="pattern">{{ matchCount }} result(s): </code>
+        <code v-if="pattern">{{ matchCount }} {{ t("result(s):") }} </code>
         <NTree
             ref="tree"
             block-line
@@ -47,6 +47,7 @@ import { ref, nextTick, inject } from "vue";
 import { NTree, NInput, NSlider, NConfigProvider } from "naive-ui";
 
 import { store } from "@/store";
+import { t } from "@/lang/helper";
 import type QuietOutline from "@/plugin";
 import { useEventBus } from "@/utils/use";
 import { type MarkdownStates, MD_DATA_FILE } from "@/navigators/markdown";
