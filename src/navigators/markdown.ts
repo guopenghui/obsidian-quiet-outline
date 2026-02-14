@@ -73,6 +73,7 @@ export class MarkDownNav extends Nav {
         plugin.outlineView?.vueInstance.onPosChange(key);
 
         setTimeout(() => {
+            this.view.app.workspace.setActiveLeaf(this.view.leaf, { focus: true });
             this.view.setEphemeralState(state);
         });
     }
