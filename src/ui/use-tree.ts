@@ -9,6 +9,7 @@ import { normal, separator, setupMenu } from "@/utils/menu";
 import type QuietOutline from "@/plugin";
 import { t } from "@/lang/helper";
 import { useDomEvent } from "@/utils/use";
+import { assertType } from "@/utils/helper";
 
 // add html attributes to nodes
 interface HTMLAttr extends HTMLAttributes {
@@ -80,11 +81,11 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
                 "data-tooltip-position": store.labelDirection,
                 raw,
                 onClick: (event) => {
-                    if (
-                        !(event.target as HTMLElement).matchParent(
-                            ".n-tree-node-content",
-                        )
-                    ) {
+                    assertType<HTMLElement>(event.target);
+                    if (event.target.matchParent(".n-tree-node-switcher")) {
+                        return;
+                    }
+                    if (!event.target.matchParent(".n-tree-node")) {
                         return;
                     }
                     jump(info.option);
