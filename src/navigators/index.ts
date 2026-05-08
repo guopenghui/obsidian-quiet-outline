@@ -5,6 +5,7 @@ import { MarkDownNav } from "./markdown";
 import { CanvasNav } from "./canvas";
 import { KanbanNav } from "./kanban";
 import { EmbedMarkdownFileNav, EmbedMarkdownTextNav } from "./embed-markdown";
+import { LineageNav } from "./lineage";
 
 type NavConstructor = new (plugin: QuietOutline, view: any) => Nav;
 const NAVIGATORS = {
@@ -14,6 +15,7 @@ const NAVIGATORS = {
     canvas: CanvasNav,
     "embed-markdown-file": EmbedMarkdownFileNav,
     "embed-markdown-text": EmbedMarkdownTextNav,
+    lineage: LineageNav,
 } satisfies { [key: string]: NavConstructor; };
 
 function createNav<Name extends keyof typeof NAVIGATORS>(
