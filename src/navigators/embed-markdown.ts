@@ -30,7 +30,7 @@ export class EmbedMarkdownFileNav extends Nav {
         // const state = { line, cursor };
 
         // this.plugin.jumping = true;
-        this.plugin.startJumping();
+        void this.plugin.startJumping();
         this.plugin.outlineView?.vueInstance.onPosChange(key);
 
         setTimeout(() => {
@@ -49,7 +49,7 @@ export class EmbedMarkdownFileNav extends Nav {
         // const state = { line, cursor };
 
         // this.plugin.jumping = true;
-        this.plugin.startJumping();
+        void this.plugin.startJumping();
         this.plugin.outlineView?.vueInstance.onPosChange(key);
 
         setTimeout(() => {

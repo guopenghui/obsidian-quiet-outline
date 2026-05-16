@@ -8,7 +8,7 @@ export class Deferred<T = void> {
         this.reject = reject;
     }).then(
         res => (this.setState('resolved'), res),
-        err => (this.setState('rejected'), Promise.reject(err)),
+        err => (this.setState('rejected'), Promise.reject(toError(err))),
     );
 
     protected setState(state: 'resolved' | 'rejected'): void {
@@ -31,4 +31,8 @@ export class Deferred<T = void> {
     isRejected(): boolean {
         return this.state === 'rejected';
     }
+}
+
+function toError(err: unknown): Error {
+    return err instanceof Error ? err : new Error(String(err));
 }

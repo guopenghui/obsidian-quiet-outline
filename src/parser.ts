@@ -30,7 +30,7 @@ export const formula: Extension = {
             finishRenderMath();
             return formula.outerHTML;
         } catch {
-            loadMathJax().then(() => {
+            void loadMathJax().then(() => {
                 store.refreshTree();
             });
             return false;

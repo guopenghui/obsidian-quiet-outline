@@ -55,13 +55,13 @@ export abstract class Nav {
     registerDomEvent<K extends keyof WindowEventMap>(
         el: Window,
         type: K,
-        callback: (this: HTMLElement, ev: WindowEventMap[K]) => unknown,
+        callback: (this: HTMLElement, ev: WindowEventMap[K]) => void,
         options?: boolean | AddEventListenerOptions,
     ): void;
     registerDomEvent<K extends keyof DocumentEventMap>(
         el: Document,
         type: K,
-        callback: (this: HTMLElement, ev: DocumentEventMap[K]) => unknown,
+        callback: (this: HTMLElement, ev: DocumentEventMap[K]) => void,
         options?: boolean | AddEventListenerOptions,
     ): void;
     registerDomEvent<K extends keyof HTMLElementEventMap>(
@@ -110,8 +110,8 @@ export abstract class Nav {
     onExpandKeysChange(path: string, keys: string[]) { }
     changeHeadingContent(no: number, content: string) { }
     abstract jump(key: number): Promise<void>;
-    async jumpWithoutFocus(key: number) { this.jump(key); }
-    async jumpWhenClick(key: number) { this.jumpWithoutFocus(key); }
+    async jumpWithoutFocus(key: number) { await this.jump(key); }
+    async jumpWhenClick(key: number) { await this.jumpWithoutFocus(key); }
     abstract getHeaders(): Promise<HeadingCache[]>;
     abstract setHeaders(): Promise<void>;
     abstract updateHeaders(): Promise<void>;

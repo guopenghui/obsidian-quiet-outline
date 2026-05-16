@@ -69,8 +69,8 @@ export default class QuietOutline extends Plugin {
         // only manually activate view when first time install
         if (await this.firstTimeInstall()) {
             this.app.workspace.onLayoutReady(() => {
-                this.activateView();
-                this.saveSettings();
+                void this.activateView();
+                void this.saveSettings();
             });
         }
 
@@ -239,7 +239,7 @@ export default class QuietOutline extends Plugin {
                 active: true,
             });
         }
-        this.app.workspace.revealLeaf(
+        await this.app.workspace.revealLeaf(
             this.app.workspace.getLeavesOfType(VIEW_TYPE)[0],
         );
     }

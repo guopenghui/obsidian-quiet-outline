@@ -11,7 +11,7 @@ export function registerCommands(plugin: QuietOutline) {
             id: "quiet-outline",
             name: "Quiet Outline",
             callback: () => {
-                plugin.activateView();
+                void plugin.activateView();
             },
         },
         {
@@ -80,7 +80,9 @@ export function registerCommands(plugin: QuietOutline) {
                     (h) => h.position.start.line < line,
                 );
 
-                idx != -1 && plugin.navigator.jump(idx);
+                if (idx !== -1) {
+                    void plugin.navigator.jump(idx);
+                }
             },
         },
         {
@@ -93,7 +95,9 @@ export function registerCommands(plugin: QuietOutline) {
                     (h) => h.position.start.line > line,
                 );
 
-                idx != -1 && plugin.navigator.jump(idx);
+                if (idx !== -1) {
+                    void plugin.navigator.jump(idx);
+                }
             },
         },
     ];

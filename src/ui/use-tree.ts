@@ -64,14 +64,14 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
             const locate = locateIdx.value === no ? "located" : "";
 
             // click and jump
-            async function jump(node: TreeOption): Promise<void> {
+            function jump(node: TreeOption): void {
                 // if (nodes[0] === undefined) {
                 //     return;
                 // }
 
                 const key_value = (node.key as string).split("-");
                 const key = parseInt(key_value[2]);
-                plugin.navigator.jumpWhenClick(key);
+                void plugin.navigator.jumpWhenClick(key);
             }
 
             return {

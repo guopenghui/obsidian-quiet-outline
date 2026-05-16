@@ -81,12 +81,12 @@ export class OutlineView extends ItemView {
             evt.preventDefault();
             const idx = this.vueInstance.currentSelected();
             if (idx === undefined) return;
-            this.plugin.navigator.jumpWithoutFocus(idx);
+            void this.plugin.navigator.jumpWithoutFocus(idx);
         });
         tree.register([], "Enter", () => {
             const idx = this.vueInstance.currentSelected();
             if (idx !== undefined) {
-                this.plugin.navigator.jump(idx);
+                void this.plugin.navigator.jump(idx);
                 this.vueInstance.resetPattern();
             }
         });

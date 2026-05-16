@@ -69,7 +69,7 @@ export class MarkDownNav extends Nav {
         };
         const state = { line, cursor };
 
-        this.plugin.startJumping();
+        void this.plugin.startJumping();
         plugin.outlineView?.vueInstance.onPosChange(key);
 
         setTimeout(() => {
@@ -81,7 +81,7 @@ export class MarkDownNav extends Nav {
     // make clicking behavior consistent with core outline plugin
     // i.e. focus editor
     async jumpWhenClick(key: number): Promise<void> {
-        this.jump(key);
+        await this.jump(key);
     }
 
     async jumpWithoutFocus(key: number) {
@@ -89,7 +89,7 @@ export class MarkDownNav extends Nav {
 
         const state = { line };
 
-        this.plugin.startJumping();
+        void this.plugin.startJumping();
         // this.plugin.jumping = true;
         plugin.outlineView?.vueInstance.onPosChange(key);
 
@@ -170,7 +170,7 @@ export class MarkDownNav extends Nav {
             },
             store.headers[no].heading,
         );
-        updater.updateHeadingLinks(content);
+        void updater.updateHeadingLinks(content);
         store.headers[no].heading = content;
     }
 

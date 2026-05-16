@@ -484,7 +484,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.patch_color = value;
                         store.theme.patchColor = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             )
             .addColorPicker((color) =>
@@ -493,7 +493,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.primary_color_light = value;
                         store.theme.primaryColorLight = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             )
             .addColorPicker((color) =>
@@ -502,7 +502,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.primary_color_dark = value;
                         store.theme.primaryColorDark = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             );
 
@@ -516,7 +516,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_line = value;
                         store.theme.rainbowLine = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             )
             .addColorPicker((color) =>
@@ -525,7 +525,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_1 = value;
                         store.theme.rainbowColor1 = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             )
             .addColorPicker((color) =>
@@ -534,7 +534,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_2 = value;
                         store.theme.rainbowColor2 = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             )
             .addColorPicker((color) =>
@@ -543,7 +543,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_3 = value;
                         store.theme.rainbowColor3 = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             )
             .addColorPicker((color) =>
@@ -552,7 +552,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_4 = value;
                         store.theme.rainbowColor4 = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             )
             .addColorPicker((color) =>
@@ -561,7 +561,7 @@ class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.rainbow_color_5 = value;
                         store.theme.rainbowColor5 = value;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }),
             );
 
@@ -800,11 +800,11 @@ class SettingTab extends PluginSettingTab {
             .setName(t("Heading Truncate Length"))
             .addText(text => text
                 .setValue(this.plugin.settings.heading_truncate_length.toString())
-                .onChange(value => {
+                .onChange(async value => {
                     const length = parseInt(value);
                     if (!isNaN(length)) {
                         this.plugin.settings.heading_truncate_length = length;
-                        this.plugin.saveSettings();
+                        await this.plugin.saveSettings();
                     }
                 })
             );
