@@ -355,8 +355,22 @@ function SL(reference: any, newPath: string, protectedAliases?: any): string {
 }
 
 function encodeLinkText(text: string) {
-    // oxlint-disable-next-line no-control-regex
-    return text.replace(/[\\\x00\x08\x0B\x0C\x0E-\x1F ]/g, encodeURIComponent);
+    // Percent-encode characters that are unsafe in Obsidian link targets:
+    // backslash, spaces, and C0 control characters except common whitespace
+    // characters that Obsidian links already handle separately.
+    return [...text].map((char) => {
+        const code = char.charCodeAt(0);
+        const shouldEncode =
+            char === "\\" ||
+            char === " " ||
+            code === 0x00 ||
+            code === 0x08 ||
+            code === 0x0B ||
+            code === 0x0C ||
+            (code >= 0x0E && code <= 0x1F);
+
+        return shouldEncode ? encodeURIComponent(char) : char;
+    }).join("");
 }
 
 /**

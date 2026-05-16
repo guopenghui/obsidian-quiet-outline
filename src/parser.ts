@@ -118,8 +118,8 @@ export const tag: Extension = {
     name: "tag",
     level: "inline",
     start(src) {
-        const match = src.match(/^#|(?<=\s)#/);
-        return match ? match.index! : -1;
+        const match = /(^|\s)#/.exec(src);
+        return match ? match.index + match[1].length : -1;
     },
     tokenizer(src, _token) {
         const rule =

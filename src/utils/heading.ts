@@ -8,7 +8,7 @@ export function stringifyHeaders(headers: Heading[], export_format: string) {
     }
 
     const parts = export_format.split(/\{.*?\}/);
-    const keys = export_format.match(/(?<={)(.*?)(?=})/g) || [];
+    const keys = [...export_format.matchAll(/\{(.*?)\}/g)].map((match) => match[1]);
 
     function transform(h: Heading) {
         const num = nums[h.level - 1];
