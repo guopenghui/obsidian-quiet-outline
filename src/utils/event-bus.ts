@@ -12,12 +12,12 @@ export type QuietOutlineEventMap = {
 export type EventName = keyof QuietOutlineEventMap;
 
 type EventHandler<K extends EventName> =
-    (...args: QuietOutlineEventMap[K]) => void;
+    (...args: QuietOutlineEventMap[K]) => void | Promise<void>;
 
 class EventBus extends Events {
     on<K extends EventName>(
         name: K,
-        callback: (...args: QuietOutlineEventMap[K]) => void,
+        callback: (...args: QuietOutlineEventMap[K]) => void | Promise<void>,
         ctx?: any
     ): EventRef;
     on(name: string, callback: (...data: any[]) => any, ctx?: any): EventRef {

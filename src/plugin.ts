@@ -208,9 +208,16 @@ export default class QuietOutline extends Plugin {
         this.outlineView?.vueInstance.onLeafChange();
     }
 
-    async onunload() {
-        await this.navigator.unload();
-        this.outlineView = null;
+    onunload(): void {
+        void this.unloadPlugin();
+    }
+
+    private async unloadPlugin(): Promise<void> {
+        try {
+            await this.navigator.unload();
+        } finally {
+            this.outlineView = null;
+        }
     }
 
     async loadSettings() {

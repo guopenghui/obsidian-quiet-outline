@@ -1,15 +1,17 @@
 import { Menu } from "obsidian";
 
+type MenuItemHandler = () => void | Promise<void>;
+
 export type MenuItemConfig =
     | {
         title: string;
         type: "normal";
-        fn: () => void;
+        fn: MenuItemHandler;
     }
     | {
         title: string;
         type: "danger";
-        fn: () => void;
+        fn: MenuItemHandler;
     }
     | {
         title: string;
@@ -51,7 +53,7 @@ export function setupMenu(menu: Menu, menuConfig: MenuItemConfig[]) {
     });
 }
 
-export function normal(title: string, fn: () => void): MenuItemConfig {
+export function normal(title: string, fn: MenuItemHandler): MenuItemConfig {
     return {
         type: "normal",
         title,
@@ -59,7 +61,7 @@ export function normal(title: string, fn: () => void): MenuItemConfig {
     };
 }
 
-export function danger(title: string, fn: () => void): MenuItemConfig {
+export function danger(title: string, fn: MenuItemHandler): MenuItemConfig {
     return {
         type: "danger",
         title,
