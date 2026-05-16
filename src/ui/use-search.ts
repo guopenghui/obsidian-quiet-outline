@@ -29,7 +29,7 @@ function regexFilter(pattern: string, option: TreeOption): boolean {
     try {
         rule = RegExp(pattern, "i");
     } catch {
-
+        // Invalid regex keeps the default match-all filter.
     }
     return rule.test(mdToHtmlTextContent(option.label));
 }

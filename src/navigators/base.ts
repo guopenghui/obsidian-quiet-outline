@@ -67,7 +67,7 @@ export abstract class Nav {
     registerDomEvent<K extends keyof HTMLElementEventMap>(
         el: HTMLElement,
         type: K,
-        callback: (this: HTMLElement, ev: HTMLElementEventMap[K]) => unknown,
+        callback: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void,
         options?: boolean | AddEventListenerOptions,
     ): void;
     registerDomEvent(
@@ -96,19 +96,19 @@ export abstract class Nav {
     async onload(): Promise<void> { }
     async onunload(): Promise<void> { }
      async handleDrop(
-        from: number,
-        to: number,
-        position: "before" | "after" | "inside",
+        _from: number,
+        _to: number,
+        _position: "before" | "after" | "inside",
     ) { }
     onRightClick(
-        event: MouseEvent,
-        nodeInfo: { node: TreeOption; no: number; level: number; raw: string; },
-        menu: Menu,
-        onClose?: () => void,
+        _event: MouseEvent,
+        _nodeInfo: { node: TreeOption; no: number; level: number; raw: string; },
+        _menu: Menu,
+        _onClose?: () => void,
     ) { }
     toBottom() { }
-    onExpandKeysChange(path: string, keys: string[]) { }
-    changeHeadingContent(no: number, content: string) { }
+    onExpandKeysChange(_path: string, _keys: string[]) { }
+    changeHeadingContent(_no: number, _content: string) { }
     abstract jump(key: number): Promise<void>;
     async jumpWithoutFocus(key: number) { await this.jump(key); }
     async jumpWhenClick(key: number) { await this.jumpWithoutFocus(key); }

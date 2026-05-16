@@ -149,7 +149,7 @@ export class HeadingUpdater {
     }
 
     private replaceHeadingText(line: string, newText: string): string {
-        return line.replace(/^(#{1,6} ).*/m, (match: string, headingMark: string) => {
+        return line.replace(/^(#{1,6} ).*/m, (_match: string, headingMark: string) => {
             return headingMark + newText;
         });
     }
@@ -166,14 +166,14 @@ export class HeadingUpdater {
  * Type guard for position-based references
  */
 function isPositionReference(reference: any): reference is { position: { start: { offset: number; }, end: { offset: number; }; }; } {
-    return reference.hasOwnProperty("position");
+    return Object.prototype.hasOwnProperty.call(reference, "position");
 }
 
 /**
  * Type guard for key-based references
  */
 function isKeyReference(reference: any): reference is { key: string; } {
-    return reference.hasOwnProperty("key");
+    return Object.prototype.hasOwnProperty.call(reference, "key");
 }
 
 /**

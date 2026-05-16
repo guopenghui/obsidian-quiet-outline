@@ -15,7 +15,7 @@ export const htmlToText = compile({
 export const getOrigin = compile({
     selectors: [{ selector: "mjx-container", format: "origin" }],
     formatters: {
-        "origin": (elem, walk, builder) => {
+        "origin": (elem, _walk, builder) => {
             builder.openBlock();
             builder.addInline(elem.attribs.origin);
             builder.closeBlock();

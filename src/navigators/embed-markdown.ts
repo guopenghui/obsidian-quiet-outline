@@ -113,11 +113,15 @@ export class EmbedMarkdownTextNav extends Nav {
 function setEphemeralState(view: EmbedMarkdownView, option: { line: number, focus?: boolean; }) {
     if (view.getMode() === "source") {
         editorScroll(view.editMode.editor, option.line);
-        option.focus && view.editMode.editor.focus();
+        if (option.focus) {
+            view.editMode.editor.focus();
+        }
     } else {
         previewScroll(view.previewMode.renderer, option.line);
         view.previewMode.containerEl.tabIndex = -1;
-        option.focus && view.previewMode.containerEl.focus();
+        if (option.focus) {
+            view.previewMode.containerEl.focus();
+        }
     }
 }
 

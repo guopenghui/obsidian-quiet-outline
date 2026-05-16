@@ -56,7 +56,7 @@ export class CanvasNav extends Nav {
 
                     // if selection is only 1 textNode or md fileNode, show md outline
                     const component = [...selection][0];
-                    if (!component.hasOwnProperty("nodeEl")) return;
+                    if (!Object.prototype.hasOwnProperty.call(component, "nodeEl")) return;
 
                     const node = component as CanvasNode;
 

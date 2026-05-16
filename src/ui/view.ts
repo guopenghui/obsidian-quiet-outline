@@ -112,19 +112,21 @@ export class OutlineView extends ItemView {
 
     focusOn(part: "search" | "tree") {
         switch (part) {
-            case "tree":
+            case "tree": {
                 const tree: HTMLElement =
                     this.contentEl.querySelector(".n-tree")!;
                 tree.focus();
                 this.scope = this.scopes.tree;
                 this.vueInstance.selectVisible();
                 break;
-            case "search":
+            }
+            case "search": {
                 const search: HTMLElement =
                     this.contentEl.querySelector(".n-input__input-el")!;
                 search.focus();
                 this.scope = this.scopes.search;
                 break;
+            }
         }
     }
 

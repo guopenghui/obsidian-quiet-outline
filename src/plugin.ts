@@ -7,6 +7,7 @@ import {
     Plugin,
     TFile,
     View,
+    type ViewState,
     WorkspaceLeaf
 } from "obsidian";
 
@@ -23,6 +24,8 @@ import { eventBus } from "./utils/event-bus";
 
 import "./stalin.css";
 import { Deferred } from "./utils/promise";
+
+type LeafEphemeralState = Record<string, unknown> | undefined;
 
 export default class QuietOutline extends Plugin {
     settings!: QuietOutlineSettings;
@@ -155,9 +158,29 @@ export default class QuietOutline extends Plugin {
             }),
         );
 
+        const getPersistedMarkdownState = (
+            viewState: ViewState,
+            eState: LeafEphemeralState,
+        ) => {
+            if (!this.settings.persist_md_states) {
+                return eState;
+            }
+
+            const states = this.data_manager.getData<MarkdownStates>(MD_DATA_FILE)!;
+            const file = typeof viewState.state?.file === "string" ? viewState.state.file : "";
+            const data = states[file];
+            if (!data) {
+                return eState;
+            }
+
+            return {
+                ...eState,
+                scroll: data.scroll,
+                cursor: data.cursor,
+            };
+        };
+
         // patch leaf.setViewState early to restore markdown scroll/cursor position
-        /* oxlint-disable no-this-alias */
-        const plugin = this;
         this.register(around(WorkspaceLeaf.prototype, {
             setViewState(next) {
                 return async function (this: WorkspaceLeaf, viewState, eState) {
@@ -165,16 +188,10 @@ export default class QuietOutline extends Plugin {
                         return next.apply(this, [viewState, eState]);
                     }
 
-                    if (plugin.settings.persist_md_states) {
-                        const states = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE)!;
-                        const data = states[<string>viewState.state?.file ?? ""];
-                        if (data) {
-                            eState = eState || {};
-                            eState.scroll = data.scroll;
-                            eState.cursor = data.cursor;
-                        }
-                    }
-                    return next.apply(this, [viewState, eState]);
+                    return next.apply(this, [
+                        viewState,
+                        getPersistedMarkdownState(viewState, eState),
+                    ]);
                 };
             }
         }));
