@@ -360,7 +360,7 @@ function enableVim(view: CanvasView) {
         }
 
         pending = "Z";
-        setTimeout(() => {
+        activeWindow.setTimeout(() => {
             pending = null;
         }, 300);
     });

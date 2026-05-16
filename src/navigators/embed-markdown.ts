@@ -33,7 +33,7 @@ export class EmbedMarkdownFileNav extends Nav {
         void this.plugin.startJumping();
         this.plugin.outlineView?.vueInstance.onPosChange(key);
 
-        setTimeout(() => {
+        activeWindow.setTimeout(() => {
             // this.view.setEphemeralState(state);
             setEphemeralState(this.view, { line, focus: true });
         });
@@ -52,7 +52,7 @@ export class EmbedMarkdownFileNav extends Nav {
         void this.plugin.startJumping();
         this.plugin.outlineView?.vueInstance.onPosChange(key);
 
-        setTimeout(() => {
+        activeWindow.setTimeout(() => {
             // this.view.setEphemeralState(state);
             setEphemeralState(this.view, { line });
         });

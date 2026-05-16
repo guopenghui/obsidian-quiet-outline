@@ -64,11 +64,11 @@ export function useOutlinePopover(plugin: QuietOutline, container: HTMLElement) 
 
             // 如果已经设置了定时器，清除之前的定时器
             if (timeoutId) {
-                clearTimeout(timeoutId);
+                activeWindow.clearTimeout(timeoutId);
             }
 
             // 设置新的定时器
-            timeoutId = setTimeout(() => {
+            timeoutId = activeWindow.setTimeout(() => {
                 fresh = true;
             }, delay);
         };

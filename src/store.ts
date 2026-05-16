@@ -108,7 +108,7 @@ export const store = reactive({
 
 function init(plugin: QuietOutline) {
     const { app, settings } = plugin;
-    store.dark = document.body.hasClass("theme-dark");
+    store.dark = activeDocument.body.hasClass("theme-dark");
     store.markdown = settings.markdown;
     store.ellipsis = settings.ellipsis;
     store.labelDirection = settings.label_direction;

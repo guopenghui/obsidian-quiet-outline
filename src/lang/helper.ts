@@ -1,6 +1,7 @@
 import zh from "./locale/zh";
 import en from "./locale/en";
 import zhTW from "./locale/zh-TW";
+import { getLanguage } from "obsidian";
 
 const localeMap: { [k: string]: Partial<typeof en>; } = {
     en,
@@ -9,7 +10,7 @@ const localeMap: { [k: string]: Partial<typeof en>; } = {
 };
 
 
-const lang = window.localStorage.getItem("language");
+const lang = getLanguage();
 const locale = localeMap[lang || "en"];
 
 export function t(text: keyof typeof en): string {

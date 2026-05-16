@@ -148,7 +148,9 @@ class SettingTab extends PluginSettingTab {
         const { containerEl } = this;
 
         containerEl.empty();
-        containerEl.createEl("h2", { text: t("Settings for Quiet Outline.") });
+        new Setting(containerEl)
+            .setName(t("Settings for Quiet Outline."))
+            .setHeading();
 
         // Create tab navigation
         const tabContainer = containerEl.createDiv({ cls: "quiet-outline-tabs" });
@@ -457,14 +459,14 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.export_format = value;
                         await this.plugin.saveSettings();
                     })
-                    .inputEl.setAttribute("style", "width: 100%;"),
+                    .inputEl.addClass("quiet-outline-export-format-input"),
             )
             .addExtraButton((button) =>
                 button
                     .setIcon("help")
                     .setTooltip("release doc 0.3.32")
                     .onClick(() =>
-                        window.open(
+                        activeWindow.open(
                             "https://github.com/guopenghui/obsidian-quiet-outline/releases/tag/0.3.32",
                         ),
                     ),

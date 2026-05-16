@@ -99,7 +99,7 @@ export default class QuietOutline extends Plugin {
     private registerListener() {
         this.registerEvent(
             this.app.workspace.on("css-change", () => {
-                store.dark = document.body.hasClass("theme-dark");
+                store.dark = activeDocument.body.hasClass("theme-dark");
                 store.cssChange = !store.cssChange;
             }),
         );

@@ -140,10 +140,10 @@ export function useOutlineTheme() {
 }
 
 function getDefaultColor() {
-    const el = document.body.createEl("div", {
+    const el = activeDocument.body.createDiv({
         attr: { style: "width: 0px; height: 0px; background-color: var(--interactive-accent);" },
     });
-    const color = getComputedStyle(el, null).getPropertyValue("background-color");
+    const color = activeWindow.getComputedStyle(el, null).getPropertyValue("background-color");
     el.remove();
 
     // for compatibility
@@ -153,7 +153,7 @@ function getDefaultColor() {
 function cssColorToRgba(color: string) {
     if (!CSS.supports('color', color)) return "rgba(0, 0, 0, 0)";
 
-    const canvas = document.createElement('canvas');
+    const canvas = activeDocument.createElement('canvas');
     canvas.width = canvas.height = 1;
     const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 

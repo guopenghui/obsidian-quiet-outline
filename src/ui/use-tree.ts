@@ -46,7 +46,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
 
         locateIdx.value = index;
 
-        setTimeout(() => {
+        activeWindow.setTimeout(() => {
             if (!plugin.settings.auto_scroll_into_view) return;
             const curLocation = container.querySelector(`#no-${index}`);
             if (curLocation) {

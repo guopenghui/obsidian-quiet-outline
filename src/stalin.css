@@ -91,6 +91,10 @@
     font-weight: var(--font-semibold);
 }
 
+.quiet-outline-export-format-input {
+    width: 100%;
+}
+
 .quiet-outline-tab-content {
     min-height: 400px;
 }

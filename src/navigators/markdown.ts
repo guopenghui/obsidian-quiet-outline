@@ -72,7 +72,7 @@ export class MarkDownNav extends Nav {
         void this.plugin.startJumping();
         plugin.outlineView?.vueInstance.onPosChange(key);
 
-        setTimeout(() => {
+        activeWindow.setTimeout(() => {
             this.view.app.workspace.setActiveLeaf(this.view.leaf, { focus: true });
             this.view.setEphemeralState(state);
         });
@@ -93,7 +93,7 @@ export class MarkDownNav extends Nav {
         // this.plugin.jumping = true;
         plugin.outlineView?.vueInstance.onPosChange(key);
 
-        setTimeout(() => {
+        activeWindow.setTimeout(() => {
             this.view.setEphemeralState(state);
         });
     }
@@ -130,7 +130,7 @@ export class MarkDownNav extends Nav {
         };
 
         scroll();
-        setTimeout(scroll, 100);
+        activeWindow.setTimeout(scroll, 100);
     }
 
     getDefaultLevel(): number {

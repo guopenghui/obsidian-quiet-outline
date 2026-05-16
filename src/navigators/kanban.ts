@@ -14,7 +14,7 @@ export class KanbanNav extends MarkDownNav {
         }
     }
     async jump(key: number): Promise<void> {
-        const panes = document.querySelectorAll(
+        const panes = activeDocument.querySelectorAll(
             '.workspace-leaf[style=""] .kanban-plugin__lane-wrapper',
         );
 
