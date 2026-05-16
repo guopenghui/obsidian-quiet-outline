@@ -19,6 +19,7 @@
     "author": "the_tree",
     "license": "MIT",
     "dependencies": {
+        "@codemirror/view": "^6.38.6",
         "html-to-text": "^9.0.5",
         "marked": "^17.0.1",
         "monkey-around": "^3.0.0",
