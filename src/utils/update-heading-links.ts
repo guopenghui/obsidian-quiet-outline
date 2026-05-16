@@ -9,8 +9,34 @@ interface TokenRange {
     text?: string;
 }
 
+type MutableRecord = Record<string, unknown>;
+
+interface LinkReference {
+    link: string;
+    original: string;
+    position?: {
+        start: { offset: number; };
+        end: { offset: number; };
+    };
+    key?: string;
+}
+
+interface LinkChange {
+    sourcePath: string;
+    reference: LinkReference;
+    change: string;
+}
+
+interface AliasProtector {
+    contains(alias: string): boolean;
+}
+
+function isMutableRecord(value: unknown): value is MutableRecord {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 class LinkChangesCollection {
-    data: Map<string, any[]> = new Map();
+    data: Map<string, LinkChange[]> = new Map();
 
     count(): number {
         let total = 0;
@@ -24,14 +50,14 @@ class LinkChangesCollection {
         this.data.delete(path);
     }
 
-    add(path: string, change: any): void {
+    add(path: string, change: LinkChange): void {
         if (!this.data.has(path)) {
             this.data.set(path, []);
         }
         this.data.get(path)!.push(change);
     }
 
-    get(path: string): any[] | undefined {
+    get(path: string): LinkChange[] | undefined {
         return this.data.get(path);
     }
 
@@ -106,7 +132,11 @@ export class HeadingUpdater {
         const oldHeadingLower = stripHeading(this.oldHeading).toLowerCase();
         const newHeadingSlug = stripHeadingForLink(content);
 
-        this.app.fileManager.iterateAllRefs((sourcePath: string, reference: any) => {
+        this.app.fileManager.iterateAllRefs((sourcePath: string, reference: unknown) => {
+            if (!isLinkReference(reference)) {
+                return;
+            }
+
             const linkInfo = parseLinktext(reference.link);
             const linkPath = linkInfo.path;
             const subpath = linkInfo.subpath;
@@ -135,7 +165,7 @@ export class HeadingUpdater {
         editor.setLine(startPos.line, newLine);
     }
 
-    private replaceInFile(value: string): TokenRange {
+    private replaceInFile(value: string): TokenRange & { text: string; } {
         const tokenRange = this.tokenRange;
         const editor = this.editor;
         const startPos = editor.offsetToPos(tokenRange.start);
@@ -165,43 +195,71 @@ export class HeadingUpdater {
 /**
  * Type guard for position-based references
  */
-function isPositionReference(reference: any): reference is { position: { start: { offset: number; }, end: { offset: number; }; }; } {
-    return Object.prototype.hasOwnProperty.call(reference, "position");
+function isPositionReference(reference: unknown): reference is LinkReference & Required<Pick<LinkReference, "position">> {
+    if (!isMutableRecord(reference) || !isMutableRecord(reference.position)) {
+        return false;
+    }
+
+    const position = reference.position;
+    return (
+        isMutableRecord(position.start) &&
+        isMutableRecord(position.end) &&
+        typeof position.start.offset === "number" &&
+        typeof position.end.offset === "number"
+    );
 }
 
 /**
  * Type guard for key-based references
  */
-function isKeyReference(reference: any): reference is { key: string; } {
-    return Object.prototype.hasOwnProperty.call(reference, "key");
+function isKeyReference(reference: unknown): reference is { key: string; } {
+    return isMutableRecord(reference) && typeof reference.key === "string";
+}
+
+function isLinkReference(reference: unknown): reference is LinkReference {
+    return (
+        isMutableRecord(reference) &&
+        typeof reference.link === "string" &&
+        typeof reference.original === "string"
+    );
+}
+
+function isAliasProtector(value: unknown): value is AliasProtector {
+    return (
+        isMutableRecord(value) &&
+        typeof value.contains === "function"
+    );
 }
 
 /**
  * Sets a nested property value in an object
  */
-function setNestedProperty(obj: any, path: string[], value: any): void {
-    while (obj && path.length) {
+function setNestedProperty(obj: unknown, path: string[], value: unknown): void {
+    let target = obj;
+    while (target && path.length) {
         const key = path.shift()!;
-        if (Array.isArray(obj)) {
+        if (Array.isArray(target)) {
             const index = parseInt(key);
-            if (isNaN(index) || index < 0 || index >= obj.length) {
+            if (isNaN(index) || index < 0 || index >= target.length) {
                 return;
             }
             if (!(path.length > 0)) {
-                obj[index] = value;
+                target[index] = value;
                 return;
             }
-            obj = obj[index];
+            target = target[index];
         } else {
-            if (typeof obj !== "object") {
+            if (!isMutableRecord(target)) {
                 return;
             }
             if (!(path.length > 0)) {
-                obj[key] = value;
+                target[key] = value;
                 return;
             }
-            obj[key] = obj[key] || {};
-            obj = obj[key];
+            if (!isMutableRecord(target[key]) && !Array.isArray(target[key])) {
+                target[key] = {};
+            }
+            target = target[key];
         }
     }
 }
@@ -209,9 +267,9 @@ function setNestedProperty(obj: any, path: string[], value: any): void {
 /**
  * Applies content and frontmatter changes to a file
  */
-function applyFileChanges(content: string, changes: Array<{ reference: any, change: string; }>): string {
+function applyFileChanges(content: string, changes: LinkChange[]): string {
     const positionChanges: Array<{ start: number, end: number, text: string; }> = [];
-    const frontmatterChanges: Array<{ key: string, value: any; }> = [];
+    const frontmatterChanges: Array<{ key: string, value: unknown; }> = [];
 
     for (const change of changes) {
         if (isPositionReference(change.reference)) {
@@ -248,10 +306,14 @@ function applyFileChanges(content: string, changes: Array<{ reference: any, chan
         return content;
     }
 
-    let frontmatterObj: any;
+    let frontmatterObj: unknown;
     try {
         frontmatterObj = parseYaml(frontmatterInfo.frontmatter);
     } catch {
+        return content;
+    }
+
+    if (!isMutableRecord(frontmatterObj) && !Array.isArray(frontmatterObj)) {
         return content;
     }
 
@@ -275,7 +337,7 @@ const mdLinkReg = /^(!?\[)(.*?)(]\(\s*)((<[^>]*?>|[^ "]+?)(\s+([^ ]+|"[^"]+"|'[^
  * @param protectedAliases 用于判断是否需要更新别名
  * @returns 更新后的 Markdown 字符串
  */
-function SL(reference: any, newPath: string, protectedAliases?: any): string {
+function SL(reference: LinkReference, newPath: string, protectedAliases?: unknown): string {
     let result: string;
     const originalText = reference.original;
     const currentLink = reference.link;
@@ -298,7 +360,8 @@ function SL(reference: any, newPath: string, protectedAliases?: any): string {
             // 逻辑：检查是否应该更新别名
             // 如果别名和实际文件名字相同，则同时更新链接中的文件名和别名部分
             const isAliasMatchingLink = normalizeFilename(linkId) === trimmedAlias;
-            const isAliasProtected = protectedAliases?.contains(trimmedAlias);
+            const isAliasProtected = isAliasProtector(protectedAliases)
+                && protectedAliases.contains(trimmedAlias);
 
             if (isAliasMatchingLink && !isAliasProtected) {
                 alias = normalizeFilename(getLinkpath(newPath));

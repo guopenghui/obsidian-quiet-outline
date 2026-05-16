@@ -10,7 +10,7 @@ function useDomEvent<T extends keyof GlobalEventHandlersEventMap>(
 function useDomEvent<T extends keyof GlobalEventHandlersEventMap>(
     elRef: Ref<EventTarget> | EventTarget,
     type: T,
-    listener: (ev: any) => void,
+    listener: (ev: Event) => void,
 ) {
     onMounted(() => {
         unref(elRef).addEventListener(type, listener);

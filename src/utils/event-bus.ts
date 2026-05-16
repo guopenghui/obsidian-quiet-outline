@@ -18,13 +18,13 @@ class EventBus extends Events {
     on<K extends EventName>(
         name: K,
         callback: (...args: QuietOutlineEventMap[K]) => void | Promise<void>,
-        ctx?: any
+        ctx?: unknown
     ): EventRef;
-    on(name: string, callback: (...data: any[]) => any, ctx?: any): EventRef {
+    on(name: string, callback: (...data: unknown[]) => unknown, ctx?: unknown): EventRef {
         return super.on(name, callback, ctx);
     }
     off<K extends EventName>(name: K, callback: EventHandler<K>): void;
-    off(name: string, callback: (...data: any[]) => any): void {
+    off(name: string, callback: (...data: unknown[]) => unknown): void {
         super.off(name, callback);
     }
     trigger<K extends EventName>(name: K, ...data: QuietOutlineEventMap[K]): void;

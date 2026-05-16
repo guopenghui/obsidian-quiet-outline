@@ -2,7 +2,7 @@ import { App, debounce } from "obsidian";
 import { tryParseJson } from "./helper";
 
 export class DataManager {
-    private cache: Record<string, any> = {};
+    private cache: Record<string, unknown> = {};
     private writeQueue: Promise<void> = Promise.resolve();
     constructor(private app: App, private pluginPath: string) { }
     private async checkPath(normalizedPath: string) {
@@ -19,7 +19,7 @@ export class DataManager {
 
     getData<Data>(path: string): Data | undefined {
         if (this.cache[path]) {
-            return this.cache[path];
+            return this.cache[path] as Data;
         }
     }
 
@@ -35,10 +35,10 @@ export class DataManager {
 
         let data = await this.app.vault.adapter.read(filePath);
         this.cache[path] = tryParseJson(data, defaultData);
-        return this.cache[path];
+        return this.cache[path] as Data;
     }
 
-    saveFileData = debounce<[string, any], void>(this._saveFileData.bind(this), 200, true);
+    saveFileData = debounce<[string, unknown], void>(this._saveFileData.bind(this), 200, true);
     _saveFileData<Data>(path: string, data: Data) {
         this.cache[path] = data;
         let filePath = [this.pluginPath, path].join("/");

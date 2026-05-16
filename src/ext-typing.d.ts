@@ -9,7 +9,7 @@ import { EditorView } from "@codemirror/view";
 
 declare global {
     const i18next: {
-        t: (key: string, options?: any) => string;
+        t: (key: string, options?: Record<string, unknown>) => string;
     };
 }
 
@@ -54,8 +54,8 @@ declare module "obsidian" {
     }
 
     interface FileManager {
-        updateInternalLinks: (changes: any) => Promise<void>;
-        iterateAllRefs(callback: (filePath: string, reference: any) => void): void;
+        updateInternalLinks: (changes: unknown) => Promise<void>;
+        iterateAllRefs(callback: (filePath: string, reference: unknown) => void): void;
     }
 
     interface MarkdownPreviewSection {
@@ -178,7 +178,13 @@ declare module "obsidian" {
         setLabel(label: string): void;
     }
 
-    type NodeFileType = EmbedMarkdownView | any;
+    interface EmbedFileView extends Component {
+        app: App;
+        file: TFile | null;
+        containerEl: HTMLElement;
+    }
+
+    type NodeFileType = EmbedMarkdownView | EmbedFileView;
 
     interface CanvasFileNode extends CanvasNodeInstance {
         file: TFile;

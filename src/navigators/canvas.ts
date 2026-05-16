@@ -33,7 +33,7 @@ export class CanvasNav extends Nav {
         if (!plugin.klasses["canvas"]) {
             this.patchCanvas(this.view.canvas);
             plugin.klasses["canvas"] = this.view
-                .constructor as Constructor<any>;
+                .constructor as Constructor<unknown>;
         }
 
         plugin.registerEvent(

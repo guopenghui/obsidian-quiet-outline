@@ -31,7 +31,7 @@ export default class QuietOutline extends Plugin {
     settings!: QuietOutlineSettings;
     navigator: Nav = createNav("dummy", this, null);
     jumping = Deferred.resolved();
-    klasses: Record<string, Constructor<any>> = {};
+    klasses: Record<string, Constructor<unknown>> = {};
     data_manager!: DataManager;
     outlineView: OutlineView | null = null;
 
