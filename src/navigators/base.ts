@@ -1,20 +1,19 @@
-import { Component, type HeadingCache, Menu } from "obsidian";
+import { type Component, type EventRef, type HeadingCache, Menu } from "obsidian";
 import type QuietOutline from "@/plugin";
 import { store } from "@/store";
 import type { TreeOption } from "naive-ui";
 import { Deferred } from "@/utils/promise";
 
 /* oxlint-disable no-unused-vars */
-export abstract class Nav extends Component {
+export abstract class Nav {
     private _used = false; // a navigator only allowed to be used once
     private _loaded = new Deferred();
-    declare private _events: (() => Promise<void>)[];
+    private _events: (() => void | Promise<void>)[] = [];
     canDrop: boolean = false;
     plugin: QuietOutline;
     view: Component | null;
 
     constructor(plugin: QuietOutline, view: Component | null) {
-        super();
         this.plugin = plugin;
         this.view = view;
     }
@@ -44,6 +43,49 @@ export abstract class Nav extends Component {
 
         // for navigator safe: avoid invalid navigator
         this.plugin.navigator = new DummyNav(this.plugin, null);
+    }
+    register(cb: () => void | Promise<void>): void {
+        this._events.push(cb);
+    }
+    registerEvent(eventRef: EventRef): void {
+        this.register(() => {
+            eventRef.e?.offref(eventRef);
+        });
+    }
+    registerDomEvent<K extends keyof WindowEventMap>(
+        el: Window,
+        type: K,
+        callback: (this: HTMLElement, ev: WindowEventMap[K]) => unknown,
+        options?: boolean | AddEventListenerOptions,
+    ): void;
+    registerDomEvent<K extends keyof DocumentEventMap>(
+        el: Document,
+        type: K,
+        callback: (this: HTMLElement, ev: DocumentEventMap[K]) => unknown,
+        options?: boolean | AddEventListenerOptions,
+    ): void;
+    registerDomEvent<K extends keyof HTMLElementEventMap>(
+        el: HTMLElement,
+        type: K,
+        callback: (this: HTMLElement, ev: HTMLElementEventMap[K]) => unknown,
+        options?: boolean | AddEventListenerOptions,
+    ): void;
+    registerDomEvent(
+        el: Window | Document | HTMLElement,
+        type: string,
+        callback: EventListenerOrEventListenerObject,
+        options?: boolean | AddEventListenerOptions,
+    ): void {
+        el.addEventListener(type, callback, options);
+        this.register(() => {
+            el.removeEventListener(type, callback, options);
+        });
+    }
+    registerInterval(id: number): number {
+        this.register(() => {
+            window.clearInterval(id);
+        });
+        return id;
     }
     getDefaultLevel() {
         return parseInt(this.plugin.settings.expand_level);

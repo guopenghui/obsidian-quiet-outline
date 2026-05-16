@@ -14,6 +14,10 @@ declare global {
 }
 
 declare module "obsidian" {
+    interface EventRef {
+        e?: Events;
+    }
+
     interface App {
         dragManager: DragManager;
     }
