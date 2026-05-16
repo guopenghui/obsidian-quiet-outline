@@ -5,11 +5,10 @@ on:
     tags:
       - "*"
 
-env:
-  PLUGIN_NAME: obsidian-quiet-outline # plugin-id folder name
-
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   build:
@@ -25,24 +24,21 @@ jobs:
           node-version: "22.x"
           cache: npm
 
-      - name: Build & package
-        id: build
+      - name: Build
         shell: bash
         run: |
           npm ci
           npm run build
 
-          # tag name for asset naming (replaces deprecated ::set-output)
-          echo "tag_name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-
-          mkdir -p "${PLUGIN_NAME}"
-          cp main.js manifest.json styles.css "${PLUGIN_NAME}"
-
-          ZIP_NAME="${PLUGIN_NAME}-${GITHUB_REF_NAME}.zip"
-          zip -r "${ZIP_NAME}" "${PLUGIN_NAME}"
-
-          echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
           ls -la
+
+      - name: Generate artifact attestations
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
 
       - name: Create Release & upload assets
         uses: softprops/action-gh-release@v2
@@ -54,7 +50,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ${{ steps.build.outputs.zip_name }}
             main.js
             manifest.json
             styles.css
