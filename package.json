@@ -7,6 +7,8 @@
         "build": "npm run check && npm run lint && vite build --mode production",
         "check": "vue-tsc -p tsconfig.app.json --noEmit --skipLibCheck",
         "dev": "vite build --mode development",
+        "eol:check": "node scripts/check-line-endings.mjs --check-staged",
+        "eol:fix": "node scripts/check-line-endings.mjs --fix",
         "lint": "oxlint",
         "lint:fix": "oxlint --fix",
         "pub": "node scripts/publish.mjs",

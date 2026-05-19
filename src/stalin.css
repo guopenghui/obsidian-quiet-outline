@@ -182,13 +182,13 @@
 .quiet-outline .function-bar input[type="text"] {
     &:hover,
     &:focus {
-        background-color: transparent !important;
-        box-shadow: none !important;
-        border: none !important;
+        background-color: transparent;
+        box-shadow: none;
+        border: none;
     }
-    background-color: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
 }
 
 /* 图标大小 */
@@ -291,12 +291,13 @@
     font-weight: 1000 !important;
 }
 .n-tree-node.located mjx-math {
-    font-weight: bold !important;
+    font-weight: bold;
 }
 
 .n-tree.n-tree--block-line
+    .n-tree-node-wrapper
     .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
-    background-color: transparent !important;
+    background-color: transparent;
 }
 
 .n-tree.n-tree--block-line:focus
