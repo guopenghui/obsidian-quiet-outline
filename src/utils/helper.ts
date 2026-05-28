@@ -10,3 +10,7 @@ export function tryParseJson<Data>(jsonString: string, defaultData: Data): Data 
 /** no-op, for type narrowing only */
 /* oxlint-disable-next-line no-unused-vars */
 export function assertType<T>(value: unknown): asserts value is T {}
+
+export function uuid(): string {
+    return crypto.randomUUID();
+}

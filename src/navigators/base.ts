@@ -1,6 +1,6 @@
-import { type Component, type EventRef, type HeadingCache, Menu } from "obsidian";
+import { type Component, type EventRef, Menu } from "obsidian";
 import type QuietOutline from "@/plugin";
-import { store } from "@/store";
+import { store, type Heading } from "@/store";
 import type { TreeOption } from "naive-ui";
 import { Deferred } from "@/utils/promise";
 
@@ -95,7 +95,7 @@ export abstract class Nav {
     async install() { }
     async onload(): Promise<void> { }
     async onunload(): Promise<void> { }
-     async handleDrop(
+    async handleDrop(
         _from: number,
         _to: number,
         _position: "before" | "after" | "inside",
@@ -110,9 +110,9 @@ export abstract class Nav {
     onExpandKeysChange(_path: string, _keys: string[]) { }
     changeHeadingContent(_no: number, _content: string) { }
     abstract jump(key: number): Promise<void>;
-    async jumpWithoutFocus(key: number) { await this.jump(key); }
-    async jumpWhenClick(key: number) { await this.jumpWithoutFocus(key); }
-    abstract getHeaders(): Promise<HeadingCache[]>;
+    async jumpWithoutFocus(index: number) { await this.jump(index); }
+    async jumpWhenClick(index: number) { await this.jumpWithoutFocus(index); }
+    abstract getHeaders(): Promise<Heading[]>;
     abstract setHeaders(): Promise<void>;
     abstract updateHeaders(): Promise<void>;
 }
@@ -120,8 +120,8 @@ export abstract class Nav {
 export class DummyNav extends Nav {
     getId() { return "dummy"; }
     async unload() { }
-    async jump(_key: number) { }
-    async getHeaders(): Promise<HeadingCache[]> { return []; }
+    async jump(_index: number) { }
+    async getHeaders(): Promise<Heading[]> { return []; }
     async setHeaders(): Promise<void> { store.headers = []; }
     async updateHeaders() { }
 }

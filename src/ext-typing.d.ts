@@ -289,6 +289,50 @@ declare module "obsidian" {
         setSubmenu(): Menu;
         setWarning(isWarning: boolean): MenuItem;
     }
+
+    interface PdfView extends FileView {
+        viewer: PdfViewerLoader;
+    }
+
+    interface PdfViewerLoader {
+        child: PdfViewerChild | null;
+    }
+
+    interface PdfViewerChild {
+        pdfViewer: ObsidianPdfViewerLike | null;
+    }
+
+    interface ObsidianPdfViewerLike {
+        eventBus: PdfEventBusLike;
+        pdfOutlineViewer: PdfOutlineViewerLike;
+    }
+
+    export interface PdfEventBusLike {
+        on(eventName: string, listener: (...args: any[]) => void, options?: any): void;
+        _on(eventName: string, listener: (...args: any[]) => void, options?: any): void;
+        _off(eventName: string, listener: (...args: any[]) => void): void;
+        dispatch(eventName: string, data?: any): void;
+    }
+
+    interface PdfOutlineViewerLike {
+        outline: PdfOutlineItemData[] | null;
+        linkService: {
+            goToDestination(dest: PdfDestination): void;
+        };
+    }
+
+    export interface PdfOutlineItemData {
+        title: string;
+        bold?: boolean;
+        italic?: boolean;
+        url?: string;
+        action?: string;
+        dest?: PdfDestination;
+        setOCGState?: unknown;
+        items: PdfOutlineItemData[];
+    }
+
+    export type PdfDestination = string | unknown[];
 }
 
 export { };

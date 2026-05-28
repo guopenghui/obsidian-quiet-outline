@@ -1,10 +1,11 @@
 import { reactive } from "vue";
-import type { HeadingCache } from "obsidian";
 import type QuietOutline from "./plugin";
 
 export type SupportedIcon = string;
 
-export type Heading = HeadingCache & {
+export type Heading = {
+    title: string;
+    level: number;
     id?: string;
     icon?: SupportedIcon;
 };

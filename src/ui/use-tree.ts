@@ -144,9 +144,8 @@ function arrToTree(headers: Heading[]): TreeOptionX[] {
 
     headers.forEach((h, i) => {
         const node: TreeOptionX = {
-            label: h.heading,
+            label: h.title,
             key: makeKey(h.level, i),
-            line: h.position.start.line,
             icon: h.icon,
             no: i
         };

@@ -15,10 +15,10 @@ export function stringifyHeaders(headers: Heading[], export_format: string) {
         const fields = keys.map((key) => {
             switch (key) {
                 case "title": {
-                    return h.heading;
+                    return h.title;
                 }
                 case "path": {
-                    return "#" + h.heading.replace(/ /g, "%20");
+                    return "#" + h.title.replace(/ /g, "%20");
                 }
                 case "bullet": {
                     return "-";

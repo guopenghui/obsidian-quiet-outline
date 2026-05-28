@@ -4,6 +4,7 @@ import { store } from "./store";
 import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { stringifyHeaders } from "./utils/heading";
 import { eventBus } from "./utils/event-bus";
+import type { MarkdownHeading } from "./navigators/markdown";
 
 export function registerCommands(plugin: QuietOutline) {
     const commands: Command[] = [
@@ -76,9 +77,8 @@ export function registerCommands(plugin: QuietOutline) {
             editorCallback: (editor) => {
                 const line = editor.getCursor().line;
 
-                const idx = store.headers.findLastIndex(
-                    (h) => h.position.start.line < line,
-                );
+                const headers = store.headers as MarkdownHeading[];
+                const idx = headers.findLastIndex((h) => h.line < line);
 
                 if (idx !== -1) {
                     void plugin.navigator.jump(idx);
@@ -91,9 +91,8 @@ export function registerCommands(plugin: QuietOutline) {
             editorCallback: (editor) => {
                 const line = editor.getCursor().line;
 
-                const idx = store.headers.findIndex(
-                    (h) => h.position.start.line > line,
-                );
+                const headers = store.headers as MarkdownHeading[];
+                const idx = headers.findIndex((h) => h.line > line);
 
                 if (idx !== -1) {
                     void plugin.navigator.jump(idx);

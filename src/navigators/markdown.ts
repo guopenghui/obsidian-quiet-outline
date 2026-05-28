@@ -1,10 +1,10 @@
 import {
-    type HeadingCache,
     type EditorRange,
     MarkdownView,
     debounce,
     Menu,
     Notice,
+    type Pos,
 } from "obsidian";
 import { confirm } from "@/utils/modal";
 import { EditorView } from "@codemirror/view";
@@ -29,6 +29,11 @@ import { eventBus } from "@/utils/event-bus";
 let plugin: QuietOutline;
 export const MD_DATA_FILE = "markdown-states.json";
 
+export interface MarkdownHeading extends Heading {
+    line: number;
+    position: Pos;
+}
+
 export class MarkDownNav extends Nav {
     declare view: MarkdownView;
     canDrop: boolean = true;
@@ -42,11 +47,13 @@ export class MarkDownNav extends Nav {
         return "markdown";
     }
 
-    async getHeaders(): Promise<HeadingCache[]> {
+    async getHeaders(): Promise<MarkdownHeading[]> {
         const cache = this.view.file && this.plugin.app.metadataCache.getFileCache(
             this.view.file,
         );
-        return structuredClone(cache?.headings) || [];
+
+        const headers = structuredClone(cache?.headings) || [];
+        return headers.map(cache => ({ title: cache.heading, level: cache.level, line: cache.position.start.line, position: cache.position }));
     }
 
     async setHeaders(): Promise<void> {
@@ -60,8 +67,8 @@ export class MarkDownNav extends Nav {
         store.headers = headings;
     }
 
-    async jump(key: number) {
-        const line: number = store.headers[key].position.start.line;
+    async jump(index: number) {
+        const line: number = getHeader(index).line;
 
         const cursor = {
             from: { line, ch: 0 },
@@ -70,7 +77,7 @@ export class MarkDownNav extends Nav {
         const state = { line, cursor };
 
         void this.plugin.startJumping();
-        plugin.outlineView?.vueInstance.onPosChange(key);
+        plugin.outlineView?.vueInstance.onPosChange(index);
 
         activeWindow.setTimeout(() => {
             this.view.app.workspace.setActiveLeaf(this.view.leaf, { focus: true });
@@ -80,18 +87,18 @@ export class MarkDownNav extends Nav {
 
     // make clicking behavior consistent with core outline plugin
     // i.e. focus editor
-    async jumpWhenClick(key: number): Promise<void> {
-        await this.jump(key);
+    async jumpWhenClick(index: number): Promise<void> {
+        await this.jump(index);
     }
 
-    async jumpWithoutFocus(key: number) {
-        const line: number = store.headers[key].position.start.line;
+    async jumpWithoutFocus(index: number) {
+        const line: number = getHeader(index).line;
 
         const state = { line };
 
         void this.plugin.startJumping();
         // this.plugin.jumping = true;
-        plugin.outlineView?.vueInstance.onPosChange(key);
+        plugin.outlineView?.vueInstance.onPosChange(index);
 
         activeWindow.setTimeout(() => {
             this.view.setEphemeralState(state);
@@ -165,13 +172,13 @@ export class MarkDownNav extends Nav {
             this.view.file,
             this.view.editor,
             {
-                start: store.headers[no].position.start.offset,
-                end: store.headers[no].position.end.offset,
+                start: getHeader(no).position.start.offset,
+                end: getHeader(no).position.end.offset,
             },
-            store.headers[no].heading,
+            getHeader(no).title,
         );
         void updater.updateHeadingLinks(content);
-        store.headers[no].heading = content;
+        getHeader(no).title = content;
     }
 
     /**
@@ -183,9 +190,9 @@ export class MarkDownNav extends Nav {
     changeHeadingLevel(index: number, level: number) {
         if (level < 1 || level > 6) { return; }
 
-        const lineNo = store.headers[index].position.start.line;
-        store.headers[index].level = level;
-        this.view.editor.setLine(lineNo, `${"#".repeat(level)} ${store.headers[index].heading}`);
+        const lineNo = getHeader(index).line;
+        getHeader(index).level = level;
+        this.view.editor.setLine(lineNo, `${"#".repeat(level)} ${getHeader(index).title}`);
     }
 
     async handleDrop(
@@ -259,8 +266,8 @@ export class MarkDownNav extends Nav {
                     }
 
                     const text = this.view.data.slice(
-                        store.headers[no].position.start.offset,
-                        store.headers[i]?.position.start.offset ||
+                        getHeader(no).position.start.offset,
+                        getHeader(i)?.position.start.offset ||
                         this.view.data.length,
                     );
                     await navigator.clipboard.writeText(text);
@@ -382,6 +389,10 @@ export class MarkDownNav extends Nav {
 
 }
 
+function getHeader(idx: number) {
+    return store.headers[idx] as MarkdownHeading;
+}
+
 function handleCursorChange(docChanged: boolean) {
     if (plugin.settings.persist_md_states) {
         (plugin.navigator as MarkDownNav).storeMarkdownState();
@@ -490,8 +501,8 @@ function nearestHeading(line: number): undefined | number {
     let current_heading = null;
     let i = store.headers.length;
     while (--i >= 0) {
-        if (store.headers[i].position.start.line <= line) {
-            current_heading = store.headers[i];
+        if (getHeader(i).line <= line) {
+            current_heading = getHeader(i);
             break;
         }
     }

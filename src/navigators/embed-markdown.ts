@@ -1,7 +1,6 @@
 import {
     Editor,
     type EmbedMarkdownView,
-    type HeadingCache,
     MarkdownPreviewRenderer,
 } from "obsidian";
 import type QuietOutline from "@/plugin";
@@ -9,6 +8,11 @@ import { store } from "@/store";
 import { Nav } from "./base";
 import { calcModifies } from "@/utils/diff";
 import { parseMetaDataCache } from "@/utils/md-process";
+import type { MarkdownHeading } from "./markdown";
+
+function getHeader(index: number) {
+    return store.headers[index] as MarkdownHeading;
+}
 
 export class EmbedMarkdownFileNav extends Nav {
     declare view: EmbedMarkdownView;
@@ -21,7 +25,7 @@ export class EmbedMarkdownFileNav extends Nav {
     async jump(key: number): Promise<void> {
         // throw new Error("Method not implemented.");
         // const view = plugin.current_note as EmbedMarkdownView;
-        const line = store.headers[key].position.start.line;
+        const line = getHeader(key).line;
 
         // const cursor = {
         // 	from: {line, ch: 0},
@@ -40,7 +44,7 @@ export class EmbedMarkdownFileNav extends Nav {
     }
 
     async jumpWithoutFocus(key: number): Promise<void> {
-        const line = store.headers[key].position.start.line;
+        const line = getHeader(key).line;
 
         // const cursor = {
         // 	from: {line, ch: 0},
@@ -59,12 +63,12 @@ export class EmbedMarkdownFileNav extends Nav {
 
     }
 
-    async getHeaders(): Promise<HeadingCache[]> {
+    async getHeaders(): Promise<MarkdownHeading[]> {
         if (!this.view.file) { return []; }
         const cache = this.plugin.app.metadataCache.getFileCache(
             this.view.file,
         );
-        return cache?.headings || [];
+        return (cache?.headings || []).map((h) => ({ level: h.level, title: h.heading, line: h.position.start.line, position: h.position }));
     }
     async setHeaders(): Promise<void> {
         const headings = await this.getHeaders();
@@ -85,20 +89,20 @@ export class EmbedMarkdownTextNav extends Nav {
     getId(): string {
         return "embed-markdown-text";
     }
-    async jump(key: number): Promise<void> {
-        const line = store.headers[key].position.start.line;
+    async jump(index: number): Promise<void> {
+        const line = getHeader(index).line;
         setEphemeralState(this.view, { line, focus: true });
     }
-    async jumpWithoutFocus(key: number): Promise<void> {
-        const line = store.headers[key].position.start.line;
+    async jumpWithoutFocus(index: number): Promise<void> {
+        const line = getHeader(index).line;
         setEphemeralState(this.view, { line });
     }
-    async getHeaders(): Promise<HeadingCache[]> {
+    async getHeaders(): Promise<MarkdownHeading[]> {
         const { headings } = await parseMetaDataCache(
             this.plugin.app,
             this.view.text,
         );
-        return headings || [];
+        return (headings || []).map((h) => ({ ...h, title: h.heading, line: h.position.start.line }));
     }
     async setHeaders(): Promise<void> {
         store.headers = await this.getHeaders();

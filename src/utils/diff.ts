@@ -28,7 +28,7 @@ export function diff(prev: Heading[], cur: Heading[]): Diff[] {
     while (i < prev.length && j < cur.length) {
         // same heading, pass
         if (
-            prev[i].heading === cur[j].heading &&
+            prev[i].title === cur[j].title &&
             prev[i].level === cur[j].level
         ) {
             i++;
@@ -120,7 +120,7 @@ function findSteps(target: Heading, arr: Heading[], from: number): number {
     const res = arr.slice(from);
     let step = res.findIndex(
         (heading) =>
-            heading.heading === target.heading &&
+            heading.title === target.title &&
             heading.level === target.level,
     );
     step = step < 0 ? res.length : step;
@@ -134,7 +134,7 @@ function findModifyStep(prev: Heading[], cur: Heading[], i: number, j: number) {
     );
     for (let id = 1; step > 0 && id <= step; id++) {
         if (
-            prev[i + id].heading === cur[j + id].heading &&
+            prev[i + id].title === cur[j + id].title &&
             prev[i + id].level === cur[j + id].level
         ) {
             return id;

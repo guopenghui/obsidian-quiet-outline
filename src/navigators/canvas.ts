@@ -6,7 +6,6 @@ import type {
     CanvasFileNode,
     CanvasTextNode,
     Constructor,
-    HeadingCache,
     EmbedMarkdownView,
     BBox,
 } from "obsidian";
@@ -99,7 +98,7 @@ export class CanvasNav extends Nav {
     async setHeaders(): Promise<void> {
         store.headers = await this.getHeaders();
     }
-    async getHeaders(): Promise<HeadingCache[]> {
+    async getHeaders(): Promise<Heading[]> {
         let nodes = this.view.canvas.data.nodes;
         // nodes may be undefined when switch to canvas view
         if (nodes) {
@@ -173,13 +172,9 @@ function canvasNodesToHeaders(
     traverse(trees, 1, (node, level) => {
         heads.push({
             level,
-            heading: text(node, lengthLimit),
+            title: text(node, lengthLimit),
             id: node.id,
             icon: chooseIcon(node),
-            position: {
-                start: { line: 0, col: 0, offset: 0 },
-                end: { line: 0, col: 0, offset: 0 },
-            },
         });
     });
     return heads;

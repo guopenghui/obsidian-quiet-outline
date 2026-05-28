@@ -12,7 +12,7 @@ export function useOutlineSearch() {
 
     const matchCount = computed(() => {
         return store.headers.filter((h) => {
-            const node = { label: h.heading } as TreeOption;
+            const node = { label: h.title } as TreeOption;
             return filter.value(pattern.value, node);
         }).length;
     });

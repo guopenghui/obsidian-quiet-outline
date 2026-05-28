@@ -20,12 +20,12 @@ export function useOutlineDnd(container: HTMLElement, plugin: QuietOutline) {
             const no = parseInt(target.id.slice(3));
             const heading = store.headers[no];
 
-            e.dataTransfer?.setData("text/plain", heading.heading);
+            e.dataTransfer?.setData("text/plain", heading.title);
             plugin.app.dragManager.onDragStart(e, {
                 source: "outline",
                 type: "heading",
                 icon: "heading-glyph",
-                title: heading.heading,
+                title: heading.title,
                 heading,
                 // currently only markdownNav allows drop, and its view exists
                 file: (plugin.navigator as MarkDownNav).view.file,
