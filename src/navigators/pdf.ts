@@ -1,11 +1,13 @@
-import type { PdfView, PdfDestination, ObsidianPdfViewerLike, PdfOutlineItemData } from "obsidian";
+import { type PdfView, type PdfDestination, type ObsidianPdfViewerLike, type PdfOutlineItemData, type PdfEvent, type PdfViewerChild, debounce } from "obsidian";
 import { Nav } from "./base";
 import type QuietOutline from "@/plugin";
 import { store, type Heading } from "@/store";
-
+import { Deferred } from "@/utils/promise";
+import { toRaw } from "vue";
 
 interface PdfHeading extends Heading {
-    dest?: PdfDestination;
+    dest: PdfDestination | undefined;
+    item: PdfOutlineItemData;
 }
 
 const PDF_OUTLINE_LOAD_TIMEOUT = 3000;
@@ -23,7 +25,59 @@ export class PdfNav extends Nav {
         this.view = view;
     }
 
+    async ready(): Promise<PdfViewerChild | null> {
+        const deferred = new Deferred<PdfViewerChild>();
+        this.view.viewer.then(child => {
+            deferred.resolve(child);
+        });
+
+        const child = await Promise.race([deferred.promise, sleep(3000).then(() => null)]);
+        await this.waitForPdfOutline();
+
+        return child;
+    }
+
     async onload(): Promise<void> {
+        const child = await this.ready();
+        if (!child) {
+            return;
+        }
+
+        this.listenToPageChange(child);
+    }
+
+    listenToPageChange(child: PdfViewerChild) {
+        const allItems = [...(child.pdfViewer?.pdfOutlineViewer.allItems ?? [])]
+            .sort((a, b) => a.pageNumber - b.pageNumber);
+
+        const callback = debounce(async (event: PdfEvent) => {
+            if (allItems.length === 0 || store.headers.length === 0) {
+                return;
+            }
+
+            // Find the last pageNumber less than event.pageNumber
+            // or the first pageNumber equal to the event pageNumber
+            const index = allItems.findLastIndex((item) => {
+                return item.pageNumber < event.pageNumber;
+            });
+
+            let toIndex = 0;
+            if (index < allItems.length - 1 && allItems[index + 1].pageNumber === event.pageNumber) {
+                toIndex = index + 1;
+            } else if (index !== -1) {
+                toIndex = index;
+            }
+
+            let indexOfStoreHeader = (store.headers as PdfHeading[])
+                .findIndex((header) => toRaw(header.item) === allItems[toIndex].item);
+
+            if (indexOfStoreHeader !== -1) {
+                this.plugin.outlineView?.vueInstance.onPosChange(indexOfStoreHeader);
+            }
+        }, 50, true);
+
+        child.on("pagechanging", callback);
+        this.register(() => child.off("pagechanging", callback));
     }
 
     getId(): string {
@@ -103,6 +157,7 @@ function outlineItemToPdfHeading(item: PdfOutlineItemData, level: number): PdfHe
     return {
         level,
         title: item.title,
-        dest: item.dest
+        dest: item.dest,
+        item,
     };
 }

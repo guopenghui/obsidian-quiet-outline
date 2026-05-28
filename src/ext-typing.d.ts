@@ -296,15 +296,23 @@ declare module "obsidian" {
 
     interface PdfViewerLoader {
         child: PdfViewerChild | null;
+        then(f: (child: PdfViewerChild) => void): void;
+    }
+
+    interface PdfEvent {
+        pageNumber: number;
     }
 
     interface PdfViewerChild {
         pdfViewer: ObsidianPdfViewerLike | null;
+        on(eventName: string, listener: (event: PdfEvent) => void): void;
+        off(eventName: string, listener: (event: PdfEvent) => void): void;
     }
 
     interface ObsidianPdfViewerLike {
         eventBus: PdfEventBusLike;
         pdfOutlineViewer: PdfOutlineViewerLike;
+        pdfDocument: PdfDocument;
     }
 
     export interface PdfEventBusLike {
@@ -316,9 +324,11 @@ declare module "obsidian" {
 
     interface PdfOutlineViewerLike {
         outline: PdfOutlineItemData[] | null;
+        allItems: { pageNumber: number; item: PdfOutlineItemData }[];
         linkService: {
             goToDestination(dest: PdfDestination): void;
         };
+        getPageNumberToDestHash(pdfDocument: PdfDocument): Promise<Map<number, PdfDestination>>;
     }
 
     export interface PdfOutlineItemData {

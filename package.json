@@ -9,6 +9,7 @@
         "dev": "vite build --mode development",
         "eol:check": "node scripts/check-line-endings.mjs --check-staged",
         "eol:fix": "node scripts/check-line-endings.mjs --fix",
+        "eol:fix-modified": "node scripts/check-line-endings.mjs --fix-modified",
         "lint": "oxlint",
         "lint:fix": "oxlint --fix",
         "pub": "node scripts/publish.mjs",

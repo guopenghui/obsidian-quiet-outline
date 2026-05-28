@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 const BINARY_EXTENSIONS = /\.(gif|ico|jpe?g|mp4|pdf|png|ttf|webp|woff2?|zip)$/i;
 const mode = process.argv[2] || "--check-staged";
@@ -13,6 +13,10 @@ function git(args, options = {}) {
 
 function splitNull(output) {
     return output.split("\0").filter(Boolean);
+}
+
+function unique(files) {
+    return [...new Set(files)];
 }
 
 function isBinary(buffer, file) {
@@ -49,25 +53,51 @@ function checkStaged() {
         console.error(`  ${file}`);
     }
     console.error("");
-    console.error("Run `npm run eol:fix`, review the changes, then stage them again.");
+    console.error(
+        "Run `npm run eol:fix-modified`, review the changes, then stage them again.",
+    );
     process.exit(1);
 }
 
-function fixWorktree() {
-    const files = splitNull(git(["ls-files", "-z"]));
+function fixFiles(files, label) {
     let changed = 0;
 
     for (const file of files) {
+        if (!existsSync(file)) continue;
+
         const buffer = readFileSync(file);
         if (isBinary(buffer, file) || !hasCrlf(buffer)) continue;
 
-        const normalized = buffer.toString("utf8").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+        const normalized = buffer
+            .toString("utf8")
+            .replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n");
         writeFileSync(file, normalized, "utf8");
         changed++;
     }
 
-    console.log(`Normalized ${changed} tracked text file${changed === 1 ? "" : "s"} to LF.`);
-    console.log("Review the changes, then run `git add --renormalize .` or stage the intended files.");
+    console.log(
+        `Normalized ${changed} ${label} text file${changed === 1 ? "" : "s"} to LF.`,
+    );
+}
+
+function fixWorktree() {
+    fixFiles(splitNull(git(["ls-files", "-z"])), "tracked");
+    console.log(
+        "Review the changes, then run `git add --renormalize .` or stage the intended files.",
+    );
+}
+
+function fixModified() {
+    const unstagedFiles = splitNull(
+        git(["diff", "--name-only", "--diff-filter=ACMR", "-z"]),
+    );
+    const stagedFiles = splitNull(
+        git(["diff", "--cached", "--name-only", "--diff-filter=ACMR", "-z"]),
+    );
+
+    fixFiles(unique([...unstagedFiles, ...stagedFiles]), "modified");
+    console.log("Review the changes, then stage the intended files.");
 }
 
 switch (mode) {
@@ -77,8 +107,11 @@ switch (mode) {
     case "--fix":
         fixWorktree();
         break;
+    case "--fix-modified":
+        fixModified();
+        break;
     default:
         console.error(`Unknown mode: ${mode}`);
-        console.error("Use --check-staged or --fix.");
+        console.error("Use --check-staged, --fix, or --fix-modified.");
         process.exit(2);
 }
