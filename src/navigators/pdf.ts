@@ -1,4 +1,4 @@
-import { type PdfView, type PdfDestination, type ObsidianPdfViewerLike, type PdfOutlineItemData, type PdfEvent, type PdfViewerChild, debounce } from "obsidian";
+import { type PdfView, type PdfDestination, type ObsidianPdfViewerLike, type PdfOutlineItemData, type PdfEvent, type PdfViewerChild, debounce, type PdfOutlineItem } from "obsidian";
 import { Nav } from "./base";
 import type QuietOutline from "@/plugin";
 import { store, type Heading } from "@/store";
@@ -14,6 +14,7 @@ const PDF_OUTLINE_LOAD_TIMEOUT = 3000;
 
 export class PdfNav extends Nav {
     outline: PdfOutlineItemData[] = [];
+    allItems: PdfOutlineItem[] = [];
     view: PdfView;
 
     get pdfViewer(): ObsidianPdfViewerLike | null | undefined {
@@ -34,6 +35,16 @@ export class PdfNav extends Nav {
         const child = await Promise.race([deferred.promise, sleep(3000).then(() => null)]);
         await this.waitForPdfOutline();
 
+        if (child?.pdfViewer?.pdfOutlineViewer.allItems) {
+            this.allItems = child.pdfViewer.pdfOutlineViewer.allItems;
+
+            await Promise.all(
+                this.allItems.map(async item => {
+                    item.pageNumber = await item.getPageNumber();
+                })
+            );
+        }
+
         return child;
     }
 
@@ -47,7 +58,7 @@ export class PdfNav extends Nav {
     }
 
     listenToPageChange(child: PdfViewerChild) {
-        const allItems = [...(child.pdfViewer?.pdfOutlineViewer.allItems ?? [])]
+        const allItems = [...this.allItems]
             .sort((a, b) => a.pageNumber - b.pageNumber);
 
         const callback = debounce(async (event: PdfEvent) => {
@@ -77,7 +88,13 @@ export class PdfNav extends Nav {
         }, 50, true);
 
         child.on("pagechanging", callback);
-        this.register(() => child.off("pagechanging", callback));
+        this.register(() => {
+            try {
+                child.off("pagechanging", callback);
+            } catch {
+                // PDF 子视图可能已被 Obsidian 销毁，忽略解绑失败
+            }
+        });
     }
 
     getId(): string {

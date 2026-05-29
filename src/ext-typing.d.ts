@@ -324,11 +324,17 @@ declare module "obsidian" {
 
     interface PdfOutlineViewerLike {
         outline: PdfOutlineItemData[] | null;
-        allItems: { pageNumber: number; item: PdfOutlineItemData }[];
+        allItems: PdfOutlineItem[];
         linkService: {
             goToDestination(dest: PdfDestination): void;
         };
         getPageNumberToDestHash(pdfDocument: PdfDocument): Promise<Map<number, PdfDestination>>;
+    }
+
+    interface PdfOutlineItem {
+        pageNumber: number;
+        item: PdfOutlineItemData;
+        getPageNumber(): Promise<number>;
     }
 
     export interface PdfOutlineItemData {
