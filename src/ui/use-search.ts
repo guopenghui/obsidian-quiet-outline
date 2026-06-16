@@ -1,7 +1,8 @@
 import type { TreeOption } from "naive-ui";
 import { computed, ref } from "vue";
 import { store } from "@/store";
-import { escapeHtml, getOrigin, htmlToText } from "@/utils/html"
+import { escapeHtml, getOrigin, htmlToText } from "@/utils/html";
+import { replaceInlineCalloutsWithText } from "@/utils/inline-callout";
 import { marked } from "marked";
 
 export function useOutlineSearch() {
@@ -48,7 +49,7 @@ function simpleFilter(pattern: string, option: TreeOption): boolean {
  * @returns The textContent (**no sanitized!!!**)
  */
 function mdToHtmlTextContent(text: string | undefined) {
-    let result = marked.parse(text || "", { async: false }).trim();
+    let result = marked.parse(replaceInlineCalloutsWithText(text), { async: false }).trim();
 
     // save mjx elements
     let i = 0;
@@ -66,5 +67,5 @@ function mdToHtmlTextContent(text: string | undefined) {
         return mjxes[i++];
     });
 
-    return htmlToText(result)
+    return htmlToText(result);
 }

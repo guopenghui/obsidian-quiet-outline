@@ -4,6 +4,7 @@ import { sanitizeHTMLToDom } from "obsidian";
 import { marked } from "marked";
 import type QuietOutline from "@/plugin";
 import { store } from "@/store";
+import { postProcessInlineCallouts } from "@/utils/inline-callout";
 import { Icon } from "@vicons/utils";
 import { ArrowForwardIosRound, LocalIcon } from "./icons";
 import type { TreeOptionX } from "./types";
@@ -84,7 +85,15 @@ function mdToHtml(label: string | undefined) {
 
 function renderMarkdown({ option }: { option: TreeOption; }) {
     const result = mdToHtml(option.label);
-    return h("div", { innerHTML: result });
+    return h("div", {
+        innerHTML: result,
+        onVnodeMounted(vnode) {
+            postProcessInlineCallouts(vnode.el as HTMLElement);
+        },
+        onVnodeUpdated(vnode) {
+            postProcessInlineCallouts(vnode.el as HTMLElement);
+        },
+    });
 }
 
 // switch icon

@@ -125,6 +125,33 @@
     margin: 0;
 }
 
+.quiet-outline .inline-callout {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 4px 0 0;
+    padding: 0;
+    border-radius: var(--inline-callout-border-radius, 4px);
+    vertical-align: text-bottom;
+}
+
+.quiet-outline .inline-callout-icon {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+}
+
+.quiet-outline .inline-callout-icon svg {
+    width: var(--inline-callout-icon-size, .9em);
+    height: var(--inline-callout-icon-size, .9em);
+}
+
+.quiet-outline .inline-callout-label {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 0 0 3px;
+    font-size: var(--inline-callout-font-size, .85em);
+}
+
 /* ellipsis */
 .quiet-outline .n-tree.ellipsis {
     overflow-x: hidden;
