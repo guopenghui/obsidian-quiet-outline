@@ -1,10 +1,49 @@
-import { App, debounce } from "obsidian";
+import { App, type Debouncer, debounce } from "obsidian";
 import { tryParseJson } from "./helper";
+
+export const DEFAULT_SAVE_DELAY_SECONDS = 0.2;
+
+const DEFAULT_SAVE_DELAY_MS = DEFAULT_SAVE_DELAY_SECONDS * 1000;
+
+export function normalizeSaveDelaySeconds(value: unknown): number {
+    if (value === "" || value === null || value === undefined) {
+        return DEFAULT_SAVE_DELAY_SECONDS;
+    }
+
+    const delay = Number(value);
+    if (!Number.isFinite(delay)) {
+        return DEFAULT_SAVE_DELAY_SECONDS;
+    }
+
+    return Math.max(0, delay);
+}
+
+export function saveDelaySecondsToMs(delaySeconds: unknown): number {
+    return Math.round(normalizeSaveDelaySeconds(delaySeconds) * 1000);
+}
+
+function normalizeSaveDelayMs(saveDelayMs: number): number {
+    if (!Number.isFinite(saveDelayMs)) {
+        return DEFAULT_SAVE_DELAY_MS;
+    }
+
+    return Math.max(0, saveDelayMs);
+}
 
 export class DataManager {
     private cache: Record<string, unknown> = {};
     private writeQueue: Promise<void> = Promise.resolve();
-    constructor(private app: App, private pluginPath: string) { }
+    private saveFileDataDebounced: Debouncer<[string, unknown], void>;
+
+    constructor(
+        private app: App,
+        private pluginPath: string,
+        private saveDelayMs: number = DEFAULT_SAVE_DELAY_MS,
+    ) {
+        this.saveDelayMs = normalizeSaveDelayMs(saveDelayMs);
+        this.saveFileDataDebounced = this.createSaveFileDataDebouncer();
+    }
+
     private async checkPath(normalizedPath: string) {
         const parent = normalizedPath.split("/").slice(0, -1).join("/");
         if (!await this.app.vault.adapter.exists(parent)) {
@@ -38,7 +77,38 @@ export class DataManager {
         return this.cache[path] as Data;
     }
 
-    saveFileData = debounce<[string, unknown], void>(this._saveFileData.bind(this), 200, true);
+    private createSaveFileDataDebouncer() {
+        return debounce<[string, unknown], void>(
+            this._saveFileData.bind(this),
+            this.saveDelayMs,
+            true,
+        );
+    }
+
+    async setSaveDelayMs(saveDelayMs: number) {
+        await this.flush();
+        this.saveDelayMs = normalizeSaveDelayMs(saveDelayMs);
+        this.saveFileDataDebounced = this.createSaveFileDataDebouncer();
+    }
+
+    cancelPendingSave() {
+        this.saveFileDataDebounced.cancel();
+    }
+
+    saveFileData<Data>(path: string, data: Data) {
+        if (this.saveDelayMs === 0) {
+            this._saveFileData(path, data);
+            return;
+        }
+
+        this.saveFileDataDebounced(path, data);
+    }
+
+    async flush() {
+        this.saveFileDataDebounced.run();
+        await this.writeQueue;
+    }
+
     _saveFileData<Data>(path: string, data: Data) {
         this.cache[path] = data;
         let filePath = [this.pluginPath, path].join("/");

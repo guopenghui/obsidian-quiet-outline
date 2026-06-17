@@ -41,6 +41,8 @@ export default {
     "Keep one line per heading": "保持标题只有一行,省略多余部分",
     "Persist Markdown States": "记录 markdown 状态",
     "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings": "保存和恢复 markdown 笔记的光标、滚动状态以及标题的展开/折叠状态",
+    "Markdown States Save Delay": "保存 markdown 状态延迟",
+    "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.": "最后一次变化后延迟保存 markdown-states.json 的秒数。设置为 0 时立即保存。",
     "Keep Search Input": "保留搜索输入",
     "Keep search input when switching between notes": "切换笔记时保留搜索输入",
     "Drag headings to modify note": "启用拖拽标题来调整文档结果",

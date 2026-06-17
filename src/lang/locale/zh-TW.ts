@@ -61,6 +61,8 @@ export default {
     "Keep one line per heading": "保持標題只有一行，省略多餘部分",
     "Persist Markdown States": "持續保存 Markdown 狀態",
     "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings": "儲存並恢復 Markdown 筆記的游標、捲動狀態，以及標題的展開/摺疊狀態",
+    "Markdown States Save Delay": "儲存 Markdown 狀態延遲",
+    "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.": "最後一次變化後延遲儲存 markdown-states.json 的秒數。設定為 0 時立即儲存。",
     "Keep Search Input": "保留搜尋輸入",
     "Keep search input when switching between notes": "切換筆記時保留搜尋輸入",
     "Drag headings to modify note": "啟用拖曳標題來調整文件結構",

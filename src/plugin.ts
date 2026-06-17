@@ -17,8 +17,15 @@ import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { debounceCb } from "./utils/debounce";
 
 import { type MarkdownStates, MD_DATA_FILE } from "./navigators/markdown";
-import { DEFAULT_SETTINGS, type QuietOutlineSettings, SettingTab } from "./settings";
-import { DataManager } from "./utils/data-manager";
+import {
+    DEFAULT_SETTINGS,
+    type QuietOutlineSettings,
+    SettingTab,
+} from "./settings";
+import {
+    DataManager,
+    saveDelaySecondsToMs,
+} from "./utils/data-manager";
 import { registerCommands } from "./commands";
 import { eventBus } from "./utils/event-bus";
 
@@ -53,7 +60,11 @@ export default class QuietOutline extends Plugin {
 
     async onload() {
         await this.loadSettings();
-        this.data_manager = new DataManager(this.app, this.getPluginPath());
+        this.data_manager = new DataManager(
+            this.app,
+            this.getPluginPath(),
+            saveDelaySecondsToMs(this.settings.md_states_save_delay),
+        );
         await this.data_manager.loadFileData<MarkdownStates>(MD_DATA_FILE, {});
 
         // TEST: 测试插件功能
@@ -232,6 +243,7 @@ export default class QuietOutline extends Plugin {
     private async unloadPlugin(): Promise<void> {
         try {
             await this.navigator.unload();
+            await this.data_manager?.flush();
         } finally {
             this.outlineView = null;
         }

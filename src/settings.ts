@@ -3,6 +3,11 @@ import type QuietOutline from "./plugin";
 import { store } from "./store";
 import { t } from "./lang/helper";
 import type { AllCanvasNodeData } from "obsidian/canvas";
+import {
+    DEFAULT_SAVE_DELAY_SECONDS,
+    normalizeSaveDelaySeconds,
+    saveDelaySecondsToMs,
+} from "./utils/data-manager";
 import { assertType } from "./utils/helper";
 
 type AutoExpandMode =
@@ -30,6 +35,7 @@ interface QuietOutlineSettings {
     locate_by_cursor: boolean;
     show_popover_key: ModifierKey;
     persist_md_states: boolean;
+    md_states_save_delay: number;
     keep_search_input: boolean;
     export_format: string;
     lang_direction_decide_by: TextDirectionDecideBy;
@@ -90,6 +96,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     locate_by_cursor: false,
     show_popover_key: "ctrlKey",
     persist_md_states: true,
+    md_states_save_delay: DEFAULT_SAVE_DELAY_SECONDS,
     keep_search_input: false,
     export_format: "{title}",
     lang_direction_decide_by: "system",
@@ -367,9 +374,33 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.persist_md_states)
                     .onChange(async (value) => {
                         this.plugin.settings.persist_md_states = value;
+                        if (!value) {
+                            this.plugin.data_manager.cancelPendingSave();
+                        }
                         await this.plugin.saveSettings();
+                        this.display();
                     }),
             );
+
+        if (this.plugin.settings.persist_md_states) {
+            new Setting(container)
+                .setName(t("Markdown States Save Delay"))
+                .setDesc(t("Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately."))
+                .addText((text) => {
+                    text.inputEl.type = "number";
+                    text.inputEl.min = "0";
+                    text.inputEl.step = "0.1";
+                    text
+                        .setPlaceholder(String(DEFAULT_SAVE_DELAY_SECONDS))
+                        .setValue(String(this.plugin.settings.md_states_save_delay))
+                        .onChange(async (value) => {
+                            const delay = normalizeSaveDelaySeconds(value);
+                            this.plugin.settings.md_states_save_delay = delay;
+                            await this.plugin.data_manager.setSaveDelayMs(saveDelaySecondsToMs(delay));
+                            await this.plugin.saveSettings();
+                        });
+                });
+        }
 
         new Setting(container)
             .setName(t("Keep Search Input"))

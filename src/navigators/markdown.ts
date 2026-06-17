@@ -372,6 +372,8 @@ export class MarkDownNav extends Nav {
     }
 
     storeMarkdownState() {
+        if (!plugin.settings.persist_md_states) return;
+
         const view = this.view;
         if (!view.file?.path) return;
 

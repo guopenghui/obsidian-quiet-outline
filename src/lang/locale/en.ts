@@ -49,6 +49,8 @@ export default {
     "Keep one line per heading": "Keep one line per heading",
     "Persist Markdown States": "Persist Markdown States",
     "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings": "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings",
+    "Markdown States Save Delay": "Markdown States Save Delay",
+    "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.": "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.",
     "Keep Search Input": "Keep Search Input",
     "Keep search input when switching between notes": "Keep search input when switching between notes",
     "Drag headings to modify note": "Drag headings to modify note",
