@@ -160,7 +160,7 @@ export class MarkDownNav extends Nav {
     onExpandKeysChange(path: string, keys: string[]) {
         if (path === this.view.file?.path) {
             this.expandedKeys = keys;
-            this.storeMarkdownState();
+            this.storeMarkdownState("expandedKeys");
         }
     }
 
@@ -371,19 +371,30 @@ export class MarkDownNav extends Nav {
         return plugin.data_manager.loadFileData<MarkdownStates>(MD_DATA_FILE, {});
     }
 
-    storeMarkdownState() {
-        if (!plugin.settings.persist_md_states) return;
+    storeMarkdownState(changedState: MarkdownStateKey) {
+        if (!plugin.settings.persist_md_states || !isMarkdownStateEnabled(changedState)) return;
 
         const view = this.view;
         if (!view.file?.path) return;
 
         const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE) || {};
         const oldData = dataMap[view.file.path] || {};
-        const keysToSave = this.expandedKeys || dataMap[view.file.path]?.expandedKeys || [];
-        const data: MarkdownState = Object.assign({}, DEFAULT_STATE, oldData, {
-            expandedKeys: keysToSave,
-            ...view.getEphemeralState()
-        });
+        const ephemeralState = view.getEphemeralState() as Partial<MarkdownState>;
+        const data: MarkdownState = { ...oldData };
+
+        switch (changedState) {
+            case "scroll":
+                if (ephemeralState.scroll === undefined) return;
+                data.scroll = ephemeralState.scroll;
+                break;
+            case "cursor":
+                if (!ephemeralState.cursor) return;
+                data.cursor = ephemeralState.cursor;
+                break;
+            case "expandedKeys":
+                data.expandedKeys = this.expandedKeys || [];
+                break;
+        }
 
         dataMap[view.file.path] = data;
         plugin.data_manager.saveFileData(MD_DATA_FILE, dataMap); // <MarkdownStates>
@@ -396,9 +407,7 @@ function getHeader(idx: number) {
 }
 
 function handleCursorChange(docChanged: boolean) {
-    if (plugin.settings.persist_md_states) {
-        (plugin.navigator as MarkDownNav).storeMarkdownState();
-    }
+    (plugin.navigator as MarkDownNav).storeMarkdownState("cursor");
 
     if (!plugin.allow_cursor_change || !plugin.jumping.isResolved() || docChanged) {
         return;
@@ -417,21 +426,25 @@ function handleCursorChange(docChanged: boolean) {
 }
 
 type MarkdownState = {
-    scroll: number,
-    cursor: EditorRange,
-    expandedKeys: string[],
+    scroll?: number,
+    cursor?: EditorRange,
+    expandedKeys?: string[],
 };
 
-const DEFAULT_STATE: MarkdownState = Object.freeze({
-    scroll: 0,
-    cursor: {
-        from: { line: 0, ch: 0 },
-        to: { line: 0, ch: 0 },
-    },
-    expandedKeys: [],
-});
+type MarkdownStateKey = keyof MarkdownState;
 
 export type MarkdownStates = Record<string, MarkdownState>;
+
+function isMarkdownStateEnabled(state: MarkdownStateKey): boolean {
+    switch (state) {
+        case "scroll":
+            return plugin.settings.persist_md_scroll;
+        case "cursor":
+            return plugin.settings.persist_md_cursor;
+        case "expandedKeys":
+            return plugin.settings.persist_md_expanded_keys;
+    }
+}
 
 function currentLine(fromScroll: boolean, isSourcemode: boolean) {
     const markdownView = (plugin.navigator as MarkDownNav).view;
@@ -518,9 +531,7 @@ function nearestHeading(line: number): undefined | number {
 const handleScroll = debounce(_handleScroll, 150, false);
 
 function _handleScroll(evt: Event) {
-    if (plugin.settings.persist_md_states) {
-        (plugin.navigator as MarkDownNav).storeMarkdownState();
-    }
+    (plugin.navigator as MarkDownNav).storeMarkdownState("scroll");
 
     if (!plugin.allow_scroll) {
         return;

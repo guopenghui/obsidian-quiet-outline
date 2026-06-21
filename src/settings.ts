@@ -35,6 +35,9 @@ interface QuietOutlineSettings {
     locate_by_cursor: boolean;
     show_popover_key: ModifierKey;
     persist_md_states: boolean;
+    persist_md_cursor: boolean;
+    persist_md_scroll: boolean;
+    persist_md_expanded_keys: boolean;
     md_states_save_delay: number;
     keep_search_input: boolean;
     export_format: string;
@@ -96,6 +99,9 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     locate_by_cursor: false,
     show_popover_key: "ctrlKey",
     persist_md_states: true,
+    persist_md_cursor: true,
+    persist_md_scroll: true,
+    persist_md_expanded_keys: true,
     md_states_save_delay: DEFAULT_SAVE_DELAY_SECONDS,
     keep_search_input: false,
     export_format: "{title}",
@@ -362,7 +368,9 @@ class SettingTab extends PluginSettingTab {
                     ),
             );
 
-        new Setting(container)
+        const persistSettingGroup = container.createDiv({ cls: "quiet-outline-setting-group" });
+
+        new Setting(persistSettingGroup)
             .setName(t("Persist Markdown States"))
             .setDesc(
                 t(
@@ -383,8 +391,44 @@ class SettingTab extends PluginSettingTab {
             );
 
         if (this.plugin.settings.persist_md_states) {
-            new Setting(container)
-                .setName(t("Markdown States Save Delay"))
+            new Setting(persistSettingGroup)
+                .setName(t("Save Cursor Position"))
+                .setDesc(t("Save and restore cursor position of markdown note"))
+                .addToggle((toggle) =>
+                    toggle
+                        .setValue(this.plugin.settings.persist_md_cursor)
+                        .onChange(async (value) => {
+                            this.plugin.settings.persist_md_cursor = value;
+                            await this.plugin.saveSettings();
+                        }),
+                );
+
+            new Setting(persistSettingGroup)
+                .setName(t("Save Scroll Position"))
+                .setDesc(t("Save and restore scroll position of markdown note"))
+                .addToggle((toggle) =>
+                    toggle
+                        .setValue(this.plugin.settings.persist_md_scroll)
+                        .onChange(async (value) => {
+                            this.plugin.settings.persist_md_scroll = value;
+                            await this.plugin.saveSettings();
+                        }),
+                );
+
+            new Setting(persistSettingGroup)
+                .setName(t("Save Heading Expansion State"))
+                .setDesc(t("Save and restore expanded/collapsed state of headings"))
+                .addToggle((toggle) =>
+                    toggle
+                        .setValue(this.plugin.settings.persist_md_expanded_keys)
+                        .onChange(async (value) => {
+                            this.plugin.settings.persist_md_expanded_keys = value;
+                            await this.plugin.saveSettings();
+                        }),
+                );
+
+            new Setting(persistSettingGroup)
+                .setName(t("Save Delay"))
                 .setDesc(t("Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately."))
                 .addText((text) => {
                     text.inputEl.type = "number";

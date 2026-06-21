@@ -99,6 +99,15 @@
     min-height: 400px;
 }
 
+.quiet-outline-setting-group {
+    border-radius: var(--radius-m);
+    background-color: var(--background-secondary);
+}
+
+.quiet-outline-setting-group .setting-item:not(:first-child) {
+    padding-left: 32px;
+}
+
 .quiet-outline .n-tree {
     font-size: var(--custom-font-size);
     font-family: var(--custom-font-family);

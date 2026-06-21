@@ -133,7 +133,7 @@ function onLeafChange() {
     const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
     const old_state =
         plugin.navigator.getId() === "markdown" ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys : null;
-    if (plugin.settings.persist_md_states && old_state) {
+    if (plugin.settings.persist_md_states && plugin.settings.persist_md_expanded_keys && old_state) {
         modifyExpandKeys(old_state);
     } else {
         switchLevel(level.value);

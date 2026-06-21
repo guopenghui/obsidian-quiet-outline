@@ -184,11 +184,18 @@ export default class QuietOutline extends Plugin {
                 return eState;
             }
 
-            return {
-                ...eState,
-                scroll: data.scroll,
-                cursor: data.cursor,
-            };
+            const persistedState: Record<string, unknown> = { ...eState };
+            let hasPersistedState = false;
+            if (this.settings.persist_md_scroll && data.scroll !== undefined) {
+                persistedState.scroll = data.scroll;
+                hasPersistedState = true;
+            }
+            if (this.settings.persist_md_cursor && data.cursor) {
+                persistedState.cursor = data.cursor;
+                hasPersistedState = true;
+            }
+
+            return hasPersistedState ? persistedState : eState;
         };
 
         // patch leaf.setViewState early to restore markdown scroll/cursor position
