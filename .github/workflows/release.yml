@@ -1,6 +1,7 @@
 name: Build obsidian plugin
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "*"
