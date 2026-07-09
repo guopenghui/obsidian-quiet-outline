@@ -2,6 +2,81 @@
 
 > This file is auto-generated from GitHub Releases. Do not edit by hand.
 
+## 0.5.15 - 2026-07-01
+
+### Fix
++ Add finer-grained persist markdown state option #306
++ Support configuring delay for persist markdown state
++ Fix several issues with pdf navigate
++ Support locating headings in pdf view
+
+---
+
+### 修复
++ 添加更细粒度的 persist markdown state 选项 #306 
++ 支持设置 persist markdown state 延时
++ 解决 pdf navigate 的一些问题
++ 支持 locate heading in pdf view
+
+## 0.5.14 - 2026-05-28
+
+### Feature
++ Support headings of PDF view
+
+---
+
+### 新增功能
++ 支持显示 PDF 视图的标题
+
+<img width="1699" height="935" alt="Image" src="https://github.com/user-attachments/assets/6d4f49fb-b2e2-4c8f-b141-17562c8a86d6" />
+
+## 0.5.13 - 2026-05-16
+
+### Fix
++ Fix the issue that clicking the blank area of the title has no effect #293
++ Improve code robustness
+---
+
+### 修复
++ 解决标题空白区域点击没有效果的问题 #293 
++ 提升代码健壮性
+
+## 0.5.12 - 2026-03-02
+
+### Fix
++ make vimlize_canvas off by default (#287)
++ close sidebar when clicking on heading on mobile (#286)
+
+---
+
+### 修复
++ 默认关闭 vimlize_canvas（#287）
++ 移动端点击标题时关闭侧边栏（#286）
+
+## 0.5.11 - 2026-02-06
+
+### Fix
++ Make outline empty  with unknown file views #284 
++ Enhance the localization of the function area
+
+---
+
+### 修复
++ 遇到未知文件视图时，清空面板 #284 
++ 提升功能区的本地化
+
+## 0.5.10 - 2026-01-30
+
+### Fix
++ input hover and focus styles overrided by theme
++ jumping state not reset in short note
+
+---
+
+### 修复
++ 输入框的悬停和选中样式被主题覆盖
++ 短文档中，跳转状态未重置
+
 ## 0.5.9 - 2026-01-20
 
 ### Fix
