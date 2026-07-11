@@ -96,7 +96,7 @@ export default defineConfig(({ mode }) => {
                     exports: 'named',
 
                     // 只生成一个 main.js（不产生额外 chunk）
-                    inlineDynamicImports: true,
+                    codeSplitting: false,
 
                     entryFileNames: 'main.js',
 
