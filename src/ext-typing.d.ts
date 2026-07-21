@@ -11,6 +11,11 @@ declare global {
     const i18next: {
         t: (key: string, options?: Record<string, unknown>) => string;
     };
+
+    interface ScrollIntoViewOptions {
+        // supported in chrome 140, obsidian 1.11
+        container?: "all" | "nearest";
+    }
 }
 
 declare module "obsidian" {

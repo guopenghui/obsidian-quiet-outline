@@ -4,7 +4,7 @@ import type { HTMLAttributes, ComputedRef, Ref } from "vue";
 import type { TreeOptionX } from "./types";
 import type { TreeOption } from "naive-ui";
 import { getPathFromArr, makeKey, keyToIndex } from "./utils";
-import { Menu } from "obsidian";
+import { debounce, Menu } from "obsidian";
 import { normal, separator, setupMenu } from "@/utils/menu";
 import type QuietOutline from "@/plugin";
 import { t } from "@/lang/helper";
@@ -37,6 +37,14 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
 
     useDomEvent(window, "click", () => { selectedKeys.value = []; });
 
+    const scrollHeadingIntoView = debounce((index: number) => {
+        if (!plugin.settings.auto_scroll_into_view) return;
+        const curLocation = container.querySelector(`#no-${index}`);
+        if (curLocation) {
+            curLocation.scrollIntoView({ block: "center", behavior: "smooth", container: "nearest" });
+        }
+    }, 100, true);
+
     function resetLocated(idx: number) {
         const path = getPathFromArr(idx);
         let index = path.find(
@@ -46,13 +54,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
 
         locateIdx.value = index;
 
-        activeWindow.setTimeout(() => {
-            if (!plugin.settings.auto_scroll_into_view) return;
-            const curLocation = container.querySelector(`#no-${index}`);
-            if (curLocation) {
-                curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
-            }
-        }, 100);
+        scrollHeadingIntoView(index);
     }
 
     const nodeProps = computed(() => {
