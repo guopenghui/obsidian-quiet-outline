@@ -209,7 +209,15 @@ export default class QuietOutline extends Plugin {
                     return next.apply(this, [
                         viewState,
                         getPersistedMarkdownState(viewState, eState),
-                    ]);
+                    ]).catch(reason => {
+                        // Notes may be modified by external operations, eg. sync between devices,
+                        // then the cursor position may be invalid and out of document range
+                        if (reason instanceof RangeError) {
+                            console.error(reason);
+                            return;
+                        }
+                        throw reason;
+                    });
                 };
             }
         }));
