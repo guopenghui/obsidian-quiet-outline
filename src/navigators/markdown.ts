@@ -8,7 +8,7 @@ import {
 } from "obsidian";
 import { confirm } from "@/utils/modal";
 import { EditorView } from "@codemirror/view";
-import { editorEvent } from "@/editorExt";
+import { editorEvent } from "@/editor-ext";
 import type QuietOutline from "@/plugin";
 import { store, getSiblings, type Heading } from "@/store";
 import { Nav } from "./base";
