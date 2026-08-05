@@ -235,9 +235,15 @@ export default class QuietOutline extends Plugin {
     refresh = debounce(this.refresh_outline, 300, true);
 
     private async updateNav(type: string, view: Component | null) {
-        await this.navigator.unload();
-        this.navigator = createNav(type, this, view);
-        await this.navigator.load();
+        try {
+            await this.navigator.unload();
+            this.navigator = createNav(type, this, view);
+            await this.navigator.load();
+        } catch (e) {
+            console.error(`Failed to initialize ${type} navigator: ` + e);
+            this.navigator = createNav("dummy", this, null);
+            await this.navigator.load();
+        }
     }
 
     async updateNavAndRefresh(type: string, view: Component | null) {

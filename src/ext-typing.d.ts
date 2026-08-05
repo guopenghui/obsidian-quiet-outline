@@ -297,6 +297,9 @@ declare module "obsidian" {
 
     interface PdfView extends FileView {
         viewer: PdfViewerLoader;
+        _quietOutlineCache: {
+            allItems: PdfOutlineItem[];
+        }
     }
 
     interface PdfViewerLoader {

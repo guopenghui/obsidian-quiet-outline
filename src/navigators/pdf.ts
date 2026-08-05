@@ -13,7 +13,6 @@ interface PdfHeading extends Heading {
 const PDF_OUTLINE_LOAD_TIMEOUT = 3000;
 
 export class PdfNav extends Nav {
-    outline: PdfOutlineItemData[] = [];
     allItems: PdfOutlineItem[] = [];
     view: PdfView;
 
@@ -35,6 +34,11 @@ export class PdfNav extends Nav {
         const child = await Promise.race([deferred.promise, sleep(3000).then(() => null)]);
         await this.waitForPdfOutline();
 
+        if (this.view._quietOutlineCache) {
+            this.allItems = this.view._quietOutlineCache.allItems;
+            return child;
+        }
+
         if (child?.pdfViewer?.pdfOutlineViewer.allItems) {
             this.allItems = child.pdfViewer.pdfOutlineViewer.allItems;
 
@@ -44,6 +48,10 @@ export class PdfNav extends Nav {
                 })
             );
         }
+
+        this.view._quietOutlineCache = {
+            allItems: this.allItems,
+        };
 
         return child;
     }
