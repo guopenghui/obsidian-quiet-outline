@@ -14,6 +14,7 @@ An outline plugin makes headings easier to read.
 + [Drag and modify note](#drag-and-modify-note)
 + [Navigation in Canvas](#navigate-in-canvas)
 + [Navigation in Kanban](#navigate-in-kanban)
++ [Navigation in Bases](#navigate-in-bases)
 + [Hover preview](#show-content-when-hovering-on-heading)
 + [Remember expand state](#remember-state)
 + [Vim-Like keymap](#vim-like-keymap)
@@ -70,6 +71,10 @@ You can customize the default level per note. See release note in [0.3.33](https
 ![Canvas](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/nav_in_canvas.gif)
 
 ### Navigate in Kanban
+
+### Navigate in Bases
+
+Lists the rows of the active Bases view (table, cards or list), following its filters, sorting and grouping. The property shown per row can be changed in the Bases settings tab.
 
 ### Show content when hovering on heading
 ![Popover](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/popover.gif)

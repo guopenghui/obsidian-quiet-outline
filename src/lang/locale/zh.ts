@@ -60,6 +60,7 @@ export default {
 
     // 设置页签
     "Canvas": "白板",
+    "Bases": "数据库",
     "General": "常规设置",
     "Styles": "样式设置",
 
@@ -74,6 +75,11 @@ export default {
     "Show file nodes": "显示文件节点",
     "Show text nodes": "显示文本节点",
     "Show link nodes": "显示链接节点",
+
+    // Bases 相关设置
+    "Display Property": "显示属性",
+    "Property shown for each row": "每一行显示的属性，例如 file.name、file.path",
+    "Bases syntax": "Bases 语法",
 
     // menu
     "Copy": "复制",

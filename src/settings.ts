@@ -50,6 +50,9 @@ interface QuietOutlineSettings {
     shown_node_types: AllCanvasNodeData['type'][];
     heading_truncate_length: number,
 
+    // Bases settings
+    bases_display_property: string;
+
     // Style settings
     patch_color: boolean;
     primary_color_light: string;
@@ -114,6 +117,9 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     shown_node_types: ["file", "group", "text", "link"],
     heading_truncate_length: 20,
 
+    // Bases settings
+    bases_display_property: "file.name",
+
     // Style settings
     patch_color: false,
     primary_color_light: "#18a058",
@@ -150,7 +156,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
 
 class SettingTab extends PluginSettingTab {
     plugin: QuietOutline;
-    private activeTab: "general" | "styles" | "canvas" = "general";
+    private activeTab: "general" | "styles" | "canvas" | "bases" = "general";
 
     constructor(app: App, plugin: QuietOutline) {
         super(app, plugin);
@@ -179,6 +185,10 @@ class SettingTab extends PluginSettingTab {
             text: t("Canvas"),
             cls: this.activeTab === "canvas" ? "active" : ""
         });
+        const basesTab = tabContainer.createEl("button", {
+            text: t("Bases"),
+            cls: this.activeTab === "bases" ? "active" : ""
+        });
 
         // Tab click handlers
         generalTab.addEventListener("click", () => {
@@ -196,6 +206,11 @@ class SettingTab extends PluginSettingTab {
             this.display();
         });
 
+        basesTab.addEventListener("click", () => {
+            this.activeTab = "bases";
+            this.display();
+        });
+
         // Content container
         const contentContainer = containerEl.createDiv({ cls: "quiet-outline-tab-content" });
 
@@ -205,6 +220,8 @@ class SettingTab extends PluginSettingTab {
             this.renderStyleSettings(contentContainer);
         } else if (this.activeTab === "canvas") {
             this.renderCanvasSettings(contentContainer);
+        } else if (this.activeTab === "bases") {
+            this.renderBasesSettings(contentContainer);
         }
     }
 
@@ -979,6 +996,32 @@ class SettingTab extends PluginSettingTab {
                         // 触发刷新
                         this.plugin.refresh();
                     }),
+            );
+    }
+
+    private renderBasesSettings(container: HTMLElement): void {
+        container.empty();
+
+        new Setting(container)
+            .setName(t("Display Property"))
+            .setDesc(t("Property shown for each row"))
+            .addText((text) =>
+                text
+                    .setPlaceholder("file.name")
+                    .setValue(this.plugin.settings.bases_display_property)
+                    .onChange(async (value) => {
+                        this.plugin.settings.bases_display_property = value;
+                        await this.plugin.saveSettings();
+                        this.plugin.refresh();
+                    }),
+            )
+            .addExtraButton((button) =>
+                button
+                    .setIcon("help")
+                    .setTooltip(t("Bases syntax"))
+                    .onClick(() =>
+                        activeWindow.open("https://obsidian.md/help/bases/syntax"),
+                    ),
             );
     }
 }
