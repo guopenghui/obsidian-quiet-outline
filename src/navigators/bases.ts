@@ -15,9 +15,12 @@ interface BasesHeading extends Heading {
     row?: number;
 }
 
+const FLASH_DURATION = 2000;
+
 export class BasesNav extends Nav {
     declare view: BasesFileView;
     private unwatchData: (() => void) | null = null;
+    private flashTimeout = 0;
 
     constructor(plugin: QuietOutline, view: BasesFileView) {
         super(plugin, view);
@@ -51,6 +54,7 @@ export class BasesNav extends Nav {
         this.register(() => {
             this.unwatchData?.();
             this.unwatchData = null;
+            this.clearFlash();
         });
     }
 
@@ -62,9 +66,11 @@ export class BasesNav extends Nav {
         if (!view) return;
 
         const plugin = this.plugin;
+        const clearFlash = () => this.clearFlash();
         this.unwatchData = around(view, {
             onDataUpdated(next) {
                 return function (this: BasesView, ...args: Parameters<typeof next>) {
+                    clearFlash();
                     next.apply(this, args);
                     plugin.refresh();
                 };
@@ -130,7 +136,24 @@ export class BasesNav extends Nav {
         const rowEl = findRowEl(view, target.path);
         if (rowEl) {
             this.scrollToTop(scrollEl, rowEl);
+            this.flash(rowEl);
         }
+    }
+
+    private flash(rowEl: HTMLElement) {
+        this.clearFlash();
+
+        rowEl.addClass("is-flashing");
+        this.flashTimeout = activeWindow.setTimeout(() => this.clearFlash(), FLASH_DURATION);
+    }
+
+    private clearFlash() {
+        activeWindow.clearTimeout(this.flashTimeout);
+        this.flashTimeout = 0;
+        // row elements are pooled, so a stale class may sit on a recycled row
+        this.view.controller?.viewContainerEl
+            ?.querySelectorAll<HTMLElement>(".is-flashing")
+            .forEach(el => el.removeClass("is-flashing"));
     }
 
     /** align a row with the top of the viewport, below the sticky table header */
