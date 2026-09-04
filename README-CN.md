@@ -12,6 +12,7 @@
 + [拖拽标题调整文档结构](#拖拽标题调整文档结构)
 + [在 Canvas 中导航](#在-canvas-中导航)
 + [在 Kanban 中导航](#在-kanban-中导航)
++ [在 Bases 中导航](#在-bases-中导航)
 + [鼠标悬浮显示预览窗口](#鼠标悬浮显示预览窗口)
 + [记忆展开状态](#记忆展开状态)
 + [Vim-Like 键盘操作](#vim-like-键盘操作)
@@ -68,6 +69,10 @@ Quiet Outline:
 ![Canvas](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/nav_in_canvas.gif)
 
 ### 在 Kanban 中导航
+
+### 在 Bases 中导航
+
+列出当前 Bases 视图（table / cards / list）中的行，遵循其筛选、排序和分组。每行显示的属性可在设置的 Bases 页签中修改。
 
 ### 鼠标悬浮显示预览窗口
 ![Popover](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/popover.gif)

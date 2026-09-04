@@ -6,6 +6,7 @@ import { CanvasNav } from "./canvas";
 import { KanbanNav } from "./kanban";
 import { EmbedMarkdownFileNav, EmbedMarkdownTextNav } from "./embed-markdown";
 import { PdfNav } from "./pdf";
+import { BasesNav } from "./bases";
 
 const NAVIGATORS = {
     dummy: DummyNav,
@@ -13,6 +14,7 @@ const NAVIGATORS = {
     kanban: KanbanNav,
     canvas: CanvasNav,
     pdf: PdfNav,
+    bases: BasesNav,
     "embed-markdown-file": EmbedMarkdownFileNav,
     "embed-markdown-text": EmbedMarkdownTextNav,
 };

@@ -70,6 +70,7 @@ export default {
     "General": "General",
     "Styles": "Styles",
     "Canvas": "Canvas",
+    "Bases": "Bases",
 
     // Canvas settings
     "Canvas Sort Order": "Canvas Sort Order",
@@ -82,6 +83,11 @@ export default {
     "Show file nodes": "Show file nodes",
     "Show text nodes": "Show text nodes",
     "Show link nodes": "Show link nodes",
+
+    // Bases settings
+    "Display Property": "Display Property",
+    "Property shown for each row": "Property shown for each row, e.g. file.name, file.path",
+    "Bases syntax": "Bases syntax",
 
     // menu
     "Copy": "Copy",

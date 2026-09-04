@@ -80,6 +80,7 @@ export default {
 
     // 設定頁籤
     "Canvas": "白板",
+    "Bases": "資料庫",
     "General": "一般設定",
     "Styles": "樣式設定",
 
@@ -94,6 +95,11 @@ export default {
     "Sort by Area": "按面積 (大 -> 小)",
     "Sort by Name (A -> Z)": "按名稱 (A -> Z)",
     "Sort by Name (Z -> A)": "按名稱 (Z -> A)",
+
+    // Bases 相關設定
+    "Display Property": "顯示屬性",
+    "Property shown for each row": "每一列顯示的屬性，例如 file.name、file.path",
+    "Bases syntax": "Bases 語法",
 
     // menu
     "Copy": "複製",

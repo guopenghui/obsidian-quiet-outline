@@ -295,6 +295,44 @@ declare module "obsidian" {
         setWarning(isWarning: boolean): MenuItem;
     }
 
+    /** the `bases` leaf view, hosting a toolbar and one inner BasesView */
+    interface BasesFileView extends FileView {
+        controller: QueryController;
+    }
+
+    interface QueryController {
+        view: BasesView | null;
+        /** scroll container of the inner view */
+        viewContainerEl: HTMLElement;
+        /** triggers "view-changed" when the inner view is replaced */
+        events: Events;
+    }
+
+    interface BasesRow {
+        entry?: BasesEntry;
+        el: HTMLElement;
+    }
+
+    interface BasesGroup {
+        rows?: BasesRow[];
+        /** cards and list views */
+        containerEl?: HTMLElement;
+        /** table view */
+        tableEl?: HTMLElement;
+    }
+
+    /** all members below are unofficial, so they are optional on purpose */
+    interface BasesView {
+        /** table view rows, flattened across groups */
+        rows?: BasesRow[];
+        /** cards view items */
+        items?: BasesRow[];
+        groups?: BasesGroup[];
+        /** cards view lays entries out in a grid */
+        measurements?: { cardsPerRow?: number; };
+        updateVirtualDisplay?(): void;
+    }
+
     interface PdfView extends FileView {
         viewer: PdfViewerLoader;
         _quietOutlineCache: {
