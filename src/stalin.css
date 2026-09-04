@@ -116,6 +116,7 @@
 
 .quiet-outline .n-tree-node-wrapper {
     padding: 0px;
+    margin-bottom: var(--custom-line-gap);
 }
 
 .quiet-outline .n-tree-node.n-tree-node--selectable {
@@ -127,7 +128,7 @@
 .quiet-outline .n-tree-node .n-tree-node-content {
     line-height: var(--custom-line-height);
     min-height: 10px;
-    margin-bottom: var(--custom-line-gap);
+    /*margin-bottom: var(--custom-line-gap);*/
 }
 
 .quiet-outline .n-tree-node-content__text p {
