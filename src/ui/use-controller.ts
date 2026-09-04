@@ -15,7 +15,9 @@ type Options = {
 export function useOutlineController({ container, locateIdx, selectedKeys, expanded, modifyExpandKeys, pattern }: Options) {
     /** select deepest visible node in located node's path */
     function selectVisible() {
+        if (locateIdx.value < 0 || !store.headers[locateIdx.value]) return;
         const path = getPathFromArr(locateIdx.value);
+        if (path.length === 0) return;
         const firstCollapse = path.findIndex((item) => !expanded.value.contains(idxToKey(item)));
         const visibleOne = firstCollapse === -1 ? locateIdx.value : path[firstCollapse];
 

@@ -100,6 +100,7 @@ async function toBottom() {
 // reset button
 function reset() {
     pattern.value = "";
+    selectedKeys.value = [];
     switchLevel(getDefaultLevel());
 }
 useEventBus("reset-panel", reset);
@@ -122,6 +123,10 @@ function onPosChange(index: number) {
 function onLeafChange() {
     // force reset animation-in-progress state of naive-ui tree component
     tree.value?.handleAfterEnter();
+
+    // clear selection and located state on view switch
+    locateIdx.value = -1;
+    selectedKeys.value = [];
 
     const old_pattern = pattern.value;
 

@@ -32,7 +32,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
         return makeTree(store.headers);
     });
 
-    const locateIdx = ref(0);
+    const locateIdx = ref(-1);
     const selectedKeys = ref<string[]>([]);
 
     useDomEvent(window, "click", () => { selectedKeys.value = []; });
@@ -46,6 +46,10 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
     }, 100, true);
 
     function resetLocated(idx: number) {
+        if (idx < 0 || !store.headers[idx]) {
+            locateIdx.value = -1;
+            return;
+        }
         const path = getPathFromArr(idx);
         let index = path.find(
             (v) => !expanded.value.contains(makeKey(store.headers[v].level, v)),

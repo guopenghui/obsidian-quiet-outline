@@ -24,6 +24,7 @@ export function isLeaf(idx: number) {
 // calculate path of heading by store.header array
 export function getPathFromArr(index: number) {
     const res: number[] = [];
+    if (index < 0 || !store.headers[index]) return res;
     let curLevel = store.headers[index].level + 1;
     for (let i = index; i >= 0; i--) {
         if (store.headers[i].level < curLevel) {
