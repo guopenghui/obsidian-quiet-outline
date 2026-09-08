@@ -198,7 +198,7 @@ function chooseIcon(node: AllCanvasNodeData): SupportedIcon {
             return "lucide-music-2";
         }
         if (node.file.endsWith(".mp4")) {
-            return "lucide-youtube";
+            return "lucide-film";
         }
         if (node.file.endsWith(".png") || node.file.endsWith(".jpg")) {
             return "lucide-file-image";
