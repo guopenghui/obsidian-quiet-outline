@@ -2,6 +2,34 @@
 
 > This file is auto-generated from GitHub Releases. Do not edit by hand.
 
+## 0.5.18 - 2026-08-07
+
+### Fix
++ make navigator switch more robust #311
+
+---
+
+### 修复
++ 提升导航器切换的稳定性 #311
+
+## 0.5.17 - 2026-07-30
+
+### Fix
++ Selection points outside of document when restoring cursor position #309
+
+### 修复
++ 恢复光标位置时选区超出文档范围 #309
+
+## 0.5.16 - 2026-07-09
+
+### Style
+Adjust the display effect of the current heading and set a background color consistent with the Obsidian style.
+
+---
+
+### 样式修改
+调整当前所在标题的显示效果，改为背景色，与obsidian风格一致
+
 ## 0.5.15 - 2026-07-01
 
 ### Fix
