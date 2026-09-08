@@ -1,9 +1,4 @@
-import {
-    EditorView,
-    type PluginValue,
-    ViewUpdate,
-    ViewPlugin,
-} from "@codemirror/view";
+import { EditorView, type PluginValue, ViewUpdate, ViewPlugin } from "@codemirror/view";
 import { eventBus } from "./utils/event-bus";
 
 class EditorEvent implements PluginValue {

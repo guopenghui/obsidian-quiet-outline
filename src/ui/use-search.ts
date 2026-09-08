@@ -1,7 +1,7 @@
 import type { TreeOption } from "naive-ui";
 import { computed, ref } from "vue";
 import { store } from "@/store";
-import { escapeHtml, getOrigin, htmlToText } from "@/utils/html"
+import { escapeHtml, getOrigin, htmlToText } from "@/utils/html";
 import { marked } from "marked";
 
 export function useOutlineSearch() {
@@ -20,8 +20,8 @@ export function useOutlineSearch() {
     return {
         pattern,
         filter,
-        matchCount
-    }
+        matchCount,
+    };
 }
 
 function regexFilter(pattern: string, option: TreeOption): boolean {
@@ -35,8 +35,7 @@ function regexFilter(pattern: string, option: TreeOption): boolean {
 }
 
 function simpleFilter(pattern: string, option: TreeOption): boolean {
-    return mdToHtmlTextContent(option.label).toLowerCase()
-        .contains(pattern.toLowerCase());
+    return mdToHtmlTextContent(option.label).toLowerCase().contains(pattern.toLowerCase());
 }
 
 /**
@@ -55,7 +54,7 @@ function mdToHtmlTextContent(text: string | undefined) {
     let mjxes: string[] = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) || [];
 
     // map to original formula text
-    mjxes = mjxes.map(mjx => escapeHtml(getOrigin(mjx)));
+    mjxes = mjxes.map((mjx) => escapeHtml(getOrigin(mjx)));
 
     result = result.replace(/<mjx-container.*?>.*?<\/mjx-container>/g, () => {
         return `<math></math>`;
@@ -66,5 +65,5 @@ function mdToHtmlTextContent(text: string | undefined) {
         return mjxes[i++];
     });
 
-    return htmlToText(result)
+    return htmlToText(result);
 }

@@ -57,7 +57,7 @@ export class OutlineView extends ItemView {
                 return;
             }
             this.pendingKey = "G";
-            activeWindow.setTimeout(() => this.pendingKey = undefined, 500);
+            activeWindow.setTimeout(() => (this.pendingKey = undefined), 500);
         });
         tree.register([], "Z", () => {
             if (this.pendingKey === "Z") {
@@ -66,7 +66,7 @@ export class OutlineView extends ItemView {
                 return;
             }
             this.pendingKey = "Z";
-            activeWindow.setTimeout(() => this.pendingKey = undefined, 500);
+            activeWindow.setTimeout(() => (this.pendingKey = undefined), 500);
         });
         tree.register(["Shift"], "G", () => this.vueInstance.move("bottom"));
         tree.register([], "ArrowLeft", () => this.vueInstance.setExpand(false));
@@ -113,16 +113,14 @@ export class OutlineView extends ItemView {
     focusOn(part: "search" | "tree") {
         switch (part) {
             case "tree": {
-                const tree: HTMLElement =
-                    this.contentEl.querySelector(".n-tree")!;
+                const tree: HTMLElement = this.contentEl.querySelector(".n-tree")!;
                 tree.focus();
                 this.scope = this.scopes.tree;
                 this.vueInstance.selectVisible();
                 break;
             }
             case "search": {
-                const search: HTMLElement =
-                    this.contentEl.querySelector(".n-input__input-el")!;
+                const search: HTMLElement = this.contentEl.querySelector(".n-input__input-el")!;
                 search.focus();
                 this.scope = this.scopes.search;
                 break;
@@ -130,7 +128,7 @@ export class OutlineView extends ItemView {
         }
     }
 
-    async onClose() { }
+    async onClose() {}
     onunload(): void {
         this.vueApp.unmount();
         this.plugin.outlineView = null;

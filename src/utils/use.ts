@@ -22,7 +22,7 @@ function useDomEvent<T extends keyof GlobalEventHandlersEventMap>(
 
 function useEventBus<K extends EventName>(
     name: K,
-    handler: (...args: QuietOutlineEventMap[K]) => void
+    handler: (...args: QuietOutlineEventMap[K]) => void,
 ) {
     onMounted(() => {
         eventBus.on(name, handler);

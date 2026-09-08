@@ -8,7 +8,7 @@ import {
     TFile,
     View,
     type ViewState,
-    WorkspaceLeaf
+    WorkspaceLeaf,
 } from "obsidian";
 
 import { Nav, createNav } from "./navigators";
@@ -17,15 +17,8 @@ import { OutlineView, VIEW_TYPE } from "./ui/view";
 import { debounceCb } from "./utils/debounce";
 
 import { type MarkdownStates, MD_DATA_FILE } from "./navigators/markdown";
-import {
-    DEFAULT_SETTINGS,
-    type QuietOutlineSettings,
-    SettingTab,
-} from "./settings";
-import {
-    DataManager,
-    saveDelaySecondsToMs,
-} from "./utils/data-manager";
+import { DEFAULT_SETTINGS, type QuietOutlineSettings, SettingTab } from "./settings";
+import { DataManager, saveDelaySecondsToMs } from "./utils/data-manager";
 import { registerCommands } from "./commands";
 import { eventBus } from "./utils/event-bus";
 
@@ -51,7 +44,7 @@ export default class QuietOutline extends Plugin {
     private prevView: View | null = null;
 
     async startJumping() {
-        const jumping = this.jumping = new Deferred();
+        const jumping = (this.jumping = new Deferred());
         // end jumping after scroll event or timeout
         await Promise.race([jumping.promise, sleep(1000)]);
 
@@ -89,14 +82,22 @@ export default class QuietOutline extends Plugin {
         }
 
         this.block_scroll = debounceCb(
-            () => { this.allow_scroll = false; },
+            () => {
+                this.allow_scroll = false;
+            },
             300,
-            () => { this.allow_scroll = true; },
+            () => {
+                this.allow_scroll = true;
+            },
         );
         this.block_cursor_change = debounceCb(
-            () => { this.allow_cursor_change = false; },
+            () => {
+                this.allow_cursor_change = false;
+            },
             300,
-            () => { this.allow_cursor_change = true; },
+            () => {
+                this.allow_cursor_change = true;
+            },
         );
     }
 
@@ -138,25 +139,29 @@ export default class QuietOutline extends Plugin {
                 if (leaf.view instanceof FileView && leaf.view.navigation && leaf.view.file) {
                     // when opening a canvas, it triggers active-leaf-change twice
                     // and at the first time it's not ready
-                    const isCanvasTwice = leaf.view.getViewType() === "canvas"
-                        && this.prevActiveFileView === leaf.view
-                        && leaf.view === prevView;
+                    const isCanvasTwice =
+                        leaf.view.getViewType() === "canvas" &&
+                        this.prevActiveFileView === leaf.view &&
+                        leaf.view === prevView;
 
-                    if (leaf.view !== this.prevActiveFileView
-                        || leaf.view.file !== this.prevActiveFile
-                        || isCanvasTwice
+                    if (
+                        leaf.view !== this.prevActiveFileView ||
+                        leaf.view.file !== this.prevActiveFile ||
+                        isCanvasTwice
                     ) {
                         this.prevActiveFileView = leaf.view;
                         this.prevActiveFile = leaf.view.file;
                         eventBus.trigger("active-fileview-change", leaf.view);
                     }
                 }
-            })
+            }),
         );
 
         this.registerEvent(
             eventBus.on("active-fileview-change", async (view) => {
-                if (this.outlineView?.leaf?.group) { return; }
+                if (this.outlineView?.leaf?.group) {
+                    return;
+                }
 
                 if (!view) {
                     await this.updateNavAndRefresh("dummy", null);
@@ -169,10 +174,7 @@ export default class QuietOutline extends Plugin {
             }),
         );
 
-        const getPersistedMarkdownState = (
-            viewState: ViewState,
-            eState: LeafEphemeralState,
-        ) => {
+        const getPersistedMarkdownState = (viewState: ViewState, eState: LeafEphemeralState) => {
             if (!this.settings.persist_md_states) {
                 return eState;
             }
@@ -199,28 +201,29 @@ export default class QuietOutline extends Plugin {
         };
 
         // patch leaf.setViewState early to restore markdown scroll/cursor position
-        this.register(around(WorkspaceLeaf.prototype, {
-            setViewState(next) {
-                return async function (this: WorkspaceLeaf, viewState, eState) {
-                    if (viewState.type !== "markdown") {
-                        return next.apply(this, [viewState, eState]);
-                    }
-
-                    return next.apply(this, [
-                        viewState,
-                        getPersistedMarkdownState(viewState, eState),
-                    ]).catch(reason => {
-                        // Notes may be modified by external operations, eg. sync between devices,
-                        // then the cursor position may be invalid and out of document range
-                        if (reason instanceof RangeError) {
-                            console.error(reason);
-                            return;
+        this.register(
+            around(WorkspaceLeaf.prototype, {
+                setViewState(next) {
+                    return async function (this: WorkspaceLeaf, viewState, eState) {
+                        if (viewState.type !== "markdown") {
+                            return next.apply(this, [viewState, eState]);
                         }
-                        throw reason;
-                    });
-                };
-            }
-        }));
+
+                        return next
+                            .apply(this, [viewState, getPersistedMarkdownState(viewState, eState)])
+                            .catch((reason) => {
+                                // Notes may be modified by external operations, eg. sync between devices,
+                                // then the cursor position may be invalid and out of document range
+                                if (reason instanceof RangeError) {
+                                    console.error(reason);
+                                    return;
+                                }
+                                throw reason;
+                            });
+                    };
+                },
+            }),
+        );
     }
 
     // set store.headers
@@ -289,8 +292,6 @@ export default class QuietOutline extends Plugin {
                 active: true,
             });
         }
-        await this.app.workspace.revealLeaf(
-            this.app.workspace.getLeavesOfType(VIEW_TYPE)[0],
-        );
+        await this.app.workspace.revealLeaf(this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]);
     }
 }

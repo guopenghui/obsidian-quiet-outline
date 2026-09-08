@@ -1,8 +1,4 @@
-import {
-    Editor,
-    type EmbedMarkdownView,
-    MarkdownPreviewRenderer,
-} from "obsidian";
+import { Editor, type EmbedMarkdownView, MarkdownPreviewRenderer } from "obsidian";
 import type QuietOutline from "@/plugin";
 import { store } from "@/store";
 import { Nav } from "./base";
@@ -60,15 +56,19 @@ export class EmbedMarkdownFileNav extends Nav {
             // this.view.setEphemeralState(state);
             setEphemeralState(this.view, { line });
         });
-
     }
 
     async getHeaders(): Promise<MarkdownHeading[]> {
-        if (!this.view.file) { return []; }
-        const cache = this.plugin.app.metadataCache.getFileCache(
-            this.view.file,
-        );
-        return (cache?.headings || []).map((h) => ({ level: h.level, title: h.heading, line: h.position.start.line, position: h.position }));
+        if (!this.view.file) {
+            return [];
+        }
+        const cache = this.plugin.app.metadataCache.getFileCache(this.view.file);
+        return (cache?.headings || []).map((h) => ({
+            level: h.level,
+            title: h.heading,
+            line: h.position.start.line,
+            position: h.position,
+        }));
     }
     async setHeaders(): Promise<void> {
         const headings = await this.getHeaders();
@@ -98,11 +98,12 @@ export class EmbedMarkdownTextNav extends Nav {
         setEphemeralState(this.view, { line });
     }
     async getHeaders(): Promise<MarkdownHeading[]> {
-        const { headings } = await parseMetaDataCache(
-            this.plugin.app,
-            this.view.text,
-        );
-        return (headings || []).map((h) => ({ ...h, title: h.heading, line: h.position.start.line }));
+        const { headings } = await parseMetaDataCache(this.plugin.app, this.view.text);
+        return (headings || []).map((h) => ({
+            ...h,
+            title: h.heading,
+            line: h.position.start.line,
+        }));
     }
     async setHeaders(): Promise<void> {
         store.headers = await this.getHeaders();
@@ -114,7 +115,7 @@ export class EmbedMarkdownTextNav extends Nav {
     }
 }
 
-function setEphemeralState(view: EmbedMarkdownView, option: { line: number, focus?: boolean; }) {
+function setEphemeralState(view: EmbedMarkdownView, option: { line: number; focus?: boolean }) {
     if (view.getMode() === "source") {
         editorScroll(view.editMode.editor, option.line);
         if (option.focus) {

@@ -19,28 +19,28 @@ export interface ConfirmModalOptions {
      * - string: rendered as-is
      * - i18nKey: translated via this plugin's `t()`
      */
-    title?: string | { i18nKey: Parameters<typeof t>[0]; };
+    title?: string | { i18nKey: Parameters<typeof t>[0] };
 
     /**
      * Modal message body (required)
      * - string: rendered as-is
      * - i18nKey: translated via this plugin's `t()`
      */
-    message: string | { i18nKey: Parameters<typeof t>[0]; };
+    message: string | { i18nKey: Parameters<typeof t>[0] };
 
     /**
      * Confirm button text (optional, default: Confirm)
      * - string: rendered as-is
      * - i18nKey: translated via this plugin's `t()`
      */
-    confirmText?: string | { i18nKey: Parameters<typeof t>[0]; };
+    confirmText?: string | { i18nKey: Parameters<typeof t>[0] };
 
     /**
      * Cancel button text (optional, default: Cancel)
      * - string: rendered as-is
      * - i18nKey: translated via this plugin's `t()`
      */
-    cancelText?: string | { i18nKey: Parameters<typeof t>[0]; };
+    cancelText?: string | { i18nKey: Parameters<typeof t>[0] };
 
     /**
      * Confirm button icon (optional), uses Obsidian built-in icon names
@@ -73,7 +73,7 @@ export interface ConfirmModalOptions {
 /**
  * Resolve display text (supports i18nKey)
  */
-function resolveText(input?: string | { i18nKey: Parameters<typeof t>[0]; }, fallback = ""): string {
+function resolveText(input?: string | { i18nKey: Parameters<typeof t>[0] }, fallback = ""): string {
     if (input === undefined || input === null) return fallback;
     if (typeof input === "string") return input;
     return t(input.i18nKey);
@@ -134,10 +134,7 @@ export class ConfirmModal extends Modal {
             // Note: this project uses the English source string as the i18n key for `t()`
             t("Cancel"),
         );
-        const confirmText = resolveText(
-            this.options.confirmText,
-            t("Confirm"),
-        );
+        const confirmText = resolveText(this.options.confirmText, t("Confirm"));
 
         // Confirm button (dangerous action: warning color) — placed on the left
         const confirmBtn = new ButtonComponent(buttonRow)
@@ -217,7 +214,10 @@ function prependIconToButton(btn: ButtonComponent, iconName: string): void {
  * - To keep this utility generic, it does not execute the dangerous action for you.
  *   You should `await` the result and handle the operation yourself.
  */
-export function confirm(app: App, options: Omit<ConfirmModalOptions, "onConfirm" | "onCancel">): Promise<boolean> {
+export function confirm(
+    app: App,
+    options: Omit<ConfirmModalOptions, "onConfirm" | "onCancel">,
+): Promise<boolean> {
     return new Promise((resolve) => {
         const modal = new ConfirmModal(app, {
             ...options,

@@ -147,7 +147,7 @@ export const remove_href = (token: Token) => {
 
 // remove list
 export const tokenizer: TokenizerObject = {
-    list(): undefined { },
+    list(): undefined {},
 };
 
 export function loadMarkedExtensions() {

@@ -37,7 +37,7 @@ export abstract class Nav {
 
         for (; this._events.length > 0;) {
             await this._events.pop()?.();
-        };
+        }
 
         await this.onunload();
 
@@ -90,38 +90,46 @@ export abstract class Nav {
     getDefaultLevel() {
         return parseInt(this.plugin.settings.expand_level);
     }
-    getPath() { return ""; }
+    getPath() {
+        return "";
+    }
     abstract getId(): string;
-    async install() { }
-    async onload(): Promise<void> { }
-    async onunload(): Promise<void> { }
-    async handleDrop(
-        _from: number,
-        _to: number,
-        _position: "before" | "after" | "inside",
-    ) { }
+    async install() {}
+    async onload(): Promise<void> {}
+    async onunload(): Promise<void> {}
+    async handleDrop(_from: number, _to: number, _position: "before" | "after" | "inside") {}
     onRightClick(
         _event: MouseEvent,
-        _nodeInfo: { node: TreeOption; no: number; level: number; raw: string; },
+        _nodeInfo: { node: TreeOption; no: number; level: number; raw: string },
         _menu: Menu,
         _onClose?: () => void,
-    ) { }
-    toBottom() { }
-    onExpandKeysChange(_path: string, _keys: string[]) { }
-    changeHeadingContent(_no: number, _content: string) { }
+    ) {}
+    toBottom() {}
+    onExpandKeysChange(_path: string, _keys: string[]) {}
+    changeHeadingContent(_no: number, _content: string) {}
     abstract jump(key: number): Promise<void>;
-    async jumpWithoutFocus(index: number) { await this.jump(index); }
-    async jumpWhenClick(index: number) { await this.jumpWithoutFocus(index); }
+    async jumpWithoutFocus(index: number) {
+        await this.jump(index);
+    }
+    async jumpWhenClick(index: number) {
+        await this.jumpWithoutFocus(index);
+    }
     abstract getHeaders(): Promise<Heading[]>;
     abstract setHeaders(): Promise<void>;
     abstract updateHeaders(): Promise<void>;
 }
 
 export class DummyNav extends Nav {
-    getId() { return "dummy"; }
-    async unload() { }
-    async jump(_index: number) { }
-    async getHeaders(): Promise<Heading[]> { return []; }
-    async setHeaders(): Promise<void> { store.headers = []; }
-    async updateHeaders() { }
+    getId() {
+        return "dummy";
+    }
+    async unload() {}
+    async jump(_index: number) {}
+    async getHeaders(): Promise<Heading[]> {
+        return [];
+    }
+    async setHeaders(): Promise<void> {
+        store.headers = [];
+    }
+    async updateHeaders() {}
 }

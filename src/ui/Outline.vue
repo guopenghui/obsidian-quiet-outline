@@ -1,9 +1,24 @@
 <template>
     <NConfigProvider :theme="theme" :theme-overrides="themeOverrides" :style="containerStyle">
         <div class="function-bar" v-if="store.searchSupport">
-            <QButton @click="toBottom" :icon-style="iconColor" :svg-icon="ArrowCircleDownRound" :label="t('To Bottom')" />
-            <QButton @click="reset" :icon-style="iconColor" :svg-icon="SettingsBackupRestoreRound" :label="t('Reset')" />
-            <NInput v-model:value="pattern" :placeholder="t('Input to search')" size="small" clearable />
+            <QButton
+                @click="toBottom"
+                :icon-style="iconColor"
+                :svg-icon="ArrowCircleDownRound"
+                :label="t('To Bottom')"
+            />
+            <QButton
+                @click="reset"
+                :icon-style="iconColor"
+                :svg-icon="SettingsBackupRestoreRound"
+                :label="t('Reset')"
+            />
+            <NInput
+                v-model:value="pattern"
+                :placeholder="t('Input to search')"
+                size="small"
+                clearable
+            />
         </div>
         <NSlider
             v-if="store.levelSwitch"
@@ -77,8 +92,10 @@ function formatTooltip(value: number): string {
     return "No expand";
 }
 
-const { theme, themeOverrides, iconColor, primaryColor, rainbowColors, containerStyle, biDi } = useOutlineTheme();
-const { level, switchLevel, expanded, modifyExpandKeys, getDefaultLevel, autoExpand } = useOutlineExpand(plugin);
+const { theme, themeOverrides, iconColor, primaryColor, rainbowColors, containerStyle, biDi } =
+    useOutlineTheme();
+const { level, switchLevel, expanded, modifyExpandKeys, getDefaultLevel, autoExpand } =
+    useOutlineExpand(plugin);
 const { data, nodeProps, locateIdx, resetLocated, selectedKeys } = useOutlineTree({
     plugin,
     container,
@@ -89,7 +106,8 @@ const { data, nodeProps, locateIdx, resetLocated, selectedKeys } = useOutlineTre
 
 const { pattern, filter, matchCount } = useOutlineSearch();
 const { onDrop } = useOutlineDnd(container, plugin);
-const { renderLabel, renderPrefix, renderSwitcherIcon, editingHeadingText } = useOutlineRenderer(plugin);
+const { renderLabel, renderPrefix, renderSwitcherIcon, editingHeadingText } =
+    useOutlineRenderer(plugin);
 useOutlinePopover(plugin, container);
 
 // to-bottom button
@@ -137,8 +155,14 @@ function onLeafChange() {
     // try to restore expanding state
     const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
     const old_state =
-        plugin.navigator.getId() === "markdown" ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys : null;
-    if (plugin.settings.persist_md_states && plugin.settings.persist_md_expanded_keys && old_state) {
+        plugin.navigator.getId() === "markdown"
+            ? dataMap?.[plugin.navigator.getPath()]?.expandedKeys
+            : null;
+    if (
+        plugin.settings.persist_md_states &&
+        plugin.settings.persist_md_expanded_keys &&
+        old_state
+    ) {
         modifyExpandKeys(old_state);
     } else {
         switchLevel(level.value);
@@ -152,14 +176,15 @@ function onLeafChange() {
 }
 onLeafChange();
 
-const { selectVisible, setExpand, center, move, resetPattern, currentSelected } = useOutlineController({
-    container,
-    locateIdx,
-    selectedKeys,
-    expanded,
-    modifyExpandKeys,
-    pattern,
-});
+const { selectVisible, setExpand, center, move, resetPattern, currentSelected } =
+    useOutlineController({
+        container,
+        locateIdx,
+        selectedKeys,
+        expanded,
+        modifyExpandKeys,
+        pattern,
+    });
 
 defineExpose({
     setExpand,
@@ -267,7 +292,12 @@ defineExpose({
 .quiet-outline .n-tree .n-tree-node .n-tree-node-content .n-tree-node-content__prefix {
     margin-right: 0;
 }
-.quiet-outline .n-tree .n-tree-node .n-tree-node-content .n-tree-node-content__prefix > *:last-child {
+.quiet-outline
+    .n-tree
+    .n-tree-node
+    .n-tree-node-content
+    .n-tree-node-content__prefix
+    > *:last-child {
     margin-right: 8px;
 }
 .n-tree-node-switcher__icon {

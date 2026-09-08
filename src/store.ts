@@ -33,9 +33,7 @@ export function getSiblings(headId: number, headings: Heading[]): Set<number> {
     const parent = getParent(headId, headings);
     const children = getChildren(parent, headings);
 
-    const siblings = [...children].filter(
-        (h) => headings[h].level === headings[headId].level,
-    );
+    const siblings = [...children].filter((h) => headings[h].level === headings[headId].level);
     return new Set(siblings);
 }
 
@@ -74,7 +72,7 @@ export const store = reactive({
     modifyKeys: {} as ModifyKeys,
     dragModify: false,
     textDirectionDecideBy: "system" as "system" | "text",
-    refreshTree: () => { },
+    refreshTree: () => {},
     theme: {
         patchColor: false,
         primaryColorLight: "",

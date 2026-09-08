@@ -39,8 +39,8 @@ export function useOutlineDnd(container: HTMLElement, plugin: QuietOutline) {
             return;
         }
 
-        const fromNo =  nodeToIndex(dragNode);
-        const toNo =  nodeToIndex(node);
+        const fromNo = nodeToIndex(dragNode);
+        const toNo = nodeToIndex(node);
 
         await plugin.navigator.handleDrop(fromNo, toNo, dropPosition);
     }

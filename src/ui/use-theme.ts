@@ -1,8 +1,8 @@
-import { store } from '@/store';
-import { computed } from 'vue';
-import { darkTheme, type GlobalThemeOverrides } from 'naive-ui';
+import { store } from "@/store";
+import { computed } from "vue";
+import { darkTheme, type GlobalThemeOverrides } from "naive-ui";
 
-type MakeRequired<T, K extends keyof T> = T & { [P in K]-?: T[P]; };
+type MakeRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 type ThemeOverrides = MakeRequired<GlobalThemeOverrides, "common" | "Slider" | "Tree">;
 
 export function useOutlineTheme() {
@@ -70,9 +70,7 @@ export function useOutlineTheme() {
     });
 
     const themeOverrides = computed(() => {
-        return theme.value === null
-            ? lightThemeConfig.value
-            : darkThemeConfig.value;
+        return theme.value === null ? lightThemeConfig.value : darkThemeConfig.value;
     });
 
     const rainbowColors = computed(() => {
@@ -97,11 +95,11 @@ export function useOutlineTheme() {
     const containerStyle = computed(() => {
         const style: Record<string, string> = {};
 
-        style['--custom-font-size'] = store.theme.fontSize;
-        style['--custom-font-family'] = store.theme.fontFamily;
-        style['--custom-font-weight'] = store.theme.fontWeight;
-        style['--custom-line-height'] = store.theme.lineHeight;
-        style['--custom-line-gap'] = store.theme.lineGap;
+        style["--custom-font-size"] = store.theme.fontSize;
+        style["--custom-font-family"] = store.theme.fontFamily;
+        style["--custom-font-weight"] = store.theme.fontWeight;
+        style["--custom-line-height"] = store.theme.lineHeight;
+        style["--custom-line-gap"] = store.theme.lineGap;
 
         // Font color settings
         if (store.theme.customFontColor) {
@@ -112,12 +110,12 @@ export function useOutlineTheme() {
             const h5Color = store.dark ? store.theme.h5ColorDark : store.theme.h5ColorLight;
             const h6Color = store.dark ? store.theme.h6ColorDark : store.theme.h6ColorLight;
 
-            style['--h1-color'] = h1Color;
-            style['--h2-color'] = h2Color;
-            style['--h3-color'] = h3Color;
-            style['--h4-color'] = h4Color;
-            style['--h5-color'] = h5Color;
-            style['--h6-color'] = h6Color;
+            style["--h1-color"] = h1Color;
+            style["--h2-color"] = h2Color;
+            style["--h3-color"] = h3Color;
+            style["--h4-color"] = h4Color;
+            style["--h5-color"] = h5Color;
+            style["--h6-color"] = h6Color;
         }
 
         return style;
@@ -151,11 +149,11 @@ function getDefaultColor() {
 }
 
 function cssColorToRgba(color: string) {
-    if (!CSS.supports('color', color)) return "rgba(0, 0, 0, 0)";
+    if (!CSS.supports("color", color)) return "rgba(0, 0, 0, 0)";
 
-    const canvas = activeDocument.createElement('canvas');
+    const canvas = activeDocument.createElement("canvas");
     canvas.width = canvas.height = 1;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
 
     ctx.clearRect(0, 0, 1, 1);
     ctx.fillStyle = color;

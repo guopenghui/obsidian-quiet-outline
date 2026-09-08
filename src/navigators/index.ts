@@ -29,11 +29,10 @@ type NavigatorViewMap = {
     [Name in NavigatorName]: ConstructorParameters<(typeof NAVIGATORS)[Name]>[1];
 };
 
-type NavConstructor<Name extends NavigatorName> =
-    new (
-        plugin: QuietOutline,
-        view: NavigatorViewMap[Name],
-    ) => NavigatorMap[Name];
+type NavConstructor<Name extends NavigatorName> = new (
+    plugin: QuietOutline,
+    view: NavigatorViewMap[Name],
+) => NavigatorMap[Name];
 
 function isKnownNav(name: string): name is NavigatorName {
     return name in NAVIGATORS;
@@ -49,8 +48,10 @@ function createKnownNav<Name extends NavigatorName>(
 }
 
 function createNav<Name extends keyof typeof NAVIGATORS>(
-    name: Name, plugin: QuietOutline, view: NavigatorViewMap[Name]
-): InstanceType<typeof NAVIGATORS[Name]>;
+    name: Name,
+    plugin: QuietOutline,
+    view: NavigatorViewMap[Name],
+): InstanceType<(typeof NAVIGATORS)[Name]>;
 function createNav(name: string, plugin: QuietOutline, view: Component | null): Nav;
 function createNav(name: string, plugin: QuietOutline, view: Component | null): Nav {
     if (isKnownNav(name)) {

@@ -1,5 +1,5 @@
 export class Deferred<T = void> {
-    state: 'resolved' | 'rejected' | 'unresolved' = 'unresolved';
+    state: "resolved" | "rejected" | "unresolved" = "unresolved";
     resolve!: (value: T | Promise<T>) => void;
     reject!: (err?: unknown) => void;
 
@@ -7,12 +7,12 @@ export class Deferred<T = void> {
         this.resolve = resolve;
         this.reject = reject;
     }).then(
-        res => (this.setState('resolved'), res),
-        err => (this.setState('rejected'), Promise.reject(toError(err))),
+        (res) => (this.setState("resolved"), res),
+        (err) => (this.setState("rejected"), Promise.reject(toError(err))),
     );
 
-    protected setState(state: 'resolved' | 'rejected'): void {
-        if (this.state === 'unresolved') {
+    protected setState(state: "resolved" | "rejected"): void {
+        if (this.state === "unresolved") {
             this.state = state;
         }
     }
@@ -25,11 +25,11 @@ export class Deferred<T = void> {
     }
 
     isResolved(): boolean {
-        return this.state === 'resolved';
+        return this.state === "resolved";
     }
 
     isRejected(): boolean {
-        return this.state === 'rejected';
+        return this.state === "rejected";
     }
 }
 

@@ -30,21 +30,20 @@ export function useOutlineExpand(plugin: QuietOutline) {
     const expanded = ref<string[]>([]);
     /** revome invalid expand keys */
     function safeFilter(keys: string[]) {
-        return keys.filter(key => {
+        return keys.filter((key) => {
             const index = keyToIndex(key);
-            return index < store.headers.length - 1
-                && store.headers[index].level < store.headers[index + 1].level;
+            return (
+                index < store.headers.length - 1 &&
+                store.headers[index].level < store.headers[index + 1].level
+            );
         });
     }
-    function modifyExpandKeys(
-        keys: string[],
-        mode: "add" | "remove" | "replace" = "replace",
-    ) {
+    function modifyExpandKeys(keys: string[], mode: "add" | "remove" | "replace" = "replace") {
         let newKeys: string[];
         if (mode === "replace") {
             newKeys = keys;
         } else if (mode === "remove") {
-            newKeys = expanded.value.filter(key => !keys.includes(key));
+            newKeys = expanded.value.filter((key) => !keys.includes(key));
         } else {
             const mergeSet = new Set([...expanded.value, ...keys]);
             newKeys = [...mergeSet];
@@ -67,7 +66,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
             // if current heading is a parent, expand itself as well
             const should_expand =
                 index < store.headers.length - 1 &&
-                    store.headers[index].level < store.headers[index + 1].level
+                store.headers[index].level < store.headers[index + 1].level
                     ? [makeKey(current_heading.level, index)]
                     : [];
 
@@ -83,15 +82,9 @@ export function useOutlineExpand(plugin: QuietOutline) {
                 }
             }
 
-            if (
-                plugin.settings.auto_expand_ext ===
-                "expand-and-collapse-rest-to-setting"
-            ) {
+            if (plugin.settings.auto_expand_ext === "expand-and-collapse-rest-to-setting") {
                 expanded.value = filterKeysLessThanEqual(level.value);
-            } else if (
-                plugin.settings.auto_expand_ext ===
-                "expand-and-collapse-rest-to-default"
-            ) {
+            } else if (plugin.settings.auto_expand_ext === "expand-and-collapse-rest-to-default") {
                 const defaultLevel = getDefaultLevel();
                 expanded.value = filterKeysLessThanEqual(defaultLevel);
                 // expanded.value = filterKeysLessThanEqual(parseInt(plugin.settings.expand_level));
@@ -113,29 +106,22 @@ export function useOutlineExpand(plugin: QuietOutline) {
                 .filter((key) => {
                     const index = keyToIndex(key);
                     const notRemove = !removes.some(
-                        (remove) =>
-                            remove.begin <= index &&
-                            index < remove.begin + remove.length,
+                        (remove) => remove.begin <= index && index < remove.begin + remove.length,
                     );
                     const notParent2Child = !modifies.some(
                         (modify) =>
-                            modify.oldBegin === index &&
-                            modify.levelChangeType === "parent2child",
+                            modify.oldBegin === index && modify.levelChangeType === "parent2child",
                     );
                     return notRemove && notParent2Child;
                 })
                 .map((key) => {
                     const index = keyToIndex(key);
-                    const Parent2Parent = modifies.find(
-                        (modify) => modify.oldBegin === index,
-                    );
+                    const Parent2Parent = modifies.find((modify) => modify.oldBegin === index);
                     const offsetBase = offsetModifies.findLastIndex(
                         (modify) => modify.begin <= index,
                     );
                     const newKey =
-                        offsetBase === -1
-                            ? key
-                            : offset(key, offsetModifies[offsetBase].offset);
+                        offsetBase === -1 ? key : offset(key, offsetModifies[offsetBase].offset);
 
                     const newIndex = keyToIndex(newKey);
                     if (Parent2Parent) {
@@ -159,15 +145,12 @@ export function useOutlineExpand(plugin: QuietOutline) {
                 const path = getPathFromArr(add.begin);
                 if (
                     add.begin >= store.headers.length - 1 ||
-                    store.headers[add.begin].level >=
-                    store.headers[add.begin + 1].level
+                    store.headers[add.begin].level >= store.headers[add.begin + 1].level
                 ) {
                     path.pop(); // remove itself
                 }
                 path.forEach((index) => {
-                    newExpandKeys.push(
-                        makeKey(store.headers[index].level, index),
-                    );
+                    newExpandKeys.push(makeKey(store.headers[index].level, index));
                 });
             });
             modifyExpandKeys([...new Set(newExpandKeys)]);
@@ -180,10 +163,9 @@ export function useOutlineExpand(plugin: QuietOutline) {
         switchLevel,
         expanded,
         modifyExpandKeys,
-        autoExpand
+        autoExpand,
     };
 }
-
 
 function offset(key: string, offset: number) {
     const parts = key.split("-");

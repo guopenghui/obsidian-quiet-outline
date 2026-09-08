@@ -19,14 +19,19 @@ interface HTMLAttr extends HTMLAttributes {
 }
 
 type OutlineTreeOptions = {
-    plugin: QuietOutline,
+    plugin: QuietOutline;
     container: HTMLElement;
-    level: Ref<number>,
-    expanded: Ref<string[]>,
-    modifyExpandKeys: (newKeys: string[], mode: "add" | "remove" | "replace") => void,
+    level: Ref<number>;
+    expanded: Ref<string[]>;
+    modifyExpandKeys: (newKeys: string[], mode: "add" | "remove" | "replace") => void;
 };
 
-export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }: OutlineTreeOptions) {
+export function useOutlineTree({
+    plugin,
+    container,
+    expanded,
+    modifyExpandKeys,
+}: OutlineTreeOptions) {
     // prepare data for tree component
     const data = computed(() => {
         return makeTree(store.headers);
@@ -35,15 +40,25 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
     const locateIdx = ref(-1);
     const selectedKeys = ref<string[]>([]);
 
-    useDomEvent(window, "click", () => { selectedKeys.value = []; });
+    useDomEvent(window, "click", () => {
+        selectedKeys.value = [];
+    });
 
-    const scrollHeadingIntoView = debounce((index: number) => {
-        if (!plugin.settings.auto_scroll_into_view) return;
-        const curLocation = container.querySelector(`#no-${index}`);
-        if (curLocation) {
-            curLocation.scrollIntoView({ block: "center", behavior: "smooth", container: "nearest" });
-        }
-    }, 100, true);
+    const scrollHeadingIntoView = debounce(
+        (index: number) => {
+            if (!plugin.settings.auto_scroll_into_view) return;
+            const curLocation = container.querySelector(`#no-${index}`);
+            if (curLocation) {
+                curLocation.scrollIntoView({
+                    block: "center",
+                    behavior: "smooth",
+                    container: "nearest",
+                });
+            }
+        },
+        100,
+        true,
+    );
 
     function resetLocated(idx: number) {
         if (idx < 0 || !store.headers[idx]) {
@@ -51,9 +66,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
             return;
         }
         const path = getPathFromArr(idx);
-        let index = path.find(
-            (v) => !expanded.value.contains(makeKey(store.headers[v].level, v)),
-        );
+        let index = path.find((v) => !expanded.value.contains(makeKey(store.headers[v].level, v)));
         index = index === undefined ? path[path.length - 1] : index;
 
         locateIdx.value = index;
@@ -62,7 +75,7 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
     }
 
     const nodeProps = computed(() => {
-        return (info: { option: TreeOption; }): HTMLAttr => {
+        return (info: { option: TreeOption }): HTMLAttr => {
             const lev = parseInt((info.option.key as string).split("-")[1]);
             const no = parseInt((info.option.key as string).split("-")[2]);
             const raw = info.option.label || "";
@@ -98,16 +111,29 @@ export function useOutlineTree({ plugin, container, expanded, modifyExpandKeys }
                 },
                 onContextmenu(event: MouseEvent) {
                     selectedKeys.value = [info.option.key as string];
-                    const { self, siblings, descendants } = getNode(data, keyToIndex(info.option.key as string));
+                    const { self, siblings, descendants } = getNode(
+                        data,
+                        keyToIndex(info.option.key as string),
+                    );
                     const menu = new Menu().setNoIcon();
 
-                    const subtreeKeys = [self, ...descendants].filter(node => node.children).map(node => node.key as string);
-                    const siblingKeys = siblings.filter(node => node.children).map(node => node.key as string);
+                    const subtreeKeys = [self, ...descendants]
+                        .filter((node) => node.children)
+                        .map((node) => node.key as string);
+                    const siblingKeys = siblings
+                        .filter((node) => node.children)
+                        .map((node) => node.key as string);
                     setupMenu(menu, [
                         expanded.value.includes(info.option.key as string)
-                            ? normal(t("Collapse Recursively"), () => modifyExpandKeys(subtreeKeys, "remove"))
-                            : normal(t("Expand Recursively"), () => modifyExpandKeys(subtreeKeys, "add")),
-                        normal(t("Collapse Sibling"), () => modifyExpandKeys(siblingKeys, "remove")),
+                            ? normal(t("Collapse Recursively"), () =>
+                                  modifyExpandKeys(subtreeKeys, "remove"),
+                              )
+                            : normal(t("Expand Recursively"), () =>
+                                  modifyExpandKeys(subtreeKeys, "add"),
+                              ),
+                        normal(t("Collapse Sibling"), () =>
+                            modifyExpandKeys(siblingKeys, "remove"),
+                        ),
                         normal(t("Expand Sibling"), () => modifyExpandKeys(siblingKeys, "add")),
                         separator(),
                     ]);
@@ -153,7 +179,7 @@ function arrToTree(headers: Heading[]): TreeOptionX[] {
             label: h.title,
             key: makeKey(h.level, i),
             icon: h.icon,
-            no: i
+            no: i,
         };
 
         while (h.level <= stack.last()!.level) {
@@ -169,15 +195,18 @@ function arrToTree(headers: Heading[]): TreeOptionX[] {
         stack.push({ node, level: h.level });
     });
 
-    root.children?.forEach(c => c.parent = undefined);
+    root.children?.forEach((c) => (c.parent = undefined));
     return root.children!;
 }
 
 // get associated heading indexes of a given heading
-function getNode(data: ComputedRef<TreeOptionX[]>, index: number): {
-    self: TreeOptionX,
-    path: TreeOptionX[],
-    siblings: TreeOptionX[],
+function getNode(
+    data: ComputedRef<TreeOptionX[]>,
+    index: number,
+): {
+    self: TreeOptionX;
+    path: TreeOptionX[];
+    siblings: TreeOptionX[];
     descendants: TreeOptionX[];
 } {
     const path: TreeOptionX[] = [];
@@ -199,9 +228,7 @@ function getNode(data: ComputedRef<TreeOptionX[]>, index: number): {
     pushLastGreatEq(data.value);
 
     const self = path[path.length - 1];
-    const siblings = path[path.length - 2]
-        ? path[path.length - 2].children || []
-        : data.value;
+    const siblings = path[path.length - 2] ? path[path.length - 2].children || [] : data.value;
 
     const descendants: TreeOptionX[] = [];
     function traverse(nodes: TreeOption[] | undefined) {

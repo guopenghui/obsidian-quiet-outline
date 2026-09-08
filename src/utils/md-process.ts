@@ -1,13 +1,8 @@
 import { App, type CachedMetadata } from "obsidian";
 
 // a trick to use obsidian builtin function to parse markdown headings
-export async function parseMetaDataCache(
-    app: App,
-    text: string,
-): Promise<CachedMetadata> {
-    const res = await app.metadataCache.computeMetadataAsync(
-        new TextEncoder().encode(text).buffer,
-    );
+export async function parseMetaDataCache(app: App, text: string): Promise<CachedMetadata> {
+    const res = await app.metadataCache.computeMetadataAsync(new TextEncoder().encode(text).buffer);
     // const res = await app.internalPlugins.plugins['canvas']._children[0].parseText(text)
     return res;
 }
@@ -100,41 +95,24 @@ export function moveHeading(
 
     switch (position) {
         case "before":
-            toParent.content.children.splice(
-                toParent.content.children.indexOf(to),
-                0,
-                newFrom,
-            );
+            toParent.content.children.splice(toParent.content.children.indexOf(to), 0, newFrom);
             modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel);
             break;
         case "after":
-            toParent.content.children.splice(
-                toParent.content.children.indexOf(to) + 1,
-                0,
-                newFrom,
-            );
+            toParent.content.children.splice(toParent.content.children.indexOf(to) + 1, 0, newFrom);
             modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel);
             break;
         case "inside":
             to.content.children.push(newFrom);
-            modifyHeadingLevel(
-                newFrom,
-                to.headingLevel - from.headingLevel + 1,
-            );
+            modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel + 1);
             break;
     }
-    fromParent.content.children.splice(
-        fromParent.content.children.indexOf(from),
-        1,
-    );
+    fromParent.content.children.splice(fromParent.content.children.indexOf(from), 1);
 }
 
 export function removeHeading(root: Section, toRemoveNo: number) {
     const [parent, toRemove] = findSection(root, toRemoveNo);
-    parent.content.children.splice(
-        parent.content.children.indexOf(toRemove),
-        1,
-    );
+    parent.content.children.splice(parent.content.children.indexOf(toRemove), 1);
 }
 
 export function findSection(root: Section, id: number): [Section, Section] {
@@ -145,11 +123,7 @@ export function findSection(root: Section, id: number): [Section, Section] {
     return res;
 }
 
-function findSectionIn(
-    root: Section,
-    parent: Section,
-    id: number,
-): [Section, Section] | undefined {
+function findSectionIn(root: Section, parent: Section, id: number): [Section, Section] | undefined {
     if (root.id === id) return [parent, root];
 
     for (const child of root.content.children) {

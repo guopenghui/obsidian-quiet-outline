@@ -1,4 +1,13 @@
-import { type PdfView, type PdfDestination, type ObsidianPdfViewerLike, type PdfOutlineItemData, type PdfEvent, type PdfViewerChild, debounce, type PdfOutlineItem } from "obsidian";
+import type {
+    PdfView,
+    PdfDestination,
+    ObsidianPdfViewerLike,
+    PdfOutlineItemData,
+    PdfEvent,
+    PdfViewerChild,
+    PdfOutlineItem,
+} from "obsidian";
+import { debounce } from "obsidian";
 import { Nav } from "./base";
 import type QuietOutline from "@/plugin";
 import { store, type Heading } from "@/store";
@@ -27,7 +36,7 @@ export class PdfNav extends Nav {
 
     async ready(): Promise<PdfViewerChild | null> {
         const deferred = new Deferred<PdfViewerChild>();
-        this.view.viewer.then(child => {
+        this.view.viewer.then((child) => {
             deferred.resolve(child);
         });
 
@@ -43,9 +52,9 @@ export class PdfNav extends Nav {
             this.allItems = child.pdfViewer.pdfOutlineViewer.allItems;
 
             await Promise.all(
-                this.allItems.map(async item => {
+                this.allItems.map(async (item) => {
                     item.pageNumber = await item.getPageNumber();
-                })
+                }),
             );
         }
 
@@ -66,34 +75,41 @@ export class PdfNav extends Nav {
     }
 
     listenToPageChange(child: PdfViewerChild) {
-        const allItems = [...this.allItems]
-            .sort((a, b) => a.pageNumber - b.pageNumber);
+        const allItems = [...this.allItems].sort((a, b) => a.pageNumber - b.pageNumber);
 
-        const callback = debounce(async (event: PdfEvent) => {
-            if (allItems.length === 0 || store.headers.length === 0) {
-                return;
-            }
+        const callback = debounce(
+            async (event: PdfEvent) => {
+                if (allItems.length === 0 || store.headers.length === 0) {
+                    return;
+                }
 
-            // Find the last pageNumber less than event.pageNumber
-            // or the first pageNumber equal to the event pageNumber
-            const index = allItems.findLastIndex((item) => {
-                return item.pageNumber < event.pageNumber;
-            });
+                // Find the last pageNumber less than event.pageNumber
+                // or the first pageNumber equal to the event pageNumber
+                const index = allItems.findLastIndex((item) => {
+                    return item.pageNumber < event.pageNumber;
+                });
 
-            let toIndex = 0;
-            if (index < allItems.length - 1 && allItems[index + 1].pageNumber === event.pageNumber) {
-                toIndex = index + 1;
-            } else if (index !== -1) {
-                toIndex = index;
-            }
+                let toIndex = 0;
+                if (
+                    index < allItems.length - 1 &&
+                    allItems[index + 1].pageNumber === event.pageNumber
+                ) {
+                    toIndex = index + 1;
+                } else if (index !== -1) {
+                    toIndex = index;
+                }
 
-            let indexOfStoreHeader = (store.headers as PdfHeading[])
-                .findIndex((header) => toRaw(header.item) === allItems[toIndex].item);
+                let indexOfStoreHeader = (store.headers as PdfHeading[]).findIndex(
+                    (header) => toRaw(header.item) === allItems[toIndex].item,
+                );
 
-            if (indexOfStoreHeader !== -1) {
-                this.plugin.outlineView?.vueInstance.onPosChange(indexOfStoreHeader);
-            }
-        }, 50, true);
+                if (indexOfStoreHeader !== -1) {
+                    this.plugin.outlineView?.vueInstance.onPosChange(indexOfStoreHeader);
+                }
+            },
+            50,
+            true,
+        );
 
         child.on("pagechanging", callback);
         this.register(() => {
@@ -116,8 +132,7 @@ export class PdfNav extends Nav {
         }
     }
     async getHeaders(): Promise<PdfHeading[]> {
-        return traverseOutlineItems(await this.waitForPdfOutline() || [], 1);
-
+        return traverseOutlineItems((await this.waitForPdfOutline()) || [], 1);
     }
     async setHeaders(): Promise<void> {
         store.headers = await this.getHeaders();
@@ -143,7 +158,9 @@ export class PdfNav extends Nav {
 
             let finished = false;
             const finish = (outline: PdfOutlineItemData[] | null) => {
-                if (finished) { return; }
+                if (finished) {
+                    return;
+                }
                 finished = true;
                 window.clearTimeout(timeoutId);
                 pdfViewer.eventBus._off("outlineloaded", onOutlineLoaded);
@@ -154,7 +171,7 @@ export class PdfNav extends Nav {
                 finish(null);
             }, PDF_OUTLINE_LOAD_TIMEOUT);
 
-            const onOutlineLoaded = (event: { outlineCount: number; }) => {
+            const onOutlineLoaded = (event: { outlineCount: number }) => {
                 finish(event.outlineCount > 0 ? outlineViewer.outline : null);
             };
 

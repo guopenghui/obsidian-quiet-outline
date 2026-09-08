@@ -3,7 +3,4 @@ import SettingsBackupRestoreRound from "./SettingsBackupRestoreRound.vue";
 import ArrowForwardIosRound from "./ArrowForwardIosRound.vue";
 import LocalIcon from "./LocalIcon.vue";
 
-export {
-    ArrowCircleDownRound, SettingsBackupRestoreRound,
-    ArrowForwardIosRound, LocalIcon
-};
+export { ArrowCircleDownRound, SettingsBackupRestoreRound, ArrowForwardIosRound, LocalIcon };

@@ -153,7 +153,7 @@ export class BasesNav extends Nav {
         // row elements are pooled, so a stale class may sit on a recycled row
         this.view.controller?.viewContainerEl
             ?.querySelectorAll<HTMLElement>(".is-flashing")
-            .forEach(el => el.removeClass("is-flashing"));
+            .forEach((el) => el.removeClass("is-flashing"));
     }
 
     /** align a row with the top of the viewport, below the sticky table header */
@@ -167,7 +167,12 @@ export class BasesNav extends Nav {
         });
     }
 
-    private scrollToEstimate(scrollEl: HTMLElement, view: BasesView, groupIdx: number, rowIdx: number) {
+    private scrollToEstimate(
+        scrollEl: HTMLElement,
+        view: BasesView,
+        groupIdx: number,
+        rowIdx: number,
+    ) {
         // cards view keeps hidden measuring elements, so read the group objects
         // instead of querying by class name
         const groupEl = view.groups?.[groupIdx]?.containerEl ?? view.groups?.[groupIdx]?.tableEl;
@@ -179,7 +184,8 @@ export class BasesNav extends Nav {
         const perRow = view.measurements?.cardsPerRow || 1;
         const count = view.data.groupedData[groupIdx].entries.length;
         const within = Math.floor(rowIdx / perRow) / Math.max(Math.ceil(count / perRow), 1);
-        const offset = groupRect.top + groupRect.height * within - scrollEl.getBoundingClientRect().top;
+        const offset =
+            groupRect.top + groupRect.height * within - scrollEl.getBoundingClientRect().top;
 
         scrollEl.scrollTop += toLayoutPx(scrollEl, offset);
     }
@@ -189,16 +195,16 @@ export class BasesNav extends Nav {
 function locate(
     groups: BasesEntryGroup[],
     header: BasesHeading,
-): { group: number; row: number; path: string; } | null {
+): { group: number; row: number; path: string } | null {
     // a group heading jumps to the first row of its group
     if (header.row === undefined) {
-        const group = groups.findIndex(group => (group.key?.toString() || "") === header.title);
+        const group = groups.findIndex((group) => (group.key?.toString() || "") === header.title);
         const path = groups[group]?.entries[0]?.file.path;
         return path ? { group, row: 0, path } : null;
     }
 
     for (let group = 0; group < groups.length; group++) {
-        const row = groups[group].entries.findIndex(entry => entry.file.path === header.id);
+        const row = groups[group].entries.findIndex((entry) => entry.file.path === header.id);
         if (row !== -1) {
             return { group, row, path: groups[group].entries[row].file.path };
         }
@@ -230,9 +236,9 @@ function entryTitle(entry: BasesEntry, property: BasesPropertyId): string {
 }
 
 function findRowEl(view: BasesView, path: string): HTMLElement | null {
-    const pools = [view.rows, view.items, ...(view.groups?.map(group => group.rows) ?? [])];
+    const pools = [view.rows, view.items, ...(view.groups?.map((group) => group.rows) ?? [])];
     for (const pool of pools) {
-        const row = pool?.find(row => row.entry?.file.path === path);
+        const row = pool?.find((row) => row.entry?.file.path === path);
         // detached rows are kept for reuse, so only a connected one is really rendered
         if (row?.el.isConnected) return row.el;
     }

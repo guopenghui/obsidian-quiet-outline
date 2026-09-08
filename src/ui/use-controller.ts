@@ -1,18 +1,24 @@
-
 import { store } from "@/store";
 import type { Ref } from "vue";
 import { getPathFromArr, makeKey, isLeaf, nodeToIndex } from "./utils";
 
 type Options = {
-    pattern: Ref<string>,
-    container: HTMLElement,
-    locateIdx: Ref<number>,
-    selectedKeys: Ref<string[]>,
-    expanded: Ref<string[]>,
-    modifyExpandKeys: (keys: string[], action: "add" | "remove") => void,
+    pattern: Ref<string>;
+    container: HTMLElement;
+    locateIdx: Ref<number>;
+    selectedKeys: Ref<string[]>;
+    expanded: Ref<string[]>;
+    modifyExpandKeys: (keys: string[], action: "add" | "remove") => void;
 };
 
-export function useOutlineController({ container, locateIdx, selectedKeys, expanded, modifyExpandKeys, pattern }: Options) {
+export function useOutlineController({
+    container,
+    locateIdx,
+    selectedKeys,
+    expanded,
+    modifyExpandKeys,
+    pattern,
+}: Options) {
     /** select deepest visible node in located node's path */
     function selectVisible() {
         if (locateIdx.value < 0 || !store.headers[locateIdx.value]) return;
@@ -54,7 +60,9 @@ export function useOutlineController({ container, locateIdx, selectedKeys, expan
         const no = nodeToIndex(selectedKey);
         const currentNode = container.querySelector(`.n-tree .n-tree-node-wrapper:has(#no-${no})`);
         if (!currentNode) {
-            const nextNode = container.querySelector(`.n-tree .n-tree-node-wrapper`)?.firstElementChild;
+            const nextNode = container.querySelector(
+                `.n-tree .n-tree-node-wrapper`,
+            )?.firstElementChild;
             if (!nextNode) return;
 
             moveToHeadingEl(nextNode as HTMLElement);
@@ -72,12 +80,14 @@ export function useOutlineController({ container, locateIdx, selectedKeys, expan
                 moveToHeadingEl(nextNode);
             }
         } else if (direction === "bottom") {
-            const bottomNode = currentNode.parentElement?.lastElementChild?.firstElementChild as HTMLElement;
+            const bottomNode = currentNode.parentElement?.lastElementChild
+                ?.firstElementChild as HTMLElement;
             if (bottomNode) {
                 moveToHeadingEl(bottomNode);
             }
         } else if (direction === "top") {
-            const topNode = currentNode.parentElement?.firstElementChild?.firstElementChild as HTMLElement;
+            const topNode = currentNode.parentElement?.firstElementChild
+                ?.firstElementChild as HTMLElement;
             if (topNode) {
                 moveToHeadingEl(topNode);
             }
@@ -112,7 +122,7 @@ export function useOutlineController({ container, locateIdx, selectedKeys, expan
         center,
         move,
         resetPattern,
-        currentSelected
+        currentSelected,
     };
 }
 

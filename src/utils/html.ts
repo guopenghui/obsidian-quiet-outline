@@ -9,16 +9,16 @@ export function escapeHtml(unsafe: string) {
 }
 
 export const htmlToText = compile({
-    wordwrap: false
+    wordwrap: false,
 });
 
 export const getOrigin = compile({
     selectors: [{ selector: "mjx-container", format: "origin" }],
     formatters: {
-        "origin": (elem, _walk, builder) => {
+        origin: (elem, _walk, builder) => {
             builder.openBlock();
             builder.addInline(elem.attribs.origin);
             builder.closeBlock();
-        }
-    }
+        },
+    },
 });

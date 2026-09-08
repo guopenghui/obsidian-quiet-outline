@@ -17,8 +17,9 @@ export function nodeToIndex(node: TreeOption | string): number {
 }
 
 export function isLeaf(idx: number) {
-    return idx === store.headers.length - 1
-        || store.headers[idx + 1].level <= store.headers[idx].level;
+    return (
+        idx === store.headers.length - 1 || store.headers[idx + 1].level <= store.headers[idx].level
+    );
 }
 
 // calculate path of heading by store.header array

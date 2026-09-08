@@ -2,8 +2,8 @@ import { Events, type FileView, type EventRef, type CanvasComponent } from "obsi
 
 export type QuietOutlineEventMap = {
     "reset-panel": [];
-    "levelchange": [level: number | "inc" | "dec"];
-    "cursorchange": [docChanged: boolean];
+    levelchange: [level: number | "inc" | "dec"];
+    cursorchange: [docChanged: boolean];
     "active-fileview-change": [fileView: FileView | null];
     "canvas-change": [];
     "canvas-selection-change": [selection: Set<CanvasComponent>];
@@ -11,14 +11,13 @@ export type QuietOutlineEventMap = {
 
 export type EventName = keyof QuietOutlineEventMap;
 
-type EventHandler<K extends EventName> =
-    (...args: QuietOutlineEventMap[K]) => void | Promise<void>;
+type EventHandler<K extends EventName> = (...args: QuietOutlineEventMap[K]) => void | Promise<void>;
 
 class EventBus extends Events {
     on<K extends EventName>(
         name: K,
         callback: (...args: QuietOutlineEventMap[K]) => void | Promise<void>,
-        ctx?: unknown
+        ctx?: unknown,
     ): EventRef;
     on(name: string, callback: (...data: unknown[]) => unknown, ctx?: unknown): EventRef {
         return super.on(name, callback, ctx);

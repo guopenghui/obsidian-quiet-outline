@@ -10,7 +10,7 @@ import type { TreeOptionX } from "./types";
 import { loadMarkedExtensions } from "../parser";
 loadMarkedExtensions();
 
-type RenderMethodType = ({ option }: { option: TreeOptionX; }) => ReturnType<typeof h>;
+type RenderMethodType = ({ option }: { option: TreeOptionX }) => ReturnType<typeof h>;
 
 export function useOutlineRenderer(plugin: QuietOutline) {
     const editingHeadingText = ref<string | undefined>();
@@ -38,7 +38,10 @@ export function useOutlineRenderer(plugin: QuietOutline) {
                 },
                 onKeydown(e) {
                     if (e.key === "Enter") {
-                        plugin.navigator.changeHeadingContent(option.no!, editingHeadingText.value || "");
+                        plugin.navigator.changeHeadingContent(
+                            option.no!,
+                            editingHeadingText.value || "",
+                        );
                         // store.headers[option.no!].heading = newContent.value || "";
                         store.currentEditingKey = "";
                         editingHeadingText.value = undefined;
@@ -82,7 +85,7 @@ function mdToHtml(label: string | undefined) {
     return result;
 }
 
-function renderMarkdown({ option }: { option: TreeOption; }) {
+function renderMarkdown({ option }: { option: TreeOption }) {
     const result = mdToHtml(option.label);
     return h("div", { innerHTML: result });
 }
@@ -100,7 +103,7 @@ function renderSwitcherIcon() {
 }
 
 // Prefix Icon
-function renderPrefix({ option }: { option: TreeOptionX; }): VNodeChild {
+function renderPrefix({ option }: { option: TreeOptionX }): VNodeChild {
     if (!option.icon) return null;
 
     let iConChild: VNodeChild = null;

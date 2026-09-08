@@ -3,62 +3,72 @@
 export default {
     // Markdown navigator menu: change heading level
     "Change Level": "Change Level",
-    "Increase": "Increase",
+    Increase: "Increase",
     "Increase Recursively": "Increase Recursively",
-    "Decrease": "Decrease",
+    Decrease: "Decrease",
     "Decrease Recursively": "Decrease Recursively",
     "Maximum level reached": "Maximum level reached",
     "Minimum level reached": "Minimum level reached",
-    'Settings for Quiet Outline.': 'Settings for Quiet Outline.',
-    "Set Primary Color": 'Set Primary Color Light/Dark',
-    "Patch default color": 'Patch default color',
-    "Set Rainbow Line Color": 'Set Rainbow Line Color',
-    'Render Markdown': 'Render Markdown',
-    'Render heading string as markdown format.': 'Render heading string as markdown format',
-    "Search Support": 'Search Support',
-    "Add a searching area on the top": 'Add a search area on the top',
-    "Level Switch": 'Level Switch',
-    "Expand headings to certain level.": 'Expand headings to certain level',
-    "Default Level": 'Default Level',
-    "Default expand level when opening a new note.": 'Default expand level',
+    "Settings for Quiet Outline.": "Settings for Quiet Outline.",
+    "Set Primary Color": "Set Primary Color Light/Dark",
+    "Patch default color": "Patch default color",
+    "Set Rainbow Line Color": "Set Rainbow Line Color",
+    "Render Markdown": "Render Markdown",
+    "Render heading string as markdown format.": "Render heading string as markdown format",
+    "Search Support": "Search Support",
+    "Add a searching area on the top": "Add a search area on the top",
+    "Level Switch": "Level Switch",
+    "Expand headings to certain level.": "Expand headings to certain level",
+    "Default Level": "Default Level",
+    "Default expand level when opening a new note.": "Default expand level",
     "No expand": "No expand",
     "To Bottom": "To Bottom",
-    "Reset": "Reset",
+    Reset: "Reset",
     "Input to search": "Input to search",
     "result(s):": "result(s):",
     "Hide Unsearched": "Hide Unsearched",
-    "Hide irrelevant headings when searching": 'Hide irrelevant headings when searching',
-    "Regex Search": 'Regex Search',
-    "Search headings using regular expression": 'Search headings using regular expression',
-    "Auto Expand": 'Auto Expand',
-    "Auto expand and collapse headings when scrolling and cursor position change": "Auto expand and collapse headings when scrolling and cursor position change",
-    "Auto Scroll Into View": 'Auto Scroll Into View',
-    "Auto scroll located heading into view": 'Auto scroll located heading into view',
-    "Only Expand": 'Only Expand',
-    "Expand and Collapse Rest": 'Expand and Collapse Rest',
-    "Expand and Collapse Rest to Default": 'Expand and Collapse Rest to Default',
-    "Expand and Collapse Rest to Setting Level (Level Switch)": 'Expand and Collapse Rest to Setting Level (Level Switch)',
-    "Disabled": 'Disabled',
-    "Locate By Cursor": 'Locate By Cursor',
-    "Show Popover on hover": 'Show Popover on hover',
-    "Press functional key and move cursor to heading": 'Press functional key and move cursor to heading',
-    "Disable": 'Disable',
-    "Highlight and Auto expand postion will be determined by cursor position": "Highlight and Auto expand postion will be determined by cursor position",
-    "Ellipsis": 'Ellipsis',
-    "Tooltip direction": 'Tooltip direction',
+    "Hide irrelevant headings when searching": "Hide irrelevant headings when searching",
+    "Regex Search": "Regex Search",
+    "Search headings using regular expression": "Search headings using regular expression",
+    "Auto Expand": "Auto Expand",
+    "Auto expand and collapse headings when scrolling and cursor position change":
+        "Auto expand and collapse headings when scrolling and cursor position change",
+    "Auto Scroll Into View": "Auto Scroll Into View",
+    "Auto scroll located heading into view": "Auto scroll located heading into view",
+    "Only Expand": "Only Expand",
+    "Expand and Collapse Rest": "Expand and Collapse Rest",
+    "Expand and Collapse Rest to Default": "Expand and Collapse Rest to Default",
+    "Expand and Collapse Rest to Setting Level (Level Switch)":
+        "Expand and Collapse Rest to Setting Level (Level Switch)",
+    Disabled: "Disabled",
+    "Locate By Cursor": "Locate By Cursor",
+    "Show Popover on hover": "Show Popover on hover",
+    "Press functional key and move cursor to heading":
+        "Press functional key and move cursor to heading",
+    Disable: "Disable",
+    "Highlight and Auto expand postion will be determined by cursor position":
+        "Highlight and Auto expand postion will be determined by cursor position",
+    Ellipsis: "Ellipsis",
+    "Tooltip direction": "Tooltip direction",
     "Keep one line per heading": "Keep one line per heading",
     "Persist Markdown States": "Persist Markdown States",
-    "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings": "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings",
+    "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings":
+        "Save and restore cursor, scroll state of markdown note, as well as expanded/collapsed state of headings",
     "Save Cursor Position": "Save Cursor Position",
-    "Save and restore cursor position of markdown note": "Save and restore cursor position of markdown note",
+    "Save and restore cursor position of markdown note":
+        "Save and restore cursor position of markdown note",
     "Save Scroll Position": "Save Scroll Position",
-    "Save and restore scroll position of markdown note": "Save and restore scroll position of markdown note",
+    "Save and restore scroll position of markdown note":
+        "Save and restore scroll position of markdown note",
     "Save Heading Expansion State": "Save Heading Expansion State",
-    "Save and restore expanded/collapsed state of headings": "Save and restore expanded/collapsed state of headings",
+    "Save and restore expanded/collapsed state of headings":
+        "Save and restore expanded/collapsed state of headings",
     "Save Delay": "Save Delay",
-    "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.": "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.",
+    "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.":
+        "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.",
     "Keep Search Input": "Keep Search Input",
-    "Keep search input when switching between notes": "Keep search input when switching between notes",
+    "Keep search input when switching between notes":
+        "Keep search input when switching between notes",
     "Drag headings to modify note": "Drag headings to modify note",
     "❗ This will modify note content, be careful.": "❗ This will modify note content, be careful",
     "Text Direction": "Text Direction",
@@ -67,10 +77,10 @@ export default {
     "Export Format": "Export Format",
 
     // Settings tabs
-    "General": "General",
-    "Styles": "Styles",
-    "Canvas": "Canvas",
-    "Bases": "Bases",
+    General: "General",
+    Styles: "Styles",
+    Canvas: "Canvas",
+    Bases: "Bases",
 
     // Canvas settings
     "Canvas Sort Order": "Canvas Sort Order",
@@ -90,8 +100,8 @@ export default {
     "Bases syntax": "Bases syntax",
 
     // menu
-    "Copy": "Copy",
-    "Heading": "Heading",
+    Copy: "Copy",
+    Heading: "Heading",
     "Heading and children headings": "Heading and children headings",
     "Heading and Content": "Heading and Content",
     "Heading and siblings headings": "Heading and siblings headings",
@@ -105,11 +115,11 @@ export default {
     "Add vim-like keymap for canvas": "Add vim-like keymap for canvas",
 
     // Confirm modal
-    "Confirm": "Confirm",
-    "Cancel": "Cancel",
+    Confirm: "Confirm",
+    Cancel: "Cancel",
 
     // Markdown navigator menu
-    "Delete": "Delete",
+    Delete: "Delete",
 
     // Confirm prompt (dangerous operation)
     "This will delete heading:": "This will delete heading:",
@@ -117,19 +127,23 @@ export default {
 
     // Text style settings
     "Font Size": "Font Size",
-    "Custom font size for outline text (e.g., 14px, 1rem)": "Custom font size for outline text (e.g., 14px, 1rem)",
+    "Custom font size for outline text (e.g., 14px, 1rem)":
+        "Custom font size for outline text (e.g., 14px, 1rem)",
     "Font Family": "Font Family",
     "Custom font family for outline text": "Custom font family for outline text",
     "Font Weight": "Font Weight",
-    "Custom font weight for outline text (e.g., normal, bold, 400, 700)": "Custom font weight for outline text (e.g., normal, bold, 400, 700)",
+    "Custom font weight for outline text (e.g., normal, bold, 400, 700)":
+        "Custom font weight for outline text (e.g., normal, bold, 400, 700)",
     "Line Height": "Line Height",
-    "Custom line height for outline text (e.g., 1.5, 2)": "Custom line height for outline text (e.g., 1.5, 2)",
+    "Custom line height for outline text (e.g., 1.5, 2)":
+        "Custom line height for outline text (e.g., 1.5, 2)",
     "Line Gap": "Line Gap",
     "Custom gap between lines (e.g., 4px, 0.5rem)": "Custom gap between lines (e.g., 4px, 0.5rem)",
 
     // Font color settings
     "Custom Font Color": "Custom Font Color",
-    "Enable custom font colors for different heading levels": "Enable custom font colors for different heading levels",
+    "Enable custom font colors for different heading levels":
+        "Enable custom font colors for different heading levels",
     "H1 Color": "H1 Color",
     "H2 Color": "H2 Color",
     "H3 Color": "H3 Color",

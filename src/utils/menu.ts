@@ -4,31 +4,29 @@ type MenuItemHandler = () => void | Promise<void>;
 
 export type MenuItemConfig =
     | {
-        title: string;
-        type: "normal";
-        fn: MenuItemHandler;
-    }
+          title: string;
+          type: "normal";
+          fn: MenuItemHandler;
+      }
     | {
-        title: string;
-        type: "danger";
-        fn: MenuItemHandler;
-    }
+          title: string;
+          type: "danger";
+          fn: MenuItemHandler;
+      }
     | {
-        title: string;
-        type: "parent";
-        subMenu: MenuItemConfig[];
-    }
+          title: string;
+          type: "parent";
+          subMenu: MenuItemConfig[];
+      }
     | {
-        type: "separator";
-    };
+          type: "separator";
+      };
 
 export function setupMenu(menu: Menu, menuConfig: MenuItemConfig[]) {
     function addItem(parent: Menu, itemConfig: MenuItemConfig) {
         switch (itemConfig.type) {
             case "normal":
-                parent.addItem((item) =>
-                    item.setTitle(itemConfig.title).onClick(itemConfig.fn),
-                );
+                parent.addItem((item) => item.setTitle(itemConfig.title).onClick(itemConfig.fn));
                 break;
             case "danger":
                 parent.addItem((item) =>
@@ -69,10 +67,7 @@ export function danger(title: string, fn: MenuItemHandler): MenuItemConfig {
     };
 }
 
-export function parent(
-    title: string,
-    subMenu: MenuItemConfig[],
-): MenuItemConfig {
+export function parent(title: string, subMenu: MenuItemConfig[]): MenuItemConfig {
     return {
         type: "parent",
         title,

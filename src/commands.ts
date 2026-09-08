@@ -49,10 +49,7 @@ export function registerCommands(plugin: QuietOutline) {
             id: "quiet-outline-copy-as-text",
             name: "Copy Current Headings As Text",
             callback: async () => {
-                const headers = stringifyHeaders(
-                    store.headers,
-                    plugin.settings.export_format,
-                );
+                const headers = stringifyHeaders(store.headers, plugin.settings.export_format);
                 await navigator.clipboard.writeText(headers.join("\n"));
                 new Notice("Headings copied");
             },

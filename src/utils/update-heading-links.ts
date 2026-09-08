@@ -1,7 +1,16 @@
 import {
-    App, Notice, stringifyYaml, parseYaml, getFrontMatterInfo,
-    stripHeading, stripHeadingForLink, getLinkpath, parseLinktext, TFile, Editor
-} from 'obsidian';
+    App,
+    Notice,
+    stringifyYaml,
+    parseYaml,
+    getFrontMatterInfo,
+    stripHeading,
+    stripHeadingForLink,
+    getLinkpath,
+    parseLinktext,
+    TFile,
+    Editor,
+} from "obsidian";
 
 interface TokenRange {
     start: number;
@@ -15,8 +24,8 @@ interface LinkReference {
     link: string;
     original: string;
     position?: {
-        start: { offset: number; };
-        end: { offset: number; };
+        start: { offset: number };
+        end: { offset: number };
     };
     key?: string;
 }
@@ -73,7 +82,7 @@ export class HeadingUpdater {
         private editor: Editor,
         private tokenRange: TokenRange,
         private oldHeading: string,
-    ) { }
+    ) {}
 
     async updateHeadingLinks(content: string) {
         if (!content) {
@@ -97,20 +106,20 @@ export class HeadingUpdater {
                 start: {
                     line: 0,
                     col: 0,
-                    offset: fileReplacement.start
+                    offset: fileReplacement.start,
                 },
                 end: {
                     line: 0,
                     col: 0,
-                    offset: fileReplacement.end
-                }
-            }
+                    offset: fileReplacement.end,
+                },
+            },
         };
 
         fileChanges.push({
             sourcePath: this.file.path,
             change: fileReplacement.text,
-            reference: linkData
+            reference: linkData,
         });
 
         await this.app.vault.process(this.file, (content: string) => {
@@ -121,7 +130,10 @@ export class HeadingUpdater {
 
         const linkText = i18next.t("nouns.link-with-count", { count: linkCount });
         const fileText = i18next.t("nouns.file-with-count", { count: fileCount });
-        const message = i18next.t("dialogue.msg-updated-links", { links: linkText, files: fileText });
+        const message = i18next.t("dialogue.msg-updated-links", {
+            links: linkText,
+            files: fileText,
+        });
 
         new Notice(message);
     }
@@ -147,7 +159,7 @@ export class HeadingUpdater {
                     changes.add(sourcePath, {
                         sourcePath: sourcePath,
                         reference: reference,
-                        change: SL(reference, linkPath + "#" + newHeadingSlug)
+                        change: SL(reference, linkPath + "#" + newHeadingSlug),
                     });
                 }
             }
@@ -165,7 +177,7 @@ export class HeadingUpdater {
         editor.setLine(startPos.line, newLine);
     }
 
-    private replaceInFile(value: string): TokenRange & { text: string; } {
+    private replaceInFile(value: string): TokenRange & { text: string } {
         const tokenRange = this.tokenRange;
         const editor = this.editor;
         const startPos = editor.offsetToPos(tokenRange.start);
@@ -174,7 +186,7 @@ export class HeadingUpdater {
 
         return {
             ...tokenRange,
-            text: newLine
+            text: newLine,
         };
     }
 
@@ -187,7 +199,7 @@ export class HeadingUpdater {
     private getCustomReplacements(value: string) {
         return {
             oldSubpath: stripHeading(this.oldHeading).toLowerCase(),
-            newSubpath: stripHeadingForLink(value)
+            newSubpath: stripHeadingForLink(value),
         };
     }
 }
@@ -195,7 +207,9 @@ export class HeadingUpdater {
 /**
  * Type guard for position-based references
  */
-function isPositionReference(reference: unknown): reference is LinkReference & Required<Pick<LinkReference, "position">> {
+function isPositionReference(
+    reference: unknown,
+): reference is LinkReference & Required<Pick<LinkReference, "position">> {
     if (!isMutableRecord(reference) || !isMutableRecord(reference.position)) {
         return false;
     }
@@ -212,7 +226,7 @@ function isPositionReference(reference: unknown): reference is LinkReference & R
 /**
  * Type guard for key-based references
  */
-function isKeyReference(reference: unknown): reference is { key: string; } {
+function isKeyReference(reference: unknown): reference is { key: string } {
     return isMutableRecord(reference) && typeof reference.key === "string";
 }
 
@@ -225,10 +239,7 @@ function isLinkReference(reference: unknown): reference is LinkReference {
 }
 
 function isAliasProtector(value: unknown): value is AliasProtector {
-    return (
-        isMutableRecord(value) &&
-        typeof value.contains === "function"
-    );
+    return isMutableRecord(value) && typeof value.contains === "function";
 }
 
 /**
@@ -268,8 +279,8 @@ function setNestedProperty(obj: unknown, path: string[], value: unknown): void {
  * Applies content and frontmatter changes to a file
  */
 function applyFileChanges(content: string, changes: LinkChange[]): string {
-    const positionChanges: Array<{ start: number, end: number, text: string; }> = [];
-    const frontmatterChanges: Array<{ key: string, value: unknown; }> = [];
+    const positionChanges: Array<{ start: number; end: number; text: string }> = [];
+    const frontmatterChanges: Array<{ key: string; value: unknown }> = [];
 
     for (const change of changes) {
         if (isPositionReference(change.reference)) {
@@ -277,12 +288,12 @@ function applyFileChanges(content: string, changes: LinkChange[]): string {
             positionChanges.push({
                 start: position.start.offset,
                 end: position.end.offset,
-                text: change.change
+                text: change.change,
             });
         } else if (isKeyReference(change.reference)) {
             frontmatterChanges.push({
                 key: change.reference.key,
-                value: change.change
+                value: change.change,
             });
         }
     }
@@ -291,7 +302,8 @@ function applyFileChanges(content: string, changes: LinkChange[]): string {
     if (positionChanges.length > 0) {
         positionChanges.sort((a, b) => b.start - a.start);
         for (const change of positionChanges) {
-            content = content.substring(0, change.start) + change.text + content.substring(change.end);
+            content =
+                content.substring(0, change.start) + change.text + content.substring(change.end);
         }
     }
 
@@ -323,11 +335,14 @@ function applyFileChanges(content: string, changes: LinkChange[]): string {
     }
 
     const newFrontmatter = stringifyYaml(frontmatterObj);
-    return content.slice(0, frontmatterInfo.from) + newFrontmatter + content.slice(frontmatterInfo.to);
+    return (
+        content.slice(0, frontmatterInfo.from) + newFrontmatter + content.slice(frontmatterInfo.to)
+    );
 }
 
 const wikiLinkReg = /^(!?\[\[)(.*?)(\|(.*))?(]])$/;
-const mdLinkReg = /^(!?\[)(.*?)(]\(\s*)((<[^>]*?>|[^ "]+?)(\s+([^ ]+|"[^"]+"|'[^']+'|\([^']+\)))?)?(\s*\))$/;
+const mdLinkReg =
+    /^(!?\[)(.*?)(]\(\s*)((<[^>]*?>|[^ "]+?)(\s+([^ ]+|"[^"]+"|'[^']+'|\([^']+\)))?)?(\s*\))$/;
 
 /**
  * 更新 Markdown 链接的函数
@@ -360,8 +375,8 @@ function SL(reference: LinkReference, newPath: string, protectedAliases?: unknow
             // 逻辑：检查是否应该更新别名
             // 如果别名和实际文件名字相同，则同时更新链接中的文件名和别名部分
             const isAliasMatchingLink = normalizeFilename(linkId) === trimmedAlias;
-            const isAliasProtected = isAliasProtector(protectedAliases)
-                && protectedAliases.contains(trimmedAlias);
+            const isAliasProtected =
+                isAliasProtector(protectedAliases) && protectedAliases.contains(trimmedAlias);
 
             if (isAliasMatchingLink && !isAliasProtected) {
                 alias = normalizeFilename(getLinkpath(newPath));
@@ -378,9 +393,8 @@ function SL(reference: LinkReference, newPath: string, protectedAliases?: unknow
 
         // 判断 URL 是否需要尖括号 <> 包裹
         // 如果不是 MD 链接，或者是 MD 链接且 URL 部分没有以 < 开头，则使用  encodeLinkText 处理
-        const formattedUrl = (!mdMatch || !mdMatch[5].startsWith("<"))
-            ? encodeLinkText(newPath)
-            : `<${newPath}>`;
+        const formattedUrl =
+            !mdMatch || !mdMatch[5].startsWith("<") ? encodeLinkText(newPath) : `<${newPath}>`;
 
         if (mdMatch) {
             const prefix = mdMatch[1]; // [
@@ -397,7 +411,10 @@ function SL(reference: LinkReference, newPath: string, protectedAliases?: unknow
             // 逻辑：如果链接文本与当前链接的文件名一致，则更新链接文本
             if (trimmedLinkText === normalizeFilename(currentBaseName)) {
                 linkText = normalizeFilename(getLinkpath(newPath));
-            } else if (trimmedLinkText.includes("/") && trimmedLinkText === removeMdExtensionIfPresent(currentBaseName)) {
+            } else if (
+                trimmedLinkText.includes("/") &&
+                trimmedLinkText === removeMdExtensionIfPresent(currentBaseName)
+            ) {
                 // 处理包含路径分隔符的情况
                 linkText = removeMdExtensionIfPresent(getLinkpath(newPath));
             }
@@ -421,19 +438,21 @@ function encodeLinkText(text: string) {
     // Percent-encode characters that are unsafe in Obsidian link targets:
     // backslash, spaces, and C0 control characters except common whitespace
     // characters that Obsidian links already handle separately.
-    return [...text].map((char) => {
-        const code = char.charCodeAt(0);
-        const shouldEncode =
-            char === "\\" ||
-            char === " " ||
-            code === 0x00 ||
-            code === 0x08 ||
-            code === 0x0B ||
-            code === 0x0C ||
-            (code >= 0x0E && code <= 0x1F);
+    return [...text]
+        .map((char) => {
+            const code = char.charCodeAt(0);
+            const shouldEncode =
+                char === "\\" ||
+                char === " " ||
+                code === 0x00 ||
+                code === 0x08 ||
+                code === 0x0b ||
+                code === 0x0c ||
+                (code >= 0x0e && code <= 0x1f);
 
-        return shouldEncode ? encodeURIComponent(char) : char;
-    }).join("");
+            return shouldEncode ? encodeURIComponent(char) : char;
+        })
+        .join("");
 }
 
 /**

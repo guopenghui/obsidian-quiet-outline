@@ -162,9 +162,7 @@
 }
 
 /* 悬浮时的背景颜色 */
-.quiet-outline
-    .n-tree.n-tree--block-line
-    .n-tree-node:not(.n-tree-node--disabled):hover {
+.quiet-outline .n-tree.n-tree--block-line .n-tree-node:not(.n-tree-node--disabled):hover {
     color: var(--nav-item-color-active);
     background-color: var(--nav-item-background-active);
     font-weight: var(--nav-item-weight-active);
@@ -295,8 +293,7 @@
     background-color: transparent;
 }
 
-.n-tree.n-tree--block-line:focus
-    .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
+.n-tree.n-tree--block-line:focus .n-tree-node:not(.n-tree-node--disabled).n-tree-node--selected {
     box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
 }
 

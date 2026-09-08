@@ -1,11 +1,4 @@
-import {
-    type EditorRange,
-    MarkdownView,
-    debounce,
-    Menu,
-    Notice,
-    type Pos,
-} from "obsidian";
+import { type EditorRange, MarkdownView, debounce, Menu, Notice, type Pos } from "obsidian";
 import { confirm } from "@/utils/modal";
 import { EditorView } from "@codemirror/view";
 import { editorEvent } from "@/editor-ext";
@@ -13,12 +6,7 @@ import type QuietOutline from "@/plugin";
 import { store, getSiblings, type Heading } from "@/store";
 import { Nav } from "./base";
 import { calcModifies } from "@/utils/diff";
-import {
-    parseMarkdown,
-    stringifySection,
-    moveHeading,
-    removeHeading,
-} from "@/utils/md-process";
+import { parseMarkdown, stringifySection, moveHeading, removeHeading } from "@/utils/md-process";
 import type { TreeOption } from "naive-ui";
 import { setupMenu, normal, parent, separator, danger } from "@/utils/menu";
 import { t } from "@/lang/helper";
@@ -48,12 +36,15 @@ export class MarkDownNav extends Nav {
     }
 
     async getHeaders(): Promise<MarkdownHeading[]> {
-        const cache = this.view.file && this.plugin.app.metadataCache.getFileCache(
-            this.view.file,
-        );
+        const cache = this.view.file && this.plugin.app.metadataCache.getFileCache(this.view.file);
 
         const headers = structuredClone(cache?.headings) || [];
-        return headers.map(cache => ({ title: cache.heading, level: cache.level, line: cache.position.start.line, position: cache.position }));
+        return headers.map((cache) => ({
+            title: cache.heading,
+            level: cache.level,
+            line: cache.position.start.line,
+            position: cache.position,
+        }));
     }
 
     async setHeaders(): Promise<void> {
@@ -119,15 +110,10 @@ export class MarkDownNav extends Nav {
 
     async onload() {
         this.registerEvent(eventBus.on("cursorchange", handleCursorChange));
-        this.registerDomEvent(
-            this.view.contentEl,
-            "scroll",
-            handleScroll,
-            true,
-        );
+        this.registerDomEvent(this.view.contentEl, "scroll", handleScroll, true);
     }
 
-    async onunload() { }
+    async onunload() {}
 
     toBottom(): void {
         const lines = this.view.data.split("\n");
@@ -188,31 +174,26 @@ export class MarkDownNav extends Nav {
      * the function does nothing.
      */
     changeHeadingLevel(index: number, level: number) {
-        if (level < 1 || level > 6) { return; }
+        if (level < 1 || level > 6) {
+            return;
+        }
 
         const lineNo = getHeader(index).line;
         getHeader(index).level = level;
         this.view.editor.setLine(lineNo, `${"#".repeat(level)} ${getHeader(index).title}`);
     }
 
-    async handleDrop(
-        from: number,
-        to: number,
-        position: "before" | "after" | "inside",
-    ) {
+    async handleDrop(from: number, to: number, position: "before" | "after" | "inside") {
         const structure = await parseMarkdown(this.view.data, this.view.app);
         moveHeading(structure, from, to, position);
 
         if (!this.view.file) return;
-        await plugin.app.vault.modify(
-            this.view.file,
-            stringifySection(structure),
-        );
+        await plugin.app.vault.modify(this.view.file, stringifySection(structure));
     }
 
     onRightClick(
         event: MouseEvent,
-        nodeInfo: { node: TreeOption; no: number; level: number; raw: string; },
+        nodeInfo: { node: TreeOption; no: number; level: number; raw: string },
         menu: Menu,
         onClose?: () => void,
     ): void {
@@ -223,22 +204,23 @@ export class MarkDownNav extends Nav {
                 }),
                 normal(t("Heading and siblings headings"), async () => {
                     const { no } = nodeInfo;
-                    const headers = stringifyHeaders(store.headers, this.plugin.settings.export_format)
-                        .map((s) => s.slice(store.headers[no].level - 1));
+                    const headers = stringifyHeaders(
+                        store.headers,
+                        this.plugin.settings.export_format,
+                    ).map((s) => s.slice(store.headers[no].level - 1));
                     const siblingSet = getSiblings(no, store.headers);
-                    const siblings = headers.filter((_, i) =>
-                        siblingSet.has(i),
-                    );
+                    const siblings = headers.filter((_, i) => siblingSet.has(i));
 
                     await navigator.clipboard.writeText(siblings.join("\n"));
                 }),
                 normal(t("Heading and children headings"), async () => {
                     const { no, level } = nodeInfo;
 
-                    let headers = stringifyHeaders(store.headers, this.plugin.settings.export_format);
-                    headers = headers.map(s =>
-                        s.slice(store.headers[no].level - 1),
+                    let headers = stringifyHeaders(
+                        store.headers,
+                        this.plugin.settings.export_format,
                     );
+                    headers = headers.map((s) => s.slice(store.headers[no].level - 1));
 
                     let slice: string[] = [headers[no]];
                     for (let i = no + 1; i < store.headers.length; i++) {
@@ -253,7 +235,11 @@ export class MarkDownNav extends Nav {
                 normal(t("Link of heading"), async () => {
                     if (!this.view.file) return;
 
-                    const link = this.plugin.app.fileManager.generateMarkdownLink(this.view.file, "", "#" + nodeInfo.raw);
+                    const link = this.plugin.app.fileManager.generateMarkdownLink(
+                        this.view.file,
+                        "",
+                        "#" + nodeInfo.raw,
+                    );
                     await navigator.clipboard.writeText(link);
                 }),
                 normal(t("Heading and Content"), async () => {
@@ -267,8 +253,7 @@ export class MarkDownNav extends Nav {
 
                     const text = this.view.data.slice(
                         getHeader(no).position.start.offset,
-                        getHeader(i)?.position.start.offset ||
-                        this.view.data.length,
+                        getHeader(i)?.position.start.offset || this.view.data.length,
                     );
                     await navigator.clipboard.writeText(text);
                 }),
@@ -280,7 +265,7 @@ export class MarkDownNav extends Nav {
                 }),
                 normal(t("Increase Recursively"), async () => {
                     // get this header and its descendants
-                    const headersToModify: (Heading & { no: number; })[] = [];
+                    const headersToModify: (Heading & { no: number })[] = [];
                     let maxLevel = 0;
                     for (let i = nodeInfo.no; i < store.headers.length; i++) {
                         const header = store.headers[i];
@@ -295,7 +280,7 @@ export class MarkDownNav extends Nav {
                         return;
                     }
 
-                    headersToModify.forEach(header => {
+                    headersToModify.forEach((header) => {
                         this.changeHeadingLevel(header.no, header.level + 1);
                     });
                 }),
@@ -304,7 +289,7 @@ export class MarkDownNav extends Nav {
                 }),
                 normal(t("Decrease Recursively"), async () => {
                     // get this header and its descendants
-                    const headersToModify: (Heading & { no: number; })[] = [];
+                    const headersToModify: (Heading & { no: number })[] = [];
                     let minLevel = Number.MAX_SAFE_INTEGER;
                     for (let i = nodeInfo.no; i < store.headers.length; i++) {
                         const header = store.headers[i];
@@ -319,7 +304,7 @@ export class MarkDownNav extends Nav {
                         return;
                     }
 
-                    headersToModify.forEach(header => {
+                    headersToModify.forEach((header) => {
                         this.changeHeadingLevel(header.no, header.level - 1);
                     });
                 }),
@@ -356,14 +341,11 @@ export class MarkDownNav extends Nav {
                     return;
                 }
 
-                await plugin.app.vault.modify(
-                    this.view.file,
-                    stringifySection(structure),
-                );
-            })
+                await plugin.app.vault.modify(this.view.file, stringifySection(structure));
+            }),
         ]);
 
-        menu.onHide(onClose || (() => { }));
+        menu.onHide(onClose || (() => {}));
         menu.showAtMouseEvent(event);
     }
 
@@ -399,7 +381,6 @@ export class MarkDownNav extends Nav {
         dataMap[view.file.path] = data;
         plugin.data_manager.saveFileData(MD_DATA_FILE, dataMap); // <MarkdownStates>
     }
-
 }
 
 function getHeader(idx: number) {
@@ -426,9 +407,9 @@ function handleCursorChange(docChanged: boolean) {
 }
 
 type MarkdownState = {
-    scroll?: number,
-    cursor?: EditorRange,
-    expandedKeys?: string[],
+    scroll?: number;
+    cursor?: EditorRange;
+    expandedKeys?: string[];
 };
 
 type MarkdownStateKey = keyof MarkdownState;
@@ -473,9 +454,7 @@ function getCurrentLineFromEditor(editorView: EditorView): number {
     let line: number = 0;
     lineBlocks.forEach((lb) => {
         const node = editorView.domAtPos(lb.from).node;
-        const el = (
-            node.nodeName == "#text" ? node.parentNode : node
-        ) as HTMLElement;
+        const el = (node.nodeName == "#text" ? node.parentNode : node) as HTMLElement;
         const elRect = el.getBoundingClientRect();
         const base = elRect.y + elRect.height / 2;
 
@@ -503,8 +482,9 @@ function getCurrentLineFromPreview(view: MarkdownView): number {
         if (y <= middle) {
             const section = renderer.getSectionForElement(el);
             if (section) {
-                line = section.lineStart  // this property has been removed since Obsidian v1.9.0
-                    || section.start.line;
+                line =
+                    section.lineStart || // this property has been removed since Obsidian v1.9.0
+                    section.start.line;
             }
         }
     });
@@ -553,8 +533,7 @@ function _handleScroll(evt: Event) {
         return;
     }
 
-    const isSourcemode =
-        (plugin.navigator as MarkDownNav).view.getMode() === "source";
+    const isSourcemode = (plugin.navigator as MarkDownNav).view.getMode() === "source";
 
     const current = currentLine(true, isSourcemode);
     const index = nearestHeading(current);

@@ -46,7 +46,7 @@ export class DataManager {
 
     private async checkPath(normalizedPath: string) {
         const parent = normalizedPath.split("/").slice(0, -1).join("/");
-        if (!await this.app.vault.adapter.exists(parent)) {
+        if (!(await this.app.vault.adapter.exists(parent))) {
             await this.app.vault.createFolder(parent);
         }
     }

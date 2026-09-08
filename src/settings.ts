@@ -11,7 +11,7 @@ import {
 import { assertType } from "./utils/helper";
 
 type AutoExpandMode =
-      "only-expand"
+    | "only-expand"
     | "expand-and-collapse-rest-to-default"
     | "expand-and-collapse-rest-to-setting"
     | "disable";
@@ -47,8 +47,8 @@ interface QuietOutlineSettings {
     // Canvas settings
     vimlize_canvas: boolean;
     canvas_sort_by: CanvasSortOrder;
-    shown_node_types: AllCanvasNodeData['type'][];
-    heading_truncate_length: number,
+    shown_node_types: AllCanvasNodeData["type"][];
+    heading_truncate_length: number;
 
     // Bases settings
     bases_display_property: string;
@@ -167,27 +167,25 @@ class SettingTab extends PluginSettingTab {
         const { containerEl } = this;
 
         containerEl.empty();
-        new Setting(containerEl)
-            .setName(t("Settings for Quiet Outline."))
-            .setHeading();
+        new Setting(containerEl).setName(t("Settings for Quiet Outline.")).setHeading();
 
         // Create tab navigation
         const tabContainer = containerEl.createDiv({ cls: "quiet-outline-tabs" });
         const generalTab = tabContainer.createEl("button", {
             text: t("General"),
-            cls: this.activeTab === "general" ? "active" : ""
+            cls: this.activeTab === "general" ? "active" : "",
         });
         const stylesTab = tabContainer.createEl("button", {
             text: t("Styles"),
-            cls: this.activeTab === "styles" ? "active" : ""
+            cls: this.activeTab === "styles" ? "active" : "",
         });
         const canvasTab = tabContainer.createEl("button", {
             text: t("Canvas"),
-            cls: this.activeTab === "canvas" ? "active" : ""
+            cls: this.activeTab === "canvas" ? "active" : "",
         });
         const basesTab = tabContainer.createEl("button", {
             text: t("Bases"),
-            cls: this.activeTab === "bases" ? "active" : ""
+            cls: this.activeTab === "bases" ? "active" : "",
         });
 
         // Tab click handlers
@@ -232,39 +230,33 @@ class SettingTab extends PluginSettingTab {
             .setName(t("Search Support"))
             .setDesc(t("Add a searching area on the top"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.search_support)
-                    .onChange(async (value) => {
-                        this.plugin.settings.search_support = value;
-                        store.searchSupport = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.search_support).onChange(async (value) => {
+                    this.plugin.settings.search_support = value;
+                    store.searchSupport = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         new Setting(container)
             .setName(t("Level Switch"))
             .setDesc(t("Expand headings to certain level."))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.level_switch)
-                    .onChange(async (value) => {
-                        this.plugin.settings.level_switch = value;
-                        store.levelSwitch = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.level_switch).onChange(async (value) => {
+                    this.plugin.settings.level_switch = value;
+                    store.levelSwitch = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         new Setting(container)
             .setName(t("Render Markdown"))
             .setDesc(t("Render heading string as markdown format."))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.markdown)
-                    .onChange(async (value) => {
-                        this.plugin.settings.markdown = value;
-                        store.markdown = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.markdown).onChange(async (value) => {
+                    this.plugin.settings.markdown = value;
+                    store.markdown = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         new Setting(container)
@@ -289,34 +281,28 @@ class SettingTab extends PluginSettingTab {
             .setName(t("Hide Unsearched"))
             .setDesc(t("Hide irrelevant headings when searching"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.hide_unsearched)
-                    .onChange(async (value) => {
-                        this.plugin.settings.hide_unsearched = value;
-                        store.hideUnsearched = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.hide_unsearched).onChange(async (value) => {
+                    this.plugin.settings.hide_unsearched = value;
+                    store.hideUnsearched = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         new Setting(container)
             .setName(t("Regex Search"))
             .setDesc(t("Search headings using regular expression"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.regex_search)
-                    .onChange(async (value) => {
-                        this.plugin.settings.regex_search = value;
-                        store.regexSearch = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.regex_search).onChange(async (value) => {
+                    this.plugin.settings.regex_search = value;
+                    store.regexSearch = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         new Setting(container)
             .setName(t("Auto Expand"))
             .setDesc(
-                t(
-                    "Auto expand and collapse headings when scrolling and cursor position change",
-                ),
+                t("Auto expand and collapse headings when scrolling and cursor position change"),
             )
             .addDropdown((mode) =>
                 mode
@@ -331,12 +317,10 @@ class SettingTab extends PluginSettingTab {
                     )
                     .addOption("disable", t("Disabled"))
                     .setValue(this.plugin.settings.auto_expand_ext)
-                    .onChange(
-                        async (value: string) => {
-                            this.plugin.settings.auto_expand_ext = value as AutoExpandMode;
-                            await this.plugin.saveSettings();
-                        },
-                    ),
+                    .onChange(async (value: string) => {
+                        this.plugin.settings.auto_expand_ext = value as AutoExpandMode;
+                        await this.plugin.saveSettings();
+                    }),
             );
 
         new Setting(container)
@@ -353,18 +337,12 @@ class SettingTab extends PluginSettingTab {
 
         new Setting(container)
             .setName(t("Locate By Cursor"))
-            .setDesc(
-                t(
-                    "Highlight and Auto expand postion will be determined by cursor position",
-                ),
-            )
+            .setDesc(t("Highlight and Auto expand postion will be determined by cursor position"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.locate_by_cursor)
-                    .onChange(async (value) => {
-                        this.plugin.settings.locate_by_cursor = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.locate_by_cursor).onChange(async (value) => {
+                    this.plugin.settings.locate_by_cursor = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         new Setting(container)
@@ -377,12 +355,10 @@ class SettingTab extends PluginSettingTab {
                     .addOption("metaKey", "Meta")
                     .addOption("disable", t("Disable"))
                     .setValue(this.plugin.settings.show_popover_key)
-                    .onChange(
-                        async (value: string) => {
-                            this.plugin.settings.show_popover_key = value as ModifierKey;
-                            await this.plugin.saveSettings();
-                        },
-                    ),
+                    .onChange(async (value: string) => {
+                        this.plugin.settings.show_popover_key = value as ModifierKey;
+                        await this.plugin.saveSettings();
+                    }),
             );
 
         const persistSettingGroup = container.createDiv({ cls: "quiet-outline-setting-group" });
@@ -395,16 +371,14 @@ class SettingTab extends PluginSettingTab {
                 ),
             )
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.persist_md_states)
-                    .onChange(async (value) => {
-                        this.plugin.settings.persist_md_states = value;
-                        if (!value) {
-                            this.plugin.data_manager.cancelPendingSave();
-                        }
-                        await this.plugin.saveSettings();
-                        this.display();
-                    }),
+                toggle.setValue(this.plugin.settings.persist_md_states).onChange(async (value) => {
+                    this.plugin.settings.persist_md_states = value;
+                    if (!value) {
+                        this.plugin.data_manager.cancelPendingSave();
+                    }
+                    await this.plugin.saveSettings();
+                    this.display();
+                }),
             );
 
         if (this.plugin.settings.persist_md_states) {
@@ -446,18 +420,23 @@ class SettingTab extends PluginSettingTab {
 
             new Setting(persistSettingGroup)
                 .setName(t("Save Delay"))
-                .setDesc(t("Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately."))
+                .setDesc(
+                    t(
+                        "Delay after the last change before saving markdown-states.json, in seconds. Set to 0 to save immediately.",
+                    ),
+                )
                 .addText((text) => {
                     text.inputEl.type = "number";
                     text.inputEl.min = "0";
                     text.inputEl.step = "0.1";
-                    text
-                        .setPlaceholder(String(DEFAULT_SAVE_DELAY_SECONDS))
+                    text.setPlaceholder(String(DEFAULT_SAVE_DELAY_SECONDS))
                         .setValue(String(this.plugin.settings.md_states_save_delay))
                         .onChange(async (value) => {
                             const delay = normalizeSaveDelaySeconds(value);
                             this.plugin.settings.md_states_save_delay = delay;
-                            await this.plugin.data_manager.setSaveDelayMs(saveDelaySecondsToMs(delay));
+                            await this.plugin.data_manager.setSaveDelayMs(
+                                saveDelaySecondsToMs(delay),
+                            );
                             await this.plugin.saveSettings();
                         });
                 });
@@ -467,62 +446,52 @@ class SettingTab extends PluginSettingTab {
             .setName(t("Keep Search Input"))
             .setDesc(t("Keep search input when switching between notes"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.keep_search_input)
-                    .onChange(async (value) => {
-                        this.plugin.settings.keep_search_input = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.keep_search_input).onChange(async (value) => {
+                    this.plugin.settings.keep_search_input = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         new Setting(container)
             .setName(t("Drag headings to modify note"))
             .setDesc(t("❗ This will modify note content, be careful."))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.drag_modify)
-                    .onChange(async (value) => {
-                        this.plugin.settings.drag_modify = value;
-                        store.dragModify = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.drag_modify).onChange(async (value) => {
+                    this.plugin.settings.drag_modify = value;
+                    store.dragModify = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         new Setting(container)
             .setName(t("Ellipsis"))
             .setDesc(t("Keep one line per heading"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.ellipsis)
-                    .onChange(async (value) => {
-                        this.plugin.settings.ellipsis = value;
-                        store.ellipsis = value;
-                        await this.plugin.saveSettings();
-                        store.refreshTree();
-                        this.display();
-                    }),
+                toggle.setValue(this.plugin.settings.ellipsis).onChange(async (value) => {
+                    this.plugin.settings.ellipsis = value;
+                    store.ellipsis = value;
+                    await this.plugin.saveSettings();
+                    store.refreshTree();
+                    this.display();
+                }),
             );
 
         if (this.plugin.settings.ellipsis) {
-            new Setting(container)
-                .setName(t("Tooltip direction"))
-                .addDropdown((level) =>
-                    level
-                        .addOption("left", "Left")
-                        .addOption("right", "Right")
-                        .addOption("top", "Top")
-                        .addOption("bottom", "Bottom")
-                        .setValue(this.plugin.settings.label_direction)
-                        .onChange(
-                            async (value: string) => {
-                                assertType<Direction>(value);
-                                this.plugin.settings.label_direction = value;
-                                store.labelDirection = value;
-                                await this.plugin.saveSettings();
-                                store.refreshTree();
-                            },
-                        ),
-                );
+            new Setting(container).setName(t("Tooltip direction")).addDropdown((level) =>
+                level
+                    .addOption("left", "Left")
+                    .addOption("right", "Right")
+                    .addOption("top", "Top")
+                    .addOption("bottom", "Bottom")
+                    .setValue(this.plugin.settings.label_direction)
+                    .onChange(async (value: string) => {
+                        assertType<Direction>(value);
+                        this.plugin.settings.label_direction = value;
+                        store.labelDirection = value;
+                        await this.plugin.saveSettings();
+                        store.refreshTree();
+                    }),
+            );
         }
 
         new Setting(container)
@@ -582,22 +551,18 @@ class SettingTab extends PluginSettingTab {
                     }),
             )
             .addColorPicker((color) =>
-                color
-                    .setValue(this.plugin.settings.primary_color_light)
-                    .onChange(async (value) => {
-                        this.plugin.settings.primary_color_light = value;
-                        store.theme.primaryColorLight = value;
-                        await this.plugin.saveSettings();
-                    }),
+                color.setValue(this.plugin.settings.primary_color_light).onChange(async (value) => {
+                    this.plugin.settings.primary_color_light = value;
+                    store.theme.primaryColorLight = value;
+                    await this.plugin.saveSettings();
+                }),
             )
             .addColorPicker((color) =>
-                color
-                    .setValue(this.plugin.settings.primary_color_dark)
-                    .onChange(async (value) => {
-                        this.plugin.settings.primary_color_dark = value;
-                        store.theme.primaryColorDark = value;
-                        await this.plugin.saveSettings();
-                    }),
+                color.setValue(this.plugin.settings.primary_color_dark).onChange(async (value) => {
+                    this.plugin.settings.primary_color_dark = value;
+                    store.theme.primaryColorDark = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         // Rainbow Line Settings
@@ -614,49 +579,39 @@ class SettingTab extends PluginSettingTab {
                     }),
             )
             .addColorPicker((color) =>
-                color
-                    .setValue(this.plugin.settings.rainbow_color_1)
-                    .onChange(async (value) => {
-                        this.plugin.settings.rainbow_color_1 = value;
-                        store.theme.rainbowColor1 = value;
-                        await this.plugin.saveSettings();
-                    }),
+                color.setValue(this.plugin.settings.rainbow_color_1).onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_1 = value;
+                    store.theme.rainbowColor1 = value;
+                    await this.plugin.saveSettings();
+                }),
             )
             .addColorPicker((color) =>
-                color
-                    .setValue(this.plugin.settings.rainbow_color_2)
-                    .onChange(async (value) => {
-                        this.plugin.settings.rainbow_color_2 = value;
-                        store.theme.rainbowColor2 = value;
-                        await this.plugin.saveSettings();
-                    }),
+                color.setValue(this.plugin.settings.rainbow_color_2).onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_2 = value;
+                    store.theme.rainbowColor2 = value;
+                    await this.plugin.saveSettings();
+                }),
             )
             .addColorPicker((color) =>
-                color
-                    .setValue(this.plugin.settings.rainbow_color_3)
-                    .onChange(async (value) => {
-                        this.plugin.settings.rainbow_color_3 = value;
-                        store.theme.rainbowColor3 = value;
-                        await this.plugin.saveSettings();
-                    }),
+                color.setValue(this.plugin.settings.rainbow_color_3).onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_3 = value;
+                    store.theme.rainbowColor3 = value;
+                    await this.plugin.saveSettings();
+                }),
             )
             .addColorPicker((color) =>
-                color
-                    .setValue(this.plugin.settings.rainbow_color_4)
-                    .onChange(async (value) => {
-                        this.plugin.settings.rainbow_color_4 = value;
-                        store.theme.rainbowColor4 = value;
-                        await this.plugin.saveSettings();
-                    }),
+                color.setValue(this.plugin.settings.rainbow_color_4).onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_4 = value;
+                    store.theme.rainbowColor4 = value;
+                    await this.plugin.saveSettings();
+                }),
             )
             .addColorPicker((color) =>
-                color
-                    .setValue(this.plugin.settings.rainbow_color_5)
-                    .onChange(async (value) => {
-                        this.plugin.settings.rainbow_color_5 = value;
-                        store.theme.rainbowColor5 = value;
-                        await this.plugin.saveSettings();
-                    }),
+                color.setValue(this.plugin.settings.rainbow_color_5).onChange(async (value) => {
+                    this.plugin.settings.rainbow_color_5 = value;
+                    store.theme.rainbowColor5 = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
         // New Font Settings
@@ -671,7 +626,7 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.font_size = value;
                         store.theme.fontSize = value;
                         await this.plugin.saveSettings();
-                    })
+                    }),
             );
 
         new Setting(container)
@@ -685,7 +640,7 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.font_family = value;
                         store.theme.fontFamily = value;
                         await this.plugin.saveSettings();
-                    })
+                    }),
             );
 
         new Setting(container)
@@ -699,7 +654,7 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.font_weight = value;
                         store.theme.fontWeight = value;
                         await this.plugin.saveSettings();
-                    })
+                    }),
             );
 
         new Setting(container)
@@ -713,7 +668,7 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.line_height = value;
                         store.theme.lineHeight = value;
                         await this.plugin.saveSettings();
-                    })
+                    }),
             );
 
         new Setting(container)
@@ -727,7 +682,7 @@ class SettingTab extends PluginSettingTab {
                         this.plugin.settings.line_gap = value;
                         store.theme.lineGap = value;
                         await this.plugin.saveSettings();
-                    })
+                    }),
             );
 
         // Font Color Settings
@@ -735,142 +690,116 @@ class SettingTab extends PluginSettingTab {
             .setName(t("Custom Font Color"))
             .setDesc(t("Enable custom font colors for different heading levels"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.custom_font_color)
-                    .onChange(async (value) => {
-                        this.plugin.settings.custom_font_color = value;
-                        store.theme.customFontColor = value;
-                        await this.plugin.saveSettings();
-                        // Refresh the display to show/hide color pickers
-                        this.display();
-                    }),
+                toggle.setValue(this.plugin.settings.custom_font_color).onChange(async (value) => {
+                    this.plugin.settings.custom_font_color = value;
+                    store.theme.customFontColor = value;
+                    await this.plugin.saveSettings();
+                    // Refresh the display to show/hide color pickers
+                    this.display();
+                }),
             );
 
         if (this.plugin.settings.custom_font_color) {
             new Setting(container)
                 .setName(t("H1 Color"))
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h1_color)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h1_color = value;
-                            store.theme.h1ColorLight = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h1_color).onChange(async (value) => {
+                        this.plugin.settings.h1_color = value;
+                        store.theme.h1ColorLight = value;
+                        await this.plugin.saveSettings();
+                    }),
                 )
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h1_color_dark)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h1_color_dark = value;
-                            store.theme.h1ColorDark = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h1_color_dark).onChange(async (value) => {
+                        this.plugin.settings.h1_color_dark = value;
+                        store.theme.h1ColorDark = value;
+                        await this.plugin.saveSettings();
+                    }),
                 );
 
             new Setting(container)
                 .setName(t("H2 Color"))
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h2_color)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h2_color = value;
-                            store.theme.h2ColorLight = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h2_color).onChange(async (value) => {
+                        this.plugin.settings.h2_color = value;
+                        store.theme.h2ColorLight = value;
+                        await this.plugin.saveSettings();
+                    }),
                 )
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h2_color_dark)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h2_color_dark = value;
-                            store.theme.h2ColorDark = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h2_color_dark).onChange(async (value) => {
+                        this.plugin.settings.h2_color_dark = value;
+                        store.theme.h2ColorDark = value;
+                        await this.plugin.saveSettings();
+                    }),
                 );
 
             new Setting(container)
                 .setName(t("H3 Color"))
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h3_color)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h3_color = value;
-                            store.theme.h3ColorLight = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h3_color).onChange(async (value) => {
+                        this.plugin.settings.h3_color = value;
+                        store.theme.h3ColorLight = value;
+                        await this.plugin.saveSettings();
+                    }),
                 )
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h3_color_dark)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h3_color_dark = value;
-                            store.theme.h3ColorDark = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h3_color_dark).onChange(async (value) => {
+                        this.plugin.settings.h3_color_dark = value;
+                        store.theme.h3ColorDark = value;
+                        await this.plugin.saveSettings();
+                    }),
                 );
 
             new Setting(container)
                 .setName(t("H4 Color"))
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h4_color)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h4_color = value;
-                            store.theme.h4ColorLight = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h4_color).onChange(async (value) => {
+                        this.plugin.settings.h4_color = value;
+                        store.theme.h4ColorLight = value;
+                        await this.plugin.saveSettings();
+                    }),
                 )
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h4_color_dark)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h4_color_dark = value;
-                            store.theme.h4ColorDark = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h4_color_dark).onChange(async (value) => {
+                        this.plugin.settings.h4_color_dark = value;
+                        store.theme.h4ColorDark = value;
+                        await this.plugin.saveSettings();
+                    }),
                 );
 
             new Setting(container)
                 .setName(t("H5 Color"))
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h5_color)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h5_color = value;
-                            store.theme.h5ColorLight = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h5_color).onChange(async (value) => {
+                        this.plugin.settings.h5_color = value;
+                        store.theme.h5ColorLight = value;
+                        await this.plugin.saveSettings();
+                    }),
                 )
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h5_color_dark)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h5_color_dark = value;
-                            store.theme.h5ColorDark = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h5_color_dark).onChange(async (value) => {
+                        this.plugin.settings.h5_color_dark = value;
+                        store.theme.h5ColorDark = value;
+                        await this.plugin.saveSettings();
+                    }),
                 );
 
             new Setting(container)
                 .setName(t("H6 Color"))
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h6_color)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h6_color = value;
-                            store.theme.h6ColorLight = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h6_color).onChange(async (value) => {
+                        this.plugin.settings.h6_color = value;
+                        store.theme.h6ColorLight = value;
+                        await this.plugin.saveSettings();
+                    }),
                 )
                 .addColorPicker((color) =>
-                    color
-                        .setValue(this.plugin.settings.h6_color_dark)
-                        .onChange(async (value) => {
-                            this.plugin.settings.h6_color_dark = value;
-                            store.theme.h6ColorDark = value;
-                            await this.plugin.saveSettings();
-                        }),
+                    color.setValue(this.plugin.settings.h6_color_dark).onChange(async (value) => {
+                        this.plugin.settings.h6_color_dark = value;
+                        store.theme.h6ColorDark = value;
+                        await this.plugin.saveSettings();
+                    }),
                 );
         }
     }
@@ -882,26 +811,23 @@ class SettingTab extends PluginSettingTab {
             .setName(t("Vimlize Canvas"))
             .setDesc(t("Add vim-like keymap for canvas"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.vimlize_canvas)
-                    .onChange(async (value) => {
-                        this.plugin.settings.vimlize_canvas = value;
-                        await this.plugin.saveSettings();
-                    }),
+                toggle.setValue(this.plugin.settings.vimlize_canvas).onChange(async (value) => {
+                    this.plugin.settings.vimlize_canvas = value;
+                    await this.plugin.saveSettings();
+                }),
             );
 
-        new Setting(container)
-            .setName(t("Heading Truncate Length"))
-            .addText(text => text
+        new Setting(container).setName(t("Heading Truncate Length")).addText((text) =>
+            text
                 .setValue(this.plugin.settings.heading_truncate_length.toString())
-                .onChange(async value => {
+                .onChange(async (value) => {
                     const length = parseInt(value);
                     if (!isNaN(length)) {
                         this.plugin.settings.heading_truncate_length = length;
                         await this.plugin.saveSettings();
                     }
-                })
-            );
+                }),
+        );
 
         new Setting(container)
             .setName(t("Canvas Sort Order"))
@@ -912,91 +838,81 @@ class SettingTab extends PluginSettingTab {
                     .addOption("name_asc", t("Sort by Name (A -> Z)"))
                     .addOption("name_desc", t("Sort by Name (Z -> A)"))
                     .setValue(this.plugin.settings.canvas_sort_by)
-                    .onChange(
-                        async (value: string) => {
-                            this.plugin.settings.canvas_sort_by = value as CanvasSortOrder;
-                            await this.plugin.saveSettings();
-                            // 触发刷新
-                            this.plugin.refresh();
-                        },
-                    ),
-            );
-
-        new Setting(container)
-            .setName(t("Show group nodes"))
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.shown_node_types.includes("group"))
-                    .onChange(async (isShown) => {
-                        const set = new Set(this.plugin.settings.shown_node_types);
-                        if (isShown) {
-                            set.add("group");
-                        } else {
-                            set.delete("group");
-                        }
-                        this.plugin.settings.shown_node_types = Array.from(set);
+                    .onChange(async (value: string) => {
+                        this.plugin.settings.canvas_sort_by = value as CanvasSortOrder;
                         await this.plugin.saveSettings();
                         // 触发刷新
                         this.plugin.refresh();
                     }),
             );
 
-        new Setting(container)
-            .setName(t("Show file nodes"))
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.shown_node_types.includes("file"))
-                    .onChange(async (isShown) => {
-                        const set = new Set(this.plugin.settings.shown_node_types);
-                        if (isShown) {
-                            set.add("file");
-                        } else {
-                            set.delete("file");
-                        }
-                        this.plugin.settings.shown_node_types = Array.from(set);
-                        await this.plugin.saveSettings();
-                        // 触发刷新
-                        this.plugin.refresh();
-                    }),
-            );
+        new Setting(container).setName(t("Show group nodes")).addToggle((toggle) =>
+            toggle
+                .setValue(this.plugin.settings.shown_node_types.includes("group"))
+                .onChange(async (isShown) => {
+                    const set = new Set(this.plugin.settings.shown_node_types);
+                    if (isShown) {
+                        set.add("group");
+                    } else {
+                        set.delete("group");
+                    }
+                    this.plugin.settings.shown_node_types = Array.from(set);
+                    await this.plugin.saveSettings();
+                    // 触发刷新
+                    this.plugin.refresh();
+                }),
+        );
 
-        new Setting(container)
-            .setName(t("Show text nodes"))
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.shown_node_types.includes("text"))
-                    .onChange(async (isShown) => {
-                        const set = new Set(this.plugin.settings.shown_node_types);
-                        if (isShown) {
-                            set.add("text");
-                        } else {
-                            set.delete("text");
-                        }
-                        this.plugin.settings.shown_node_types = Array.from(set);
-                        await this.plugin.saveSettings();
-                        // 触发刷新
-                        this.plugin.refresh();
-                    }),
-            );
+        new Setting(container).setName(t("Show file nodes")).addToggle((toggle) =>
+            toggle
+                .setValue(this.plugin.settings.shown_node_types.includes("file"))
+                .onChange(async (isShown) => {
+                    const set = new Set(this.plugin.settings.shown_node_types);
+                    if (isShown) {
+                        set.add("file");
+                    } else {
+                        set.delete("file");
+                    }
+                    this.plugin.settings.shown_node_types = Array.from(set);
+                    await this.plugin.saveSettings();
+                    // 触发刷新
+                    this.plugin.refresh();
+                }),
+        );
 
-        new Setting(container)
-            .setName(t("Show link nodes"))
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.shown_node_types.includes("link"))
-                    .onChange(async (isShown) => {
-                        const set = new Set(this.plugin.settings.shown_node_types);
-                        if (isShown) {
-                            set.add("link");
-                        } else {
-                            set.delete("link");
-                        }
-                        this.plugin.settings.shown_node_types = Array.from(set);
-                        await this.plugin.saveSettings();
-                        // 触发刷新
-                        this.plugin.refresh();
-                    }),
-            );
+        new Setting(container).setName(t("Show text nodes")).addToggle((toggle) =>
+            toggle
+                .setValue(this.plugin.settings.shown_node_types.includes("text"))
+                .onChange(async (isShown) => {
+                    const set = new Set(this.plugin.settings.shown_node_types);
+                    if (isShown) {
+                        set.add("text");
+                    } else {
+                        set.delete("text");
+                    }
+                    this.plugin.settings.shown_node_types = Array.from(set);
+                    await this.plugin.saveSettings();
+                    // 触发刷新
+                    this.plugin.refresh();
+                }),
+        );
+
+        new Setting(container).setName(t("Show link nodes")).addToggle((toggle) =>
+            toggle
+                .setValue(this.plugin.settings.shown_node_types.includes("link"))
+                .onChange(async (isShown) => {
+                    const set = new Set(this.plugin.settings.shown_node_types);
+                    if (isShown) {
+                        set.add("link");
+                    } else {
+                        set.delete("link");
+                    }
+                    this.plugin.settings.shown_node_types = Array.from(set);
+                    await this.plugin.saveSettings();
+                    // 触发刷新
+                    this.plugin.refresh();
+                }),
+        );
     }
 
     private renderBasesSettings(container: HTMLElement): void {
@@ -1019,9 +935,7 @@ class SettingTab extends PluginSettingTab {
                 button
                     .setIcon("help")
                     .setTooltip(t("Bases syntax"))
-                    .onClick(() =>
-                        activeWindow.open("https://obsidian.md/help/bases/syntax"),
-                    ),
+                    .onClick(() => activeWindow.open("https://obsidian.md/help/bases/syntax")),
             );
     }
 }

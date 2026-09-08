@@ -31,8 +31,7 @@ export class CanvasNav extends Nav {
         const plugin = this.plugin;
         if (!plugin.klasses["canvas"]) {
             this.patchCanvas(this.view.canvas);
-            plugin.klasses["canvas"] = this.view
-                .constructor as Constructor<unknown>;
+            plugin.klasses["canvas"] = this.view.constructor as Constructor<unknown>;
         }
 
         plugin.registerEvent(
@@ -42,38 +41,35 @@ export class CanvasNav extends Nav {
         );
 
         plugin.registerEvent(
-            eventBus.on(
-                "canvas-selection-change",
-                async (selection: Set<CanvasComponent>) => {
-                    // if selection change to 0 or more than 1, return to canvas view
-                    if (selection.size === 0 || selection.size > 1) {
-                        const view = plugin.app.workspace.getActiveFileView();
-                        if (!view) return;
-                        await plugin.updateNavAndRefresh(view.getViewType(), view);
-                        return;
-                    }
+            eventBus.on("canvas-selection-change", async (selection: Set<CanvasComponent>) => {
+                // if selection change to 0 or more than 1, return to canvas view
+                if (selection.size === 0 || selection.size > 1) {
+                    const view = plugin.app.workspace.getActiveFileView();
+                    if (!view) return;
+                    await plugin.updateNavAndRefresh(view.getViewType(), view);
+                    return;
+                }
 
-                    // if selection is only 1 textNode or md fileNode, show md outline
-                    const component = [...selection][0];
-                    if (!Object.prototype.hasOwnProperty.call(component, "nodeEl")) return;
+                // if selection is only 1 textNode or md fileNode, show md outline
+                const component = [...selection][0];
+                if (!Object.prototype.hasOwnProperty.call(component, "nodeEl")) return;
 
-                    const node = component as CanvasNode;
+                const node = component as CanvasNode;
 
-                    if (isFileNode(node) && node.filePath.endsWith(".md")) {
-                        const view = node.child as EmbedMarkdownView;
-                        await plugin.updateNavAndRefresh("embed-markdown-file", view);
-                        return;
-                    }
+                if (isFileNode(node) && node.filePath.endsWith(".md")) {
+                    const view = node.child as EmbedMarkdownView;
+                    await plugin.updateNavAndRefresh("embed-markdown-file", view);
+                    return;
+                }
 
-                    if (isTextNode(node)) {
-                        const view = node.child;
-                        await plugin.updateNavAndRefresh("embed-markdown-text", view);
-                        return;
-                    }
+                if (isTextNode(node)) {
+                    const view = node.child;
+                    await plugin.updateNavAndRefresh("embed-markdown-text", view);
+                    return;
+                }
 
-                    await plugin.updateNavAndRefresh("dummy", null);
-                },
-            ),
+                await plugin.updateNavAndRefresh("dummy", null);
+            }),
         );
     }
 
@@ -102,11 +98,13 @@ export class CanvasNav extends Nav {
         let nodes = this.view.canvas.data.nodes;
         // nodes may be undefined when switch to canvas view
         if (nodes) {
-            nodes = nodes.filter(node => this.plugin.settings.shown_node_types.includes(node.type));
+            nodes = nodes.filter((node) =>
+                this.plugin.settings.shown_node_types.includes(node.type),
+            );
             return canvasNodesToHeaders(
                 nodes,
                 this.plugin.settings.canvas_sort_by,
-                this.plugin.settings.heading_truncate_length
+                this.plugin.settings.heading_truncate_length,
             );
         }
         return [];
@@ -148,7 +146,7 @@ export class CanvasNav extends Nav {
 function canvasNodesToHeaders(
     nodes: AllCanvasNodeData[],
     sortMode: "area" | "name_asc" | "name_desc" = "area",
-    lengthLimit: number = 20
+    lengthLimit: number = 20,
 ): Heading[] {
     // 下行为原注释
     // const groups = nodes.filter(node => node.type === "group").sort((a, b) => - cmpArea(a, b));
@@ -235,10 +233,9 @@ function text(node: AllCanvasNodeData, lengthLimit: number = 20): string {
                 text = node.url;
                 request(node.url)
                     .then((res) => {
-                        cacheTitle[node.url] =
-                            /<title>(.*)<\/title>/.exec(res)?.[1] || "";
+                        cacheTitle[node.url] = /<title>(.*)<\/title>/.exec(res)?.[1] || "";
                     })
-                    .catch(() => { });
+                    .catch(() => {});
             }
             break;
         }
@@ -250,7 +247,7 @@ function text(node: AllCanvasNodeData, lengthLimit: number = 20): string {
     return text;
 }
 
-type TreeNode = { node: AllCanvasNodeData; children: TreeNode[]; };
+type TreeNode = { node: AllCanvasNodeData; children: TreeNode[] };
 function traverse(
     trees: TreeNode[],
     level: number,
@@ -372,7 +369,6 @@ function enableVim(view: CanvasView) {
         }
     });
 
-
     view.__vimed = true;
 }
 
@@ -405,40 +401,45 @@ function move(canvas: Canvas, dir: "up" | "down" | "left" | "right") {
     const node = selected as CanvasNode;
     const box = node.bbox;
 
-    let nodes = [...canvas.nodes.values()]
-        .filter(n => n !== node && n.unknownData.type !== "group");
+    let nodes = [...canvas.nodes.values()].filter(
+        (n) => n !== node && n.unknownData.type !== "group",
+    );
 
     switch (dir) {
         case "up": {
-            const set1 = nodes.filter(n => n.bbox.maxY < box.minY);
-            const set2 = set1.filter(n => intersect(n.bbox, box, "x"));
-            nodes = set2.length > 0
-                ? set2.sort((a, b) => b.bbox.maxY - a.bbox.maxY)
-                : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
+            const set1 = nodes.filter((n) => n.bbox.maxY < box.minY);
+            const set2 = set1.filter((n) => intersect(n.bbox, box, "x"));
+            nodes =
+                set2.length > 0
+                    ? set2.sort((a, b) => b.bbox.maxY - a.bbox.maxY)
+                    : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
             break;
         }
         case "down": {
-            const set1 = nodes.filter(n => n.bbox.minY > box.maxY);
-            const set2 = set1.filter(n => intersect(n.bbox, box, "x"));
-            nodes = set2.length > 0
-                ? set2.sort((a, b) => a.bbox.minY - b.bbox.minY)
-                : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
+            const set1 = nodes.filter((n) => n.bbox.minY > box.maxY);
+            const set2 = set1.filter((n) => intersect(n.bbox, box, "x"));
+            nodes =
+                set2.length > 0
+                    ? set2.sort((a, b) => a.bbox.minY - b.bbox.minY)
+                    : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
             break;
         }
         case "left": {
-            const set1 = nodes.filter(n => n.bbox.maxX < box.minX);
-            const set2 = set1.filter(n => intersect(n.bbox, box, "y"));
-            nodes = set2.length > 0
-                ? set2.sort((a, b) => b.bbox.maxX - a.bbox.maxX)
-                : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
+            const set1 = nodes.filter((n) => n.bbox.maxX < box.minX);
+            const set2 = set1.filter((n) => intersect(n.bbox, box, "y"));
+            nodes =
+                set2.length > 0
+                    ? set2.sort((a, b) => b.bbox.maxX - a.bbox.maxX)
+                    : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
             break;
         }
         case "right": {
-            const set1 = nodes.filter(n => n.bbox.minX > box.maxX);
-            const set2 = set1.filter(n => intersect(n.bbox, box, "y"));
-            nodes = set2.length > 0
-                ? set2.sort((a, b) => a.bbox.minX - b.bbox.minX)
-                : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
+            const set1 = nodes.filter((n) => n.bbox.minX > box.maxX);
+            const set2 = set1.filter((n) => intersect(n.bbox, box, "y"));
+            nodes =
+                set2.length > 0
+                    ? set2.sort((a, b) => a.bbox.minX - b.bbox.minX)
+                    : set1.sort((a, b) => dist(a.bbox, box) - dist(b.bbox, box));
             break;
         }
     }
@@ -451,9 +452,9 @@ function move(canvas: Canvas, dir: "up" | "down" | "left" | "right") {
 }
 
 function intersect(a: BBox, b: BBox, dimension: "x" | "y") {
-    return dimension === "x" ?
-        a.minX < b.maxX && a.maxX > b.minX :
-        a.minY < b.maxY && a.maxY > b.minY;
+    return dimension === "x"
+        ? a.minX < b.maxX && a.maxX > b.minX
+        : a.minY < b.maxY && a.maxY > b.minY;
 }
 
 function dist(a: BBox, b: BBox) {

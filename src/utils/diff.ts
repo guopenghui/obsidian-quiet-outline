@@ -13,11 +13,7 @@ type ModifyDiff = {
     begin: number;
     length: number;
     levelChange: boolean;
-    levelChangeType:
-    | "parent2parent"
-    | "parent2child"
-    | "child2parent"
-    | "child2child";
+    levelChangeType: "parent2parent" | "parent2child" | "child2parent" | "child2child";
 };
 
 const MODIFY_CHECK_STEP = 5;
@@ -27,10 +23,7 @@ export function diff(prev: Heading[], cur: Heading[]): Diff[] {
     const res: Diff[] = [];
     while (i < prev.length && j < cur.length) {
         // same heading, pass
-        if (
-            prev[i].title === cur[j].title &&
-            prev[i].level === cur[j].level
-        ) {
+        if (prev[i].title === cur[j].title && prev[i].level === cur[j].level) {
             i++;
             j++;
             continue;
@@ -45,8 +38,8 @@ export function diff(prev: Heading[], cur: Heading[]): Diff[] {
                         ? "parent2parent"
                         : "parent2child"
                     : cur[j].level < cur[j + 1].level
-                        ? "child2parent"
-                        : "child2child";
+                      ? "child2parent"
+                      : "child2child";
             res.push({
                 type: action.type,
                 begin: i,
@@ -94,7 +87,7 @@ function addOrRemoveOrModify(
     cur: Heading[],
     i: number,
     j: number,
-): { type: "add" | "remove" | "modify"; length: number; } {
+): { type: "add" | "remove" | "modify"; length: number } {
     const stepAdd = findSteps(prev[i], cur, j);
     const stepRm = findSteps(cur[j], prev, i);
     const stepMod = findModifyStep(prev, cur, i, j);
@@ -102,15 +95,11 @@ function addOrRemoveOrModify(
         { type: "add", length: stepAdd },
         { type: "remove", length: stepRm },
         { type: "modify", length: stepMod },
-    ] as { type: "add" | "remove" | "modify"; length: number; }[];
+    ] as { type: "add" | "remove" | "modify"; length: number }[];
     res.sort((a, b) => a.length - b.length);
 
     // choose remove first
-    if (
-        res[0].type == "add" &&
-        res[1].type == "remove" &&
-        res[0].length === res[1].length
-    ) {
+    if (res[0].type == "add" && res[1].type == "remove" && res[0].length === res[1].length) {
         return res[1];
     }
 
@@ -119,24 +108,15 @@ function addOrRemoveOrModify(
 function findSteps(target: Heading, arr: Heading[], from: number): number {
     const res = arr.slice(from);
     let step = res.findIndex(
-        (heading) =>
-            heading.title === target.title &&
-            heading.level === target.level,
+        (heading) => heading.title === target.title && heading.level === target.level,
     );
     step = step < 0 ? res.length : step;
     return step;
 }
 function findModifyStep(prev: Heading[], cur: Heading[], i: number, j: number) {
-    const step = Math.min(
-        prev.length - i - 1,
-        cur.length - j - 1,
-        MODIFY_CHECK_STEP,
-    );
+    const step = Math.min(prev.length - i - 1, cur.length - j - 1, MODIFY_CHECK_STEP);
     for (let id = 1; step > 0 && id <= step; id++) {
-        if (
-            prev[i + id].title === cur[j + id].title &&
-            prev[i + id].level === cur[j + id].level
-        ) {
+        if (prev[i + id].title === cur[j + id].title && prev[i + id].level === cur[j + id].level) {
             return id;
         }
     }
@@ -179,10 +159,7 @@ export function calcModifies(prev: Heading[], cur: Heading[]) {
                 break;
             }
             case "modify": {
-                if (
-                    !diff.levelChange ||
-                    diff.levelChangeType === "child2child"
-                ) {
+                if (!diff.levelChange || diff.levelChangeType === "child2child") {
                     break;
                 }
                 modifyKeys.modifies.push({

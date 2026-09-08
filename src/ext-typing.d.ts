@@ -27,7 +27,6 @@ declare module "obsidian" {
         dragManager: DragManager;
     }
 
-
     interface DraggableBase {
         source?: string;
         icon?: string;
@@ -36,7 +35,7 @@ declare module "obsidian" {
 
     interface DraggableHeading extends DraggableBase {
         type: "heading";
-        heading: n.heading,
+        heading: n.heading;
         file: TFile | null;
     }
 
@@ -72,8 +71,8 @@ declare module "obsidian" {
         /** @deprecated has been removed from 1.9.0 */
         lineEnd: number;
         lines: number;
-        start: { line: number, col: number, offset: number; };
-        end: { line: number, col: number, offset: number; };
+        start: { line: number; col: number; offset: number };
+        end: { line: number; col: number; offset: number };
     }
 
     interface MarkdownPreviewRenderer {
@@ -81,10 +80,7 @@ declare module "obsidian" {
         viewportHeight: number;
         previewEl: HTMLElement;
 
-        applyScroll(
-            scroll: number,
-            config: { highlight: boolean; center: boolean; },
-        ): boolean;
+        applyScroll(scroll: number, config: { highlight: boolean; center: boolean }): boolean;
 
         highlightEl(el: HTMLElement): void;
         getSectionForElement(el: HTMLElement): MarkdownPreviewSection | null;
@@ -120,9 +116,9 @@ declare module "obsidian" {
             edges: CanvasEdgeData[];
         };
         /** edges set from node */
-        edgeFrom: { data: Map<CanvasNode, Set<CanvasEdge>>; };
+        edgeFrom: { data: Map<CanvasNode, Set<CanvasEdge>> };
         /** edges set to node */
-        edgeTo: { data: Map<CanvasNode, Set<CanvasEdge>>; };
+        edgeTo: { data: Map<CanvasNode, Set<CanvasEdge>> };
 
         selection: Set<CanvasComponent>;
 
@@ -218,11 +214,7 @@ declare module "obsidian" {
         setUrl(url: string): void;
     }
 
-    export type CanvasNode =
-        | CanvasGroupNode
-        | CanvasFileNode
-        | CanvasTextNode
-        | CanvasLinkNode;
+    export type CanvasNode = CanvasGroupNode | CanvasFileNode | CanvasTextNode | CanvasLinkNode;
 
     export interface BBox {
         minX: number;
@@ -329,7 +321,7 @@ declare module "obsidian" {
         items?: BasesRow[];
         groups?: BasesGroup[];
         /** cards view lays entries out in a grid */
-        measurements?: { cardsPerRow?: number; };
+        measurements?: { cardsPerRow?: number };
         updateVirtualDisplay?(): void;
     }
 
@@ -337,7 +329,7 @@ declare module "obsidian" {
         viewer: PdfViewerLoader;
         _quietOutlineCache: {
             allItems: PdfOutlineItem[];
-        }
+        };
     }
 
     interface PdfViewerLoader {
@@ -397,4 +389,4 @@ declare module "obsidian" {
     export type PdfDestination = string | unknown[];
 }
 
-export { };
+export {};
