@@ -13,6 +13,7 @@
 + [在 Canvas 中导航](#在-canvas-中导航)
 + [在 Kanban 中导航](#在-kanban-中导航)
 + [在 Bases 中导航](#在-bases-中导航)
++ [在 PDF 中导航](#在-pdf-中导航)
 + [鼠标悬浮显示预览窗口](#鼠标悬浮显示预览窗口)
 + [记忆展开状态](#记忆展开状态)
 + [Vim-Like 键盘操作](#vim-like-键盘操作)
@@ -73,6 +74,12 @@ Quiet Outline:
 ### 在 Bases 中导航
 
 列出当前 Bases 视图（table / cards / list）中的行，遵循其筛选、排序和分组。每行显示的属性可在设置的 Bases 页签中修改。
+
+### 在 PDF 中导航
+
+支持读取并显示 PDF 文件的内置目录（大纲/书签）：
++ **点击快速跳转**：点击大纲中的目录条目，直接跳转到 PDF 对应的目标页面与位置。
++ **阅读自动跟踪**：在浏览或翻页 PDF 时，大纲会实时同步跟踪并高亮当前页码对应的目录位置。
 
 ### 鼠标悬浮显示预览窗口
 ![Popover](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/popover.gif)

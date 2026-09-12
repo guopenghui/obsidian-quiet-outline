@@ -15,6 +15,7 @@ An outline plugin makes headings easier to read.
 + [Navigation in Canvas](#navigate-in-canvas)
 + [Navigation in Kanban](#navigate-in-kanban)
 + [Navigation in Bases](#navigate-in-bases)
++ [Navigation in PDF](#navigate-in-pdf)
 + [Hover preview](#show-content-when-hovering-on-heading)
 + [Remember expand state](#remember-state)
 + [Vim-Like keymap](#vim-like-keymap)
@@ -75,6 +76,12 @@ You can customize the default level per note. See release note in [0.3.33](https
 ### Navigate in Bases
 
 Lists the rows of the active Bases view (table, cards or list), following its filters, sorting and grouping. The property shown per row can be changed in the Bases settings tab.
+
+### Navigate in PDF
+
+Supports reading and displaying the table of contents (outline / bookmarks) embedded in PDF files:
++ **Click to Jump**: Click on any outline item to navigate directly to the destination page and position in the PDF.
++ **Active Page Sync**: Automatically tracks and highlights the corresponding outline heading as you scroll or change pages in the PDF.
 
 ### Show content when hovering on heading
 ![Popover](https://raw.githubusercontent.com/guopenghui/obsidian-quiet-outline/master/public/popover.gif)
