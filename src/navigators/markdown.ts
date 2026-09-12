@@ -20,6 +20,7 @@ export const MD_DATA_FILE = "markdown-states.json";
 export interface MarkdownHeading extends Heading {
     line: number;
     position: Pos;
+    icon?: string;
 }
 
 export class MarkDownNav extends Nav {
@@ -44,6 +45,9 @@ export class MarkDownNav extends Nav {
             level: cache.level,
             line: cache.position.start.line,
             position: cache.position,
+            icon: this.plugin.settings.show_markdown_level_icon
+                ? `lucide-heading-${cache.level}`
+                : undefined,
         }));
     }
 

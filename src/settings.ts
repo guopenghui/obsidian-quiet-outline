@@ -54,6 +54,7 @@ interface QuietOutlineSettings {
     bases_display_property: string;
 
     // Style settings
+    show_markdown_level_icon: boolean;
     patch_color: boolean;
     primary_color_light: string;
     primary_color_dark: string;
@@ -121,6 +122,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     bases_display_property: "file.name",
 
     // Style settings
+    show_markdown_level_icon: false,
     patch_color: false,
     primary_color_light: "#18a058",
     primary_color_dark: "#63e2b7",
@@ -536,6 +538,20 @@ class SettingTab extends PluginSettingTab {
 
     private renderStyleSettings(container: HTMLElement): void {
         container.empty();
+
+        // Heading Level Icon Setting
+        new Setting(container)
+            .setName(t("Show Heading Level Icon"))
+            .setDesc(t("Display heading level prefix icon (H1-H6) in markdown outline"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.show_markdown_level_icon)
+                    .onChange(async (value) => {
+                        this.plugin.settings.show_markdown_level_icon = value;
+                        await this.plugin.saveSettings();
+                        await this.plugin.refresh_outline();
+                    }),
+            );
 
         // Primary Color Settings
         new Setting(container)

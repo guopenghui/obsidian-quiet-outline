@@ -68,6 +68,9 @@ export class EmbedMarkdownFileNav extends Nav {
             title: h.heading,
             line: h.position.start.line,
             position: h.position,
+            icon: this.plugin.settings.show_markdown_level_icon
+                ? `lucide-heading-${h.level}`
+                : undefined,
         }));
     }
     async setHeaders(): Promise<void> {
@@ -103,6 +106,9 @@ export class EmbedMarkdownTextNav extends Nav {
             ...h,
             title: h.heading,
             line: h.position.start.line,
+            icon: this.plugin.settings.show_markdown_level_icon
+                ? `lucide-heading-${h.level}`
+                : undefined,
         }));
     }
     async setHeaders(): Promise<void> {

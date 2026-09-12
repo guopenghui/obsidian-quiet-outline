@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import { getIcon } from "obsidian";
+import { computed } from "vue";
 
 const props = defineProps({
     id: {
@@ -12,5 +13,5 @@ const props = defineProps({
     },
 });
 
-const html = getIcon(props.id)?.outerHTML || getIcon("ghost")?.outerHTML;
+const html = computed(() => getIcon(props.id)?.outerHTML || getIcon("ghost")?.outerHTML);
 </script>

@@ -109,12 +109,12 @@ function renderPrefix({ option }: { option: TreeOptionX }): VNodeChild {
     let iConChild: VNodeChild = null;
     switch (option.icon) {
         default: {
-            iConChild = h(LocalIcon, { id: option.icon });
+            iConChild = h(LocalIcon, { id: option.icon, key: option.icon });
         }
     }
     return h(
         Icon,
-        { size: "1.2em" },
+        { size: "1.2em", key: option.icon },
         {
             default: () => iConChild,
         },

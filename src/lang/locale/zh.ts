@@ -147,4 +147,9 @@ export default {
     "H4 Color": "H4 颜色",
     "H5 Color": "H5 颜色",
     "H6 Color": "H6 颜色",
+
+    // Heading level icon
+    "Show Heading Level Icon": "显示标题层级图标",
+    "Display heading level prefix icon (H1-H6) in markdown outline":
+        "在 Markdown 大纲中显示标题层级前缀图标 (H1-H6)",
 };
