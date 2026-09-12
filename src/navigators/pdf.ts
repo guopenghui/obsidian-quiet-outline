@@ -43,7 +43,12 @@ export class PdfNav extends Nav {
         const child = await Promise.race([deferred.promise, sleep(3000).then(() => null)]);
         await this.waitForPdfOutline();
 
-        if (this.view._quietOutlineCache) {
+        if (
+            this.view._quietOutlineCache &&
+            // pdf view will be reused when open a new pdf file
+            // so use path to avoid old cache
+            this.view.file?.path === this.view._quietOutlineCache.path
+        ) {
             this.allItems = this.view._quietOutlineCache.allItems;
             return child;
         }
@@ -60,6 +65,7 @@ export class PdfNav extends Nav {
 
         this.view._quietOutlineCache = {
             allItems: this.allItems,
+            path: this.view.file?.path ?? "",
         };
 
         return child;

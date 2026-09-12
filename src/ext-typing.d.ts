@@ -329,6 +329,7 @@ declare module "obsidian" {
         viewer: PdfViewerLoader;
         _quietOutlineCache: {
             allItems: PdfOutlineItem[];
+            path: string;
         };
     }
 
