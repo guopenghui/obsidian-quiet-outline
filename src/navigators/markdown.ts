@@ -515,7 +515,11 @@ function nearestHeading(line: number): undefined | number {
 const handleScroll = debounce(_handleScroll, 150, false);
 
 function _handleScroll(evt: Event) {
-    (plugin.navigator as MarkDownNav).storeMarkdownState("scroll");
+    if (!(plugin.navigator instanceof MarkDownNav)) {
+        return;
+    }
+
+    plugin.navigator.storeMarkdownState("scroll");
 
     if (!plugin.allow_scroll) {
         return;
@@ -537,7 +541,7 @@ function _handleScroll(evt: Event) {
         return;
     }
 
-    const isSourcemode = (plugin.navigator as MarkDownNav).view.getMode() === "source";
+    const isSourcemode = plugin.navigator.view.getMode() === "source";
 
     const current = currentLine(true, isSourcemode);
     const index = nearestHeading(current);
