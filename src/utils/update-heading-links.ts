@@ -126,7 +126,7 @@ export class HeadingUpdater {
             return applyFileChanges(content, fileChanges);
         });
 
-        await this.app.fileManager.updateInternalLinks(changes);
+        await this.app.metadataCache.updateInternalLinks(changes);
 
         const linkText = i18next.t("nouns.link-with-count", { count: linkCount });
         const fileText = i18next.t("nouns.file-with-count", { count: fileCount });
@@ -144,7 +144,7 @@ export class HeadingUpdater {
         const oldHeadingLower = stripHeading(this.oldHeading).toLowerCase();
         const newHeadingSlug = stripHeadingForLink(content);
 
-        this.app.fileManager.iterateAllRefs((sourcePath: string, reference: unknown) => {
+        metadataCache.iterateAllRefs((sourcePath: string, reference: unknown) => {
             if (!isLinkReference(reference)) {
                 return;
             }

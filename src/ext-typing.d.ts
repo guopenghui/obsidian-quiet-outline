@@ -47,6 +47,8 @@ declare module "obsidian" {
 
     interface MetadataCache {
         computeMetadataAsync(buffer: ArrayBufferLike): Promise<CachedMetadata>;
+        iterateAllRefs(callback: (filePath: string, reference: unknown) => void): void;
+        updateInternalLinks: (changes: unknown) => Promise<void>;
     }
 
     interface Workspace {
@@ -58,8 +60,6 @@ declare module "obsidian" {
     }
 
     interface FileManager {
-        updateInternalLinks: (changes: unknown) => Promise<void>;
-        iterateAllRefs(callback: (filePath: string, reference: unknown) => void): void;
     }
 
     interface MarkdownPreviewSection {
