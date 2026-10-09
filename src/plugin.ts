@@ -4,6 +4,8 @@ import {
     type Constructor,
     debounce,
     FileView,
+    type MarkdownEphemeralState,
+    MarkdownView,
     Plugin,
     TFile,
     View,
@@ -25,7 +27,7 @@ import { eventBus } from "./utils/event-bus";
 import "./stalin.css";
 import { Deferred } from "./utils/promise";
 
-type LeafEphemeralState = Record<string, unknown> | undefined;
+type LeafEphemeralState = MarkdownEphemeralState | undefined;
 
 export default class QuietOutline extends Plugin {
     settings!: QuietOutlineSettings;
@@ -174,8 +176,28 @@ export default class QuietOutline extends Plugin {
             }),
         );
 
+        // Check whether eState already carries an explicit navigation/positioning target.
+        // Each check aligns with Obsidian's internal MarkdownView / MarkdownEditView / MarkdownPreviewView logic:
+        // - subpath: truthy check (`if (eState.subpath)`), as links/embeds without `#heading` may pass `subpath: ""`
+        // - line / scroll: numeric check (0 is a valid target)
+        // - cursor / startLoc / match / propertyMatches: defined when caller specifies selection, resolved subpath, or search match
+        const hasNavigationTarget = (eState: LeafEphemeralState): boolean => {
+            if (!eState) {
+                return false;
+            }
+            return Boolean(
+                eState.subpath ||
+                typeof eState.line === "number" ||
+                typeof eState.scroll === "number" ||
+                eState.cursor ||
+                eState.startLoc !== undefined ||
+                eState.match !== undefined ||
+                eState.propertyMatches !== undefined,
+            );
+        };
+
         const getPersistedMarkdownState = (viewState: ViewState, eState: LeafEphemeralState) => {
-            if (!this.settings.persist_md_states) {
+            if (!this.settings.persist_md_states || hasNavigationTarget(eState)) {
                 return eState;
             }
 
@@ -186,7 +208,7 @@ export default class QuietOutline extends Plugin {
                 return eState;
             }
 
-            const persistedState: Record<string, unknown> = { ...eState };
+            const persistedState: MarkdownEphemeralState = { ...eState };
             let hasPersistedState = false;
             if (this.settings.persist_md_scroll && data.scroll !== undefined) {
                 persistedState.scroll = data.scroll;
@@ -204,8 +226,26 @@ export default class QuietOutline extends Plugin {
         this.register(
             around(WorkspaceLeaf.prototype, {
                 setViewState(next) {
-                    return async function (this: WorkspaceLeaf, viewState, eState) {
-                        if (viewState.type !== "markdown") {
+                    return async function (
+                        this: WorkspaceLeaf,
+                        viewState: ViewState,
+                        eState?: MarkdownEphemeralState,
+                    ) {
+                        // Skip state restoration when:
+                        // 1. Not a markdown view
+                        // 2. Leaf lives inside a popover (e.g., Page Preview, Hover Editor)
+                        // 3. The same markdown file is already open in this leaf (e.g., switching between
+                        //    Reading and Editing mode, toggling Source mode, or toggling backlinks)
+                        const isSameMarkdownFile =
+                            this.view instanceof MarkdownView &&
+                            Boolean(this.view.file?.path) &&
+                            this.view.file?.path === viewState.state?.file;
+
+                        if (
+                            viewState.type !== "markdown" ||
+                            this.containerEl?.closest?.(".popover") ||
+                            isSameMarkdownFile
+                        ) {
                             return next.apply(this, [viewState, eState]);
                         }
 

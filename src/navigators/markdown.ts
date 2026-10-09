@@ -361,7 +361,9 @@ export class MarkDownNav extends Nav {
         if (!plugin.settings.persist_md_states || !isMarkdownStateEnabled(changedState)) return;
 
         const view = this.view;
-        if (!view.file?.path) return;
+        // Skip persisting state for leaves inside popovers (e.g., Page Preview, Hover Editor)
+        // to avoid overwriting the note's main workspace state
+        if (!view.file?.path || view.leaf.containerEl?.closest?.(".popover")) return;
 
         const dataMap = plugin.data_manager.getData<MarkdownStates>(MD_DATA_FILE) || {};
         const oldData = dataMap[view.file.path] || {};

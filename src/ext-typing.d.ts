@@ -57,6 +57,29 @@ declare module "obsidian" {
 
     interface WorkspaceLeaf {
         group: string | null;
+        containerEl: HTMLElement;
+    }
+
+    export interface MarkdownEphemeralState {
+        scroll?: number;
+        cursor?: EditorRange;
+        subpath?: string;
+        line?: number;
+        startLoc?: Loc;
+        endLoc?: Loc | null;
+        match?: {
+            content: string;
+            matches: SearchMatches;
+        };
+        propertyMatches?: Array<{
+            key: string;
+            pos?: SearchMatchPart;
+            subkey?: string[];
+        }>;
+        focus?: boolean;
+        focusOnMobile?: boolean;
+        focusMetadata?: boolean;
+        rename?: "start" | "end" | "all";
     }
 
     interface FileManager {
