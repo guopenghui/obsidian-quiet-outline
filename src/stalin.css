@@ -238,8 +238,26 @@
     color: var(--link-color);
 }
 
+.quiet-outline mark[data-highlight="red"] {
+    --highlight-background: var(--highlight-background-red);
+}
+.quiet-outline mark[data-highlight="orange"] {
+    --highlight-background: var(--highlight-background-orange);
+}
+.quiet-outline mark[data-highlight="yellow"] {
+    --highlight-background: var(--highlight-background-yellow);
+}
+.quiet-outline mark[data-highlight="green"] {
+    --highlight-background: var(--highlight-background-green);
+}
+.quiet-outline mark[data-highlight="blue"] {
+    --highlight-background: var(--highlight-background-blue);
+}
+.quiet-outline mark[data-highlight="purple"] {
+    --highlight-background: var(--highlight-background-purple);
+}
 .quiet-outline mark {
-    background-color: var(--text-highlight-bg);
+    background-color: var(--highlight-background);
     color: var(--text-normal);
 }
 

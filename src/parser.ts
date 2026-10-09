@@ -89,6 +89,23 @@ export const remove_ref: Extension = {
     },
 };
 
+const highlightColors: Record<string, string> = {
+    "🔴": "red",
+    "🟥": "red",
+    "🟠": "orange",
+    "🟧": "orange",
+    "🟡": "yellow",
+    "🟨": "yellow",
+    "🟢": "green",
+    "🟩": "green",
+    "🔵": "blue",
+    "🟦": "blue",
+    "🟣": "purple",
+    "🟪": "purple",
+};
+
+const highlightRule = new RegExp(`^==(${Object.keys(highlightColors).join("|")})?([^=]+)==`);
+
 // parse ==xxx== format
 export const highlight: Extension = {
     name: "highlight",
@@ -98,18 +115,19 @@ export const highlight: Extension = {
         return match ? match.index! : -1;
     },
     tokenizer(src, _token) {
-        const rule = /^==([^=]+)==/;
-        const match = rule.exec(src);
+        const match = highlightRule.exec(src);
         if (match) {
             return {
                 type: "highlight",
                 raw: match[0],
-                internal: match[1],
+                color: match[1] ? highlightColors[match[1]] : undefined,
+                internal: match[2],
             };
         }
     },
     renderer(token) {
-        return `<mark>${token.internal}</mark>`;
+        const attr = token.color ? `data-highlight="${token.color}"` : "data-highlight";
+        return `<mark ${attr}>${token.internal}</mark>`;
     },
 };
 
