@@ -84,12 +84,16 @@ const tree = ref<InstanceType<typeof NTree>>();
 // level switch
 const marks = { 0: "", 1: "", 2: "", 3: "", 4: "", 5: "" };
 function formatTooltip(value: number): string {
-    const num = store.headers.filter((h) => h.level === value).length;
-
-    if (value > 0) {
-        return `H${value}: ${num}`;
+    if (value <= 0) {
+        return "No expand";
     }
-    return "No expand";
+
+    // "value" is the deepest *expanded* heading level, so the deepest *visible*
+    // level is "value + 1" (see filterKeysLessThanEqual in use-expand.ts)
+    const visibleLevel = value + 1;
+    const num = store.headers.filter((h) => h.level === visibleLevel).length;
+
+    return num > 0 ? `H${visibleLevel}: ${num}` : `H${visibleLevel}`;
 }
 
 const { theme, themeOverrides, iconColor, primaryColor, rainbowColors, containerStyle, biDi } =
