@@ -148,8 +148,10 @@ export default {
     "H5 Color": "H5 顏色",
     "H6 Color": "H6 顏色",
 
-    // Heading level icon
-    "Show Heading Level Icon": "顯示標題層級圖示",
-    "Display heading level prefix icon (H1-H6) in markdown outline":
-        "在 Markdown 大綱中顯示標題層級前綴圖示 (H1-H6)",
+    // Markdown heading prefix
+    "Markdown Heading Prefix": "Markdown 標題前綴",
+    "Prefix displayed before headings in Markdown outlines": "顯示在 Markdown 大綱標題前的前綴",
+    None: "無",
+    "Heading Numbering": "標題編號",
+    "Heading Level Icon": "標題層級圖示",
 };

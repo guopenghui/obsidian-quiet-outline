@@ -8,6 +8,7 @@ export type Heading = {
     level: number;
     id?: string;
     icon?: SupportedIcon;
+    prefixText?: string;
 };
 
 export function getParent(headId: number, headings: Heading[]): number {

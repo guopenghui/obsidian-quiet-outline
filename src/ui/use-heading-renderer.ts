@@ -55,6 +55,28 @@ export function useOutlineRenderer(plugin: QuietOutline) {
         return method;
     });
 
+    function renderPrefix({ option }: { option: TreeOptionX }): VNodeChild {
+        if (plugin.settings.markdown_heading_prefix === "numbering" && option.prefixText) {
+            return h("span", { class: "quiet-outline-heading-prefix-text" }, option.prefixText);
+        }
+
+        if (!option.icon) return null;
+
+        let iConChild: VNodeChild = null;
+        switch (option.icon) {
+            default: {
+                iConChild = h(LocalIcon, { id: option.icon, key: option.icon });
+            }
+        }
+        return h(
+            Icon,
+            { class: "quiet-outline-heading-prefix-icon", key: option.icon },
+            {
+                default: () => iConChild,
+            },
+        );
+    }
+
     return {
         renderLabel,
         renderSwitcherIcon,
@@ -98,25 +120,6 @@ function renderSwitcherIcon() {
         // null,
         {
             default: () => h(ArrowForwardIosRound),
-        },
-    );
-}
-
-// Prefix Icon
-function renderPrefix({ option }: { option: TreeOptionX }): VNodeChild {
-    if (!option.icon) return null;
-
-    let iConChild: VNodeChild = null;
-    switch (option.icon) {
-        default: {
-            iConChild = h(LocalIcon, { id: option.icon, key: option.icon });
-        }
-    }
-    return h(
-        Icon,
-        { size: "1.2em", key: option.icon },
-        {
-            default: () => iConChild,
         },
     );
 }

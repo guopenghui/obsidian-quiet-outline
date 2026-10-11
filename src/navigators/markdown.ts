@@ -11,7 +11,7 @@ import type { TreeOption } from "naive-ui";
 import { setupMenu, normal, parent, separator, danger } from "@/utils/menu";
 import { t } from "@/lang/helper";
 import { HeadingUpdater } from "@/utils/update-heading-links";
-import { stringifyHeaders } from "@/utils/heading";
+import { calculateHeadingNumbering, stringifyHeaders } from "@/utils/heading";
 import { eventBus } from "@/utils/event-bus";
 
 let plugin: QuietOutline;
@@ -20,7 +20,6 @@ export const MD_DATA_FILE = "markdown-states.json";
 export interface MarkdownHeading extends Heading {
     line: number;
     position: Pos;
-    icon?: string;
 }
 
 export class MarkDownNav extends Nav {
@@ -40,14 +39,21 @@ export class MarkDownNav extends Nav {
         const cache = this.view.file && this.plugin.app.metadataCache.getFileCache(this.view.file);
 
         const headers = structuredClone(cache?.headings) || [];
-        return headers.map((cache) => ({
+        const headings: MarkdownHeading[] = headers.map((cache) => ({
             title: cache.heading,
             level: cache.level,
             line: cache.position.start.line,
             position: cache.position,
-            icon: this.plugin.settings.show_markdown_level_icon
-                ? `lucide-heading-${cache.level}`
-                : undefined,
+            icon:
+                this.plugin.settings.markdown_heading_prefix === "level-icon"
+                    ? `lucide-heading-${cache.level}`
+                    : undefined,
+        }));
+        const numbering = calculateHeadingNumbering(headings);
+
+        return headings.map((heading, index) => ({
+            ...heading,
+            prefixText: numbering[index],
         }));
     }
 

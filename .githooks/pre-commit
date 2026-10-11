@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 set -eu
 
+npm run format
 node scripts/check-line-endings.mjs --check-staged

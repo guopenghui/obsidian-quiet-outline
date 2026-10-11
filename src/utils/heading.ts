@@ -1,5 +1,37 @@
 import type { Heading } from "@/store";
 
+export function calculateHeadingNumbering(headings: readonly Pick<Heading, "level">[]): string[] {
+    const result: string[] = [];
+    const stack: number[] = [];
+    let counters: number[] = [];
+
+    for (const { level } of headings) {
+        while (stack.length > 0 && stack[stack.length - 1] > level) {
+            stack.pop();
+        }
+
+        if (stack.length === 0) {
+            stack.push(level);
+            counters = [counters.length === 0 ? 1 : counters[0] + 1];
+        } else if (stack[stack.length - 1] === level) {
+            counters = counters.slice(0, stack.length);
+            counters[stack.length - 1]++;
+        } else {
+            stack.push(level);
+            counters = counters.slice(0, stack.length);
+            if (counters.length >= stack.length) {
+                counters[stack.length - 1]++;
+            } else {
+                counters[stack.length - 1] = 1;
+            }
+        }
+
+        result.push(counters.join("."));
+    }
+
+    return result;
+}
+
 export function stringifyHeaders(headers: Heading[], export_format: string) {
     function merge(arr1: string[], arr2: string[]) {
         return Array(arr1.length + arr2.length)

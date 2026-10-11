@@ -135,6 +135,14 @@
     margin: 0;
 }
 
+.quiet-outline-heading-prefix-text {
+    opacity: 0.5;
+}
+
+.quiet-outline-heading-prefix-icon {
+    font-size: 1.2em;
+}
+
 /* ellipsis */
 .quiet-outline .n-tree.ellipsis {
     overflow-x: hidden;

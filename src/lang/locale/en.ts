@@ -151,8 +151,11 @@ export default {
     "H5 Color": "H5 Color",
     "H6 Color": "H6 Color",
 
-    // Heading level icon
-    "Show Heading Level Icon": "Show Heading Level Icon",
-    "Display heading level prefix icon (H1-H6) in markdown outline":
-        "Display heading level prefix icon (H1-H6) in markdown outline",
+    // Markdown heading prefix
+    "Markdown Heading Prefix": "Markdown Heading Prefix",
+    "Prefix displayed before headings in Markdown outlines":
+        "Prefix displayed before headings in Markdown outlines",
+    None: "None",
+    "Heading Numbering": "Heading Numbering",
+    "Heading Level Icon": "Heading Level Icon",
 };

@@ -19,6 +19,7 @@ type ModifierKey = "ctrlKey" | "altKey" | "metaKey" | "disable";
 type Direction = "top" | "bottom" | "left" | "right";
 type TextDirectionDecideBy = "system" | "text";
 type CanvasSortOrder = "area" | "name_asc" | "name_desc";
+type MarkdownHeadingPrefix = "none" | "numbering" | "level-icon";
 
 interface QuietOutlineSettings {
     // General settings
@@ -54,7 +55,7 @@ interface QuietOutlineSettings {
     bases_display_property: string;
 
     // Style settings
-    show_markdown_level_icon: boolean;
+    markdown_heading_prefix: MarkdownHeadingPrefix;
     patch_color: boolean;
     primary_color_light: string;
     primary_color_dark: string;
@@ -122,7 +123,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     bases_display_property: "file.name",
 
     // Style settings
-    show_markdown_level_icon: false,
+    markdown_heading_prefix: "none",
     patch_color: false,
     primary_color_light: "#18a058",
     primary_color_dark: "#63e2b7",
@@ -539,15 +540,18 @@ class SettingTab extends PluginSettingTab {
     private renderStyleSettings(container: HTMLElement): void {
         container.empty();
 
-        // Heading Level Icon Setting
         new Setting(container)
-            .setName(t("Show Heading Level Icon"))
-            .setDesc(t("Display heading level prefix icon (H1-H6) in markdown outline"))
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.show_markdown_level_icon)
+            .setName(t("Markdown Heading Prefix"))
+            .setDesc(t("Prefix displayed before headings in Markdown outlines"))
+            .addDropdown((dropdown) =>
+                dropdown
+                    .addOption("none", t("None"))
+                    .addOption("numbering", t("Heading Numbering"))
+                    .addOption("level-icon", t("Heading Level Icon"))
+                    .setValue(this.plugin.settings.markdown_heading_prefix)
                     .onChange(async (value) => {
-                        this.plugin.settings.show_markdown_level_icon = value;
+                        assertType<MarkdownHeadingPrefix>(value);
+                        this.plugin.settings.markdown_heading_prefix = value;
                         await this.plugin.saveSettings();
                         await this.plugin.refresh_outline();
                     }),

@@ -179,6 +179,7 @@ function arrToTree(headers: Heading[]): TreeOptionX[] {
             label: h.title,
             key: makeKey(h.level, i),
             icon: h.icon,
+            prefixText: h.prefixText,
             no: i,
         };
 

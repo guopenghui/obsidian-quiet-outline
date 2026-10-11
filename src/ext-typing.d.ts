@@ -82,8 +82,7 @@ declare module "obsidian" {
         rename?: "start" | "end" | "all";
     }
 
-    interface FileManager {
-    }
+    interface FileManager {}
 
     interface MarkdownPreviewSection {
         el: HTMLElement;

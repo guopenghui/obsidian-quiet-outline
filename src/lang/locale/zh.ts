@@ -148,8 +148,10 @@ export default {
     "H5 Color": "H5 颜色",
     "H6 Color": "H6 颜色",
 
-    // Heading level icon
-    "Show Heading Level Icon": "显示标题层级图标",
-    "Display heading level prefix icon (H1-H6) in markdown outline":
-        "在 Markdown 大纲中显示标题层级前缀图标 (H1-H6)",
+    // Markdown heading prefix
+    "Markdown Heading Prefix": "Markdown 标题前缀",
+    "Prefix displayed before headings in Markdown outlines": "显示在 Markdown 大纲标题前的前缀",
+    None: "无",
+    "Heading Numbering": "标题编号",
+    "Heading Level Icon": "标题层级图标",
 };

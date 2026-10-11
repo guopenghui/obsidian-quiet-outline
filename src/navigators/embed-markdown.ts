@@ -5,6 +5,7 @@ import { Nav } from "./base";
 import { calcModifies } from "@/utils/diff";
 import { parseMetaDataCache } from "@/utils/md-process";
 import type { MarkdownHeading } from "./markdown";
+import { calculateHeadingNumbering } from "@/utils/heading";
 
 function getHeader(index: number) {
     return store.headers[index] as MarkdownHeading;
@@ -63,14 +64,21 @@ export class EmbedMarkdownFileNav extends Nav {
             return [];
         }
         const cache = this.plugin.app.metadataCache.getFileCache(this.view.file);
-        return (cache?.headings || []).map((h) => ({
+        const headings: MarkdownHeading[] = (cache?.headings || []).map((h) => ({
             level: h.level,
             title: h.heading,
             line: h.position.start.line,
             position: h.position,
-            icon: this.plugin.settings.show_markdown_level_icon
-                ? `lucide-heading-${h.level}`
-                : undefined,
+            icon:
+                this.plugin.settings.markdown_heading_prefix === "level-icon"
+                    ? `lucide-heading-${h.level}`
+                    : undefined,
+        }));
+        const numbering = calculateHeadingNumbering(headings);
+
+        return headings.map((heading, index) => ({
+            ...heading,
+            prefixText: numbering[index],
         }));
     }
     async setHeaders(): Promise<void> {
@@ -101,14 +109,24 @@ export class EmbedMarkdownTextNav extends Nav {
         setEphemeralState(this.view, { line });
     }
     async getHeaders(): Promise<MarkdownHeading[]> {
-        const { headings } = await parseMetaDataCache(this.plugin.app, this.view.text);
-        return (headings || []).map((h) => ({
+        const { headings: cachedHeadings } = await parseMetaDataCache(
+            this.plugin.app,
+            this.view.text,
+        );
+        const headings: MarkdownHeading[] = (cachedHeadings || []).map((h) => ({
             ...h,
             title: h.heading,
             line: h.position.start.line,
-            icon: this.plugin.settings.show_markdown_level_icon
-                ? `lucide-heading-${h.level}`
-                : undefined,
+            icon:
+                this.plugin.settings.markdown_heading_prefix === "level-icon"
+                    ? `lucide-heading-${h.level}`
+                    : undefined,
+        }));
+        const numbering = calculateHeadingNumbering(headings);
+
+        return headings.map((heading, index) => ({
+            ...heading,
+            prefixText: numbering[index],
         }));
     }
     async setHeaders(): Promise<void> {
