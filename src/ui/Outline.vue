@@ -224,7 +224,7 @@ defineExpose({
 .quiet-outline .n-tree-node-indent::after {
     content: "";
     position: absolute;
-    height: 100%;
+    height: calc(100% + var(--custom-line-gap));
     right: 8px;
 }
 
