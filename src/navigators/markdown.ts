@@ -457,25 +457,26 @@ function currentLine(fromScroll: boolean, isSourcemode: boolean) {
     }
 }
 
-// line above and nearest to middle of the editor
+// 0-based index of the line intersecting or immediately above the editor viewport's vertical center.
 function getCurrentLineFromEditor(editorView: EditorView): number {
     const { y, height } = editorView.dom.getBoundingClientRect();
     const middle = y + height / 2;
     const lineBlocks = editorView.viewportLineBlocks;
 
-    let line: number = 0;
-    lineBlocks.forEach((lb) => {
+    let line: number = 1;
+    for (const lb of lineBlocks) {
         const node = editorView.domAtPos(lb.from).node;
         const el = (node.nodeName == "#text" ? node.parentNode : node) as HTMLElement;
-        const elRect = el.getBoundingClientRect();
-        const base = elRect.y + elRect.height / 2;
+        const { top } = el.getBoundingClientRect();
 
-        if (base <= middle) {
+        if (top <= middle) {
             line = editorView.state.doc.lineAt(lb.from).number;
+        } else {
+            break;
         }
-    });
+    }
 
-    return Math.max(line - 2, 0);
+    return Math.max(line - 1, 0);
 }
 
 function getCurrentLineFromPreview(view: MarkdownView): number {
