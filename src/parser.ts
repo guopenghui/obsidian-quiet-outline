@@ -10,7 +10,7 @@ export const formula: Extension = {
     name: "formula",
     level: "inline",
     start(src) {
-        return src.match(/\$/)?.index || -1;
+        return src.match(/\$/)?.index ?? -1;
     },
     tokenizer(src, _tokens) {
         const rule = /^\$([^$]+)\$/;
