@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick, inject } from "vue";
-import { NTree, NInput, NSlider, NConfigProvider } from "naive-ui";
+import { NTree, NInput, NSlider, NConfigProvider, type TreeOption } from "naive-ui";
 
 import { store } from "@/store";
 import { t } from "@/lang/helper";
@@ -94,14 +94,21 @@ function formatTooltip(value: number): string {
 
 const { theme, themeOverrides, iconColor, primaryColor, rainbowColors, containerStyle, biDi } =
     useOutlineTheme();
-const { level, switchLevel, expanded, modifyExpandKeys, getDefaultLevel, autoExpand } =
-    useOutlineExpand(plugin);
+const {
+    level,
+    switchLevel,
+    expanded,
+    modifyExpandKeys,
+    toggleExpandKeys,
+    getDefaultLevel,
+    autoExpand,
+} = useOutlineExpand(plugin);
 const { data, nodeProps, locateIdx, resetLocated, selectedKeys } = useOutlineTree({
     plugin,
     container,
     level,
     expanded,
-    modifyExpandKeys,
+    toggleExpandKeys,
 });
 
 const { pattern, filter, matchCount } = useOutlineSearch();
@@ -123,7 +130,16 @@ function reset() {
 }
 useEventBus("reset-panel", reset);
 
-function expand(keys: string[]) {
+function expand(
+    keys: string[],
+    _options: unknown,
+    meta?: { node: TreeOption | null; action: "expand" | "collapse" | "filter" },
+) {
+    // clicking a node's switcher
+    if (meta?.node && meta.action !== "filter") {
+        toggleExpandKeys([meta.node.key as string], meta.action === "expand" ? "add" : "remove");
+        return;
+    }
     modifyExpandKeys(keys);
 }
 
@@ -182,7 +198,7 @@ const { selectVisible, setExpand, center, move, resetPattern, currentSelected } 
         locateIdx,
         selectedKeys,
         expanded,
-        modifyExpandKeys,
+        toggleExpandKeys,
         pattern,
     });
 

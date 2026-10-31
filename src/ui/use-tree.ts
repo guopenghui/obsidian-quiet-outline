@@ -23,14 +23,15 @@ type OutlineTreeOptions = {
     container: HTMLElement;
     level: Ref<number>;
     expanded: Ref<string[]>;
-    modifyExpandKeys: (newKeys: string[], mode: "add" | "remove" | "replace") => void;
+    /** expand/collapse requested by the user (may also fold the note) */
+    toggleExpandKeys: (keys: string[], mode: "add" | "remove") => void;
 };
 
 export function useOutlineTree({
     plugin,
     container,
     expanded,
-    modifyExpandKeys,
+    toggleExpandKeys,
 }: OutlineTreeOptions) {
     // prepare data for tree component
     const data = computed(() => {
@@ -126,15 +127,15 @@ export function useOutlineTree({
                     setupMenu(menu, [
                         expanded.value.includes(info.option.key as string)
                             ? normal(t("Collapse Recursively"), () =>
-                                  modifyExpandKeys(subtreeKeys, "remove"),
+                                  toggleExpandKeys(subtreeKeys, "remove"),
                               )
                             : normal(t("Expand Recursively"), () =>
-                                  modifyExpandKeys(subtreeKeys, "add"),
+                                  toggleExpandKeys(subtreeKeys, "add"),
                               ),
                         normal(t("Collapse Sibling"), () =>
-                            modifyExpandKeys(siblingKeys, "remove"),
+                            toggleExpandKeys(siblingKeys, "remove"),
                         ),
-                        normal(t("Expand Sibling"), () => modifyExpandKeys(siblingKeys, "add")),
+                        normal(t("Expand Sibling"), () => toggleExpandKeys(siblingKeys, "add")),
                         separator(),
                     ]);
 

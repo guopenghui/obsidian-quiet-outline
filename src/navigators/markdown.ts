@@ -1,6 +1,8 @@
 import { type EditorRange, MarkdownView, debounce, Menu, Notice, type Pos } from "obsidian";
 import { confirm } from "@/utils/modal";
 import { EditorView } from "@codemirror/view";
+import type { StateEffect } from "@codemirror/state";
+import { foldable, foldedRanges, foldEffect, unfoldEffect } from "@codemirror/language";
 import { editorEvent } from "@/editor-ext";
 import type QuietOutline from "@/plugin";
 import { store, getSiblings, type Heading } from "@/store";
@@ -158,6 +160,90 @@ export class MarkDownNav extends Nav {
             this.expandedKeys = keys;
             this.storeMarkdownState("expandedKeys");
         }
+    }
+
+    foldHeadings(indices: number[], fold: boolean) {
+        const targets = indices.filter((idx) => getHeader(idx));
+        if (targets.length === 0) return;
+
+        if (this.view.getMode() === "source") {
+            this.foldHeadingsInEditor(targets, fold);
+        } else {
+            this.foldHeadingsInPreview(targets, fold);
+        }
+    }
+
+    private foldHeadingsInEditor(indices: number[], fold: boolean) {
+        const cm = this.view.editor.cm;
+        const state = cm.state;
+        const effects: StateEffect<{ from: number; to: number }>[] = [];
+
+        for (const idx of indices) {
+            const lineNo = getHeader(idx).position.start.line + 1;
+            if (lineNo > state.doc.lines) continue;
+            const line = state.doc.line(lineNo);
+
+            if (fold) {
+                // prefer obsidian's own heading fold range, so the fold gutter recognizes it
+                const range =
+                    foldable(state, line.from, line.to) ?? this.headingFoldRange(idx, state.doc);
+                if (range) effects.push(foldEffect.of(range));
+            } else {
+                foldedRanges(state).between(line.from, line.to, (from, to) => {
+                    // skip folds of parent headings which merely cover this line
+                    if (from >= line.from && from <= line.to) {
+                        effects.push(unfoldEffect.of({ from, to }));
+                    }
+                });
+            }
+        }
+
+        if (effects.length > 0) cm.dispatch({ effects });
+    }
+
+    private foldHeadingsInPreview(indices: number[], fold: boolean) {
+        const preview = this.view.previewMode;
+        if (!preview.getFoldInfo || !preview.applyFoldInfo) return;
+
+        const lineCount = this.view.editor.lineCount();
+        const info = preview.getFoldInfo() ?? { folds: [], lines: lineCount };
+        let folds = [...info.folds];
+
+        for (const idx of indices) {
+            const from = getHeader(idx).position.start.line;
+            folds = folds.filter((f) => f.from !== from);
+            if (fold) {
+                folds.push({ from, to: this.headingSectionEndLine(idx, lineCount) });
+            }
+        }
+
+        preview.applyFoldInfo({ folds, lines: lineCount });
+        this.view.onMarkdownFold?.();
+    }
+
+    /** last line (0-based) of the heading's section, ignoring trailing blank lines */
+    private headingSectionEndLine(
+        idx: number,
+        lineCount: number,
+        lineText?: (line: number) => string,
+    ) {
+        const heading = getHeader(idx);
+        let next = idx + 1;
+        while (next < store.headers.length && store.headers[next].level > heading.level) next++;
+
+        let end =
+            next < store.headers.length ? getHeader(next).position.start.line - 1 : lineCount - 1;
+        const text = lineText ?? ((line: number) => this.view.editor.getLine(line));
+        while (end > heading.position.start.line && text(end).trim() === "") end--;
+        return end;
+    }
+
+    /** fallback when obsidian's "Fold heading" editor option is off */
+    private headingFoldRange(idx: number, doc: EditorView["state"]["doc"]) {
+        const start = getHeader(idx).position.start.line;
+        const end = this.headingSectionEndLine(idx, doc.lines, (line) => doc.line(line + 1).text);
+        if (end <= start) return null;
+        return { from: doc.line(start + 1).to, to: doc.line(end + 1).to };
     }
 
     changeHeadingContent(no: number, content: string) {

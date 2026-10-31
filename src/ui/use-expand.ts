@@ -52,6 +52,14 @@ export function useOutlineExpand(plugin: QuietOutline) {
         syncExpandKeys();
     }
 
+    /** expand/collapse requested by the user, mirrored as folds in the note if enabled */
+    function toggleExpandKeys(keys: string[], mode: "add" | "remove") {
+        modifyExpandKeys(keys, mode);
+        if (plugin.settings.fold_note_with_outline && keys.length > 0) {
+            plugin.navigator.foldHeadings(keys.map(keyToIndex), mode === "remove");
+        }
+    }
+
     function syncExpandKeys() {
         const path = plugin.navigator.getPath();
         if (!path) return;
@@ -163,6 +171,7 @@ export function useOutlineExpand(plugin: QuietOutline) {
         switchLevel,
         expanded,
         modifyExpandKeys,
+        toggleExpandKeys,
         autoExpand,
     };
 }

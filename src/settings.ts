@@ -29,6 +29,7 @@ interface QuietOutlineSettings {
     expand_level: string;
     hide_unsearched: boolean;
     auto_expand_ext: AutoExpandMode;
+    fold_note_with_outline: boolean;
     regex_search: boolean;
     ellipsis: boolean;
     label_direction: Direction;
@@ -97,6 +98,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     expand_level: "0",
     hide_unsearched: true,
     auto_expand_ext: "only-expand",
+    fold_note_with_outline: false,
     regex_search: false,
     ellipsis: false,
     label_direction: "left",
@@ -322,6 +324,22 @@ class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.auto_expand_ext)
                     .onChange(async (value: string) => {
                         this.plugin.settings.auto_expand_ext = value as AutoExpandMode;
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
+        new Setting(container)
+            .setName(t("Fold Note With Outline"))
+            .setDesc(
+                t(
+                    "Collapsing or expanding a heading in the outline also folds or unfolds it in the markdown note",
+                ),
+            )
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.fold_note_with_outline)
+                    .onChange(async (value) => {
+                        this.plugin.settings.fold_note_with_outline = value;
                         await this.plugin.saveSettings();
                     }),
             );

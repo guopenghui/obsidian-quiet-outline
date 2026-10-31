@@ -30,6 +30,7 @@
         "vue": "^3.5.39"
     },
     "devDependencies": {
+        "@codemirror/language": "^6.13.1",
         "@types/html-to-text": "^9.0.4",
         "@types/node": "^24.13.3",
         "@vicons/utils": "^0.1.4",

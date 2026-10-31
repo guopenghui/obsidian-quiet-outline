@@ -45,6 +45,9 @@ export default {
     "Auto Expand": "自動展開",
     "Auto expand and collapse headings when scrolling and cursor position change":
         "當捲動頁面或游標改變時，自動跟隨目前所在標題並展開",
+    "Fold Note With Outline": "大綱摺疊同步到筆記",
+    "Collapsing or expanding a heading in the outline also folds or unfolds it in the markdown note":
+        "在大綱中摺疊或展開標題時，同時在 Markdown 筆記中摺疊或展開該標題",
     "Auto Scroll Into View": "自動捲動到定位的標題",
     "Auto scroll located heading into view": "當捲動或游標位置變化時，大綱自動捲動到相應標題",
     "Only Expand": "僅展開目前標題",
