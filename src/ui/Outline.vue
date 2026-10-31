@@ -23,7 +23,7 @@
         <NSlider
             v-if="store.levelSwitch"
             :value="level"
-            :on-update:value="switchLevel"
+            :on-update:value="switchLevelByUser"
             :marks="marks"
             step="mark"
             :min="0"
@@ -97,6 +97,7 @@ const { theme, themeOverrides, iconColor, primaryColor, rainbowColors, container
 const {
     level,
     switchLevel,
+    switchLevelByUser,
     expanded,
     modifyExpandKeys,
     toggleExpandKeys,
