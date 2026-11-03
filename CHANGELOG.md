@@ -2,6 +2,58 @@
 
 > This file is auto-generated from GitHub Releases. Do not edit by hand.
 
+## 0.5.21 - 2026-10-11
+
+### Feature
++ Support heading numbering prefix in markdown outline (#323)
++ Support colored highlights in headings (#325)
+
+### Fix
++ Fix "Persist Markdown States" overriding navigation targets (subpath/line) (#326)
++ Fix runtime error `navigator.storeMarkdownState is not a function` (#324)
++ Fix link updating when renaming headings via context menu
+
+---
+
+### 新增功能
++ 支持在 Markdown 大纲中显示标题层级编号前缀 (#323)
++ 支持在大纲标题中渲染彩色高亮文本 (#325)
+
+### 修复
++ 修复开启“保留 Markdown 状态”时覆盖跳转链接目标（子路径/行号）的问题 (#326)
++ 修复运行时报错 `navigator.storeMarkdownState is not a function` (#324)
++ 修复右键重命名标题时更新相关内部链接的问题
+
+Heading Numbering:
+
+<img width="1339" height="616" alt="image" src="https://github.com/user-attachments/assets/9b41d10a-8b30-4b78-b9e6-3789af2f3535" />
+
+## 0.5.20 - 2026-09-17
+
+### Feature
++ Support displaying heading level prefix icons (H1-H6) in markdown outline #318
+
+### Fix
++ Invalidate outline cache when switching PDF files in PDF navigator
+
+---
+
+### 新增功能
++ Markdown 大纲支持显示标题层级前缀图标 (H1-H6) #318
+
+### 修复
++ 修复 PDF 导航器在切换 PDF 文件时大纲缓存未正确更新的问题
+
+## 0.5.19 - 2026-09-11
+
++ Fix alignment of header icons
++ Add bases navigation feature (table, card, list) #288 (Thanks @jasongzy)
+
+---
+
++ 修复标题图标对齐
++ 增加 bases 导航功能（表格、卡片、列表） #288 （感谢 @jasongzy ）
+
 ## 0.5.18 - 2026-08-07
 
 ### Fix
