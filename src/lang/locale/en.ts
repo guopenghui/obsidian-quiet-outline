@@ -33,6 +33,9 @@ export default {
     "Auto Expand": "Auto Expand",
     "Auto expand and collapse headings when scrolling and cursor position change":
         "Auto expand and collapse headings when scrolling and cursor position change",
+    "Fold Note With Outline": "Fold Note With Outline",
+    "Collapsing or expanding a heading in the outline also folds or unfolds it in the markdown note":
+        "Collapsing or expanding a heading in the outline also folds or unfolds it in the markdown note",
     "Auto Scroll Into View": "Auto Scroll Into View",
     "Auto scroll located heading into view": "Auto scroll located heading into view",
     "Only Expand": "Only Expand",

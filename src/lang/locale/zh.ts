@@ -25,6 +25,9 @@ export default {
     "Auto Expand": "自动展开",
     "Auto expand and collapse headings when scrolling and cursor position change":
         "当滚动页面时，自动跟踪当前所在标题并展开",
+    "Fold Note With Outline": "大纲折叠同步到笔记",
+    "Collapsing or expanding a heading in the outline also folds or unfolds it in the markdown note":
+        "在大纲中折叠或展开标题时，同时在 Markdown 笔记中折叠或展开该标题",
     "Auto Scroll Into View": "自动滚动到定位的标题",
     "Auto scroll located heading into view": "当滚动或者光标位置变化时，大纲自动滚动到相应标题",
     "Only Expand": "仅展开当前标题",

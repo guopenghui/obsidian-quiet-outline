@@ -8,7 +8,8 @@ type Options = {
     locateIdx: Ref<number>;
     selectedKeys: Ref<string[]>;
     expanded: Ref<string[]>;
-    modifyExpandKeys: (keys: string[], action: "add" | "remove") => void;
+    /** expand/collapse requested by the user (may also fold the note) */
+    toggleExpandKeys: (keys: string[], action: "add" | "remove") => void;
 };
 
 export function useOutlineController({
@@ -16,7 +17,7 @@ export function useOutlineController({
     locateIdx,
     selectedKeys,
     expanded,
-    modifyExpandKeys,
+    toggleExpandKeys,
     pattern,
 }: Options) {
     /** select deepest visible node in located node's path */
@@ -36,9 +37,9 @@ export function useOutlineController({
         if (!selectedKey || isLeaf(nodeToIndex(selectedKey))) return;
 
         if (open) {
-            modifyExpandKeys([selectedKey], "add");
+            toggleExpandKeys([selectedKey], "add");
         } else {
-            modifyExpandKeys([selectedKey], "remove");
+            toggleExpandKeys([selectedKey], "remove");
         }
     }
 

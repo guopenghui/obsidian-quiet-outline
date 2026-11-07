@@ -288,6 +288,27 @@ declare module "obsidian" {
         toggleMode(): void;
     }
 
+    /** a folded section, in 0-based line numbers */
+    interface FoldPosition {
+        from: number;
+        to: number;
+    }
+
+    interface FoldInfo {
+        folds: FoldPosition[];
+        lines: number;
+    }
+
+    interface MarkdownPreviewView {
+        getFoldInfo?(): FoldInfo | null;
+        applyFoldInfo?(info: FoldInfo): void;
+    }
+
+    interface MarkdownView {
+        /** persists the current fold state of the note */
+        onMarkdownFold?(): void;
+    }
+
     interface Editor {
         cm: EditorView;
         /**
