@@ -71,6 +71,9 @@ export default {
         "Keep search input when switching between notes",
     "Drag headings to modify note": "Drag headings to modify note",
     "❗ This will modify note content, be careful.": "❗ This will modify note content, be careful",
+    "Preserve heading level when dragging": "Preserve heading level when dragging",
+    "Keep the original heading level when reordering headings.":
+        "Keep the original heading level when reordering headings",
     "Text Direction": "Text Direction",
     "is decided by": "is decided by",
 

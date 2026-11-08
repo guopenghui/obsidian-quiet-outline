@@ -33,6 +33,7 @@ interface QuietOutlineSettings {
     ellipsis: boolean;
     label_direction: Direction;
     drag_modify: boolean;
+    drag_preserve_level: boolean;
     locate_by_cursor: boolean;
     show_popover_key: ModifierKey;
     persist_md_states: boolean;
@@ -101,6 +102,7 @@ const DEFAULT_SETTINGS: QuietOutlineSettings = {
     ellipsis: false,
     label_direction: "left",
     drag_modify: false,
+    drag_preserve_level: true,
     locate_by_cursor: false,
     show_popover_key: "ctrlKey",
     persist_md_states: true,
@@ -464,6 +466,18 @@ class SettingTab extends PluginSettingTab {
                     store.dragModify = value;
                     await this.plugin.saveSettings();
                 }),
+            );
+
+        new Setting(container)
+            .setName(t("Preserve heading level when dragging"))
+            .setDesc(t("Keep the original heading level when reordering headings."))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.drag_preserve_level)
+                    .onChange(async (value) => {
+                        this.plugin.settings.drag_preserve_level = value;
+                        await this.plugin.saveSettings();
+                    }),
             );
 
         new Setting(container)

@@ -58,6 +58,8 @@ export default {
     "Keep search input when switching between notes": "切换笔记时保留搜索输入",
     "Drag headings to modify note": "启用拖拽标题来调整文档结果",
     "❗ This will modify note content, be careful.": "❗ 拖拽操作会改变文档内容，小心使用",
+    "Preserve heading level when dragging": "拖拽时保持标题层级",
+    "Keep the original heading level when reordering headings.": "重新排列标题时保持原有的标题层级",
     "Text Direction": "文本方向",
     "is decided by": "由什么决定",
 

@@ -83,11 +83,24 @@ export async function parseMarkdown(text: string, app: App): Promise<Section> {
     return stack[0];
 }
 
+/**
+ * Move a section to a new position.
+ *
+ * `before`/`after` only reorder the section, so by default the heading level of the
+ * moved section is kept as is. This matters when the dragged heading is deeper than
+ * the heading it is dropped next to: making it a sibling of that heading would raise
+ * it to the parent level, which is unexpected for a pure reorder operation.
+ *
+ * `inside` always nests the moved section one level under the target heading.
+ *
+ * @param preserveLevel Keep the original heading level for `before`/`after` drops.
+ */
 export function moveHeading(
     root: Section,
     fromNo: number,
     toNo: number,
     position: "before" | "after" | "inside",
+    preserveLevel = false,
 ) {
     const [fromParent, from] = findSection(root, fromNo);
     const [toParent, to] = findSection(root, toNo);
@@ -96,11 +109,15 @@ export function moveHeading(
     switch (position) {
         case "before":
             toParent.content.children.splice(toParent.content.children.indexOf(to), 0, newFrom);
-            modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel);
+            if (!preserveLevel) {
+                modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel);
+            }
             break;
         case "after":
             toParent.content.children.splice(toParent.content.children.indexOf(to) + 1, 0, newFrom);
-            modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel);
+            if (!preserveLevel) {
+                modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel);
+            }
             break;
         case "inside":
             to.content.children.push(newFrom);
