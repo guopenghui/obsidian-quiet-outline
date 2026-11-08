@@ -180,20 +180,34 @@ export class HeadingUpdater {
     private replaceInFile(value: string): TokenRange & { text: string } {
         const tokenRange = this.tokenRange;
         const editor = this.editor;
+
         const startPos = editor.offsetToPos(tokenRange.start);
-        const lineContent = editor.getLine(startPos.line);
-        const newLine = this.replaceHeadingText(lineContent, value);
+        const endPos = editor.offsetToPos(tokenRange.end);
+
+        const headingContent = editor.getRange(startPos, endPos);
 
         return {
             ...tokenRange,
-            text: newLine,
+            text: this.replaceHeadingText(headingContent, value),
         };
     }
 
-    private replaceHeadingText(line: string, newText: string): string {
-        return line.replace(/^(#{1,6} ).*/m, (_match: string, headingMark: string) => {
-            return headingMark + newText;
-        });
+    private replaceHeadingText(heading: string, newText: string): string {
+        const atx = heading.match(/^( {0,3}#{1,6})([ \t]+|$)(.*)$/);
+        if (atx) {
+            const closing = /^#+[ \t]*$/.test(atx[3])
+                ? " " + atx[3]
+                : (atx[3].match(/[ \t]+(?:#+[ \t]*)?$/)?.[0] ?? "");
+
+            return atx[1] + (atx[2] || " ") + newText + closing;
+        }
+
+        const setext = heading.match(/^( {0,3})[\s\S]*?(\r?\n {0,3}(?:=+|-+)[ \t]*)$/);
+        if (setext) {
+            return setext[1] + newText + setext[2];
+        }
+
+        return heading;
     }
 
     private getCustomReplacements(value: string) {

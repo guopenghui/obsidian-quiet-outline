@@ -83,48 +83,39 @@ export async function parseMarkdown(text: string, app: App): Promise<Section> {
     return stack[0];
 }
 
-/**
- * Move a section to a new position.
- *
- * `before`/`after` only reorder the section, so by default the heading level of the
- * moved section is kept as is. This matters when the dragged heading is deeper than
- * the heading it is dropped next to: making it a sibling of that heading would raise
- * it to the parent level, which is unexpected for a pure reorder operation.
- *
- * `inside` always nests the moved section one level under the target heading.
- *
- * @param preserveLevel Keep the original heading level for `before`/`after` drops.
- */
 export function moveHeading(
     root: Section,
     fromNo: number,
     toNo: number,
     position: "before" | "after" | "inside",
-    preserveLevel = false,
 ) {
     const [fromParent, from] = findSection(root, fromNo);
     const [toParent, to] = findSection(root, toNo);
+    const levelDelta = to.headingLevel - from.headingLevel + (position === "inside" ? 1 : 0);
+    let maxLevel = from.headingLevel;
+    visitSection(from, (section) => {
+        maxLevel = Math.max(maxLevel, section.headingLevel);
+    });
+    if (maxLevel + levelDelta > 6) {
+        return false;
+    }
+
     const newFrom = structuredClone(from);
+    modifyHeadingLevel(newFrom, levelDelta);
 
     switch (position) {
         case "before":
             toParent.content.children.splice(toParent.content.children.indexOf(to), 0, newFrom);
-            if (!preserveLevel) {
-                modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel);
-            }
             break;
         case "after":
             toParent.content.children.splice(toParent.content.children.indexOf(to) + 1, 0, newFrom);
-            if (!preserveLevel) {
-                modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel);
-            }
             break;
         case "inside":
             to.content.children.push(newFrom);
-            modifyHeadingLevel(newFrom, to.headingLevel - from.headingLevel + 1);
             break;
     }
     fromParent.content.children.splice(fromParent.content.children.indexOf(from), 1);
+    return true;
 }
 
 export function removeHeading(root: Section, toRemoveNo: number) {
