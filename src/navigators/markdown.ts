@@ -195,7 +195,10 @@ export class MarkDownNav extends Nav {
 
     async handleDrop(from: number, to: number, position: "before" | "after" | "inside") {
         const structure = await parseMarkdown(this.view.data, this.view.app);
-        moveHeading(structure, from, to, position);
+        if (!moveHeading(structure, from, to, position)) {
+            new Notice(t("Maximum level reached"));
+            return;
+        }
 
         if (!this.view.file) return;
         await plugin.app.vault.modify(this.view.file, stringifySection(structure));
