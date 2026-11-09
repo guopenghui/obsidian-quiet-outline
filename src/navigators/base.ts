@@ -106,6 +106,8 @@ export abstract class Nav {
     ) {}
     toBottom() {}
     onExpandKeysChange(_path: string, _keys: string[]) {}
+    /** fold (or unfold) the given headings in the document itself */
+    foldHeadings(_indices: number[], _fold: boolean) {}
     changeHeadingContent(_no: number, _content: string) {}
     abstract jump(key: number): Promise<void>;
     async jumpWithoutFocus(index: number) {

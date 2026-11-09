@@ -17,13 +17,28 @@ export function useOutlineExpand(plugin: QuietOutline) {
         modifyExpandKeys(newKeys);
     }
 
+    /** level switch requested by the user, mirrored as folds in the note if enabled */
+    function switchLevelByUser(lev: number) {
+        switchLevel(lev);
+        if (!plugin.settings.fold_note_with_outline) return;
+
+        // show headings up to `lev` unfolded, fold every deeper one (leaf headings included)
+        const unfold: number[] = [];
+        const fold: number[] = [];
+        store.headers.forEach((heading, index) => {
+            (heading.level <= lev ? unfold : fold).push(index);
+        });
+        plugin.navigator.foldHeadings(unfold, false);
+        plugin.navigator.foldHeadings(fold, true);
+    }
+
     useEventBus("levelchange", (arg) => {
         if (typeof arg === "number") {
-            switchLevel(arg);
+            switchLevelByUser(arg);
         } else if (arg === "inc") {
-            switchLevel(Math.clamp(level.value + 1, 0, 5));
+            switchLevelByUser(Math.clamp(level.value + 1, 0, 5));
         } else if (arg === "dec") {
-            switchLevel(Math.clamp(level.value - 1, 0, 5));
+            switchLevelByUser(Math.clamp(level.value - 1, 0, 5));
         }
     });
 
@@ -50,6 +65,14 @@ export function useOutlineExpand(plugin: QuietOutline) {
         }
         expanded.value = safeFilter(newKeys);
         syncExpandKeys();
+    }
+
+    /** expand/collapse requested by the user, mirrored as folds in the note if enabled */
+    function toggleExpandKeys(keys: string[], mode: "add" | "remove") {
+        modifyExpandKeys(keys, mode);
+        if (plugin.settings.fold_note_with_outline && keys.length > 0) {
+            plugin.navigator.foldHeadings(keys.map(keyToIndex), mode === "remove");
+        }
     }
 
     function syncExpandKeys() {
@@ -161,8 +184,10 @@ export function useOutlineExpand(plugin: QuietOutline) {
         getDefaultLevel,
         level,
         switchLevel,
+        switchLevelByUser,
         expanded,
         modifyExpandKeys,
+        toggleExpandKeys,
         autoExpand,
     };
 }
