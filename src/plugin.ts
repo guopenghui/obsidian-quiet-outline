@@ -113,6 +113,8 @@ export default class QuietOutline extends Plugin {
     // Markdown states are keyed by file path: follow renames so a note keeps its state,
     // and drop the states of deleted files so they do not pile up in markdown-states.json.
     private moveMarkdownStates(oldPath: string, newPath: string | null) {
+        if (!this.settings.persist_md_states || oldPath === newPath) return;
+
         const states = this.data_manager.getData<MarkdownStates>(MD_DATA_FILE);
         if (!states) return;
 
