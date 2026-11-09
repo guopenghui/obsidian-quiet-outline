@@ -279,6 +279,11 @@ defineExpose({
 
 .quiet-outline .n-tree-node-wrapper {
     border-radius: var(--nav-item-radius);
+
+    .n-tree-node {
+        border-radius: var(--nav-item-radius);
+    }
+
     &:has(.n-tree-node.located) {
         background-color: var(--nav-item-background-active);
     }
